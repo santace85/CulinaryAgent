@@ -1,0 +1,162 @@
+import { Recipe, CommunityPost } from "../types";
+
+export const STARTER_RECIPES: Recipe[] = [
+  {
+    id: "starter_1",
+    title: "Artisanal Tuscan Garlic & Sun-Dried Tomato Fettuccine",
+    summary: "A silkily rich pasta with sautéed garlic, sun-dried tomatoes, baby spinach, and sweet basil in a Parmesan cream reduction.",
+    prepTimeMinutes: 10,
+    cookTimeMinutes: 15,
+    servings: 4,
+    difficulty: "Easy",
+    calories: 510,
+    cuisine: "Italian",
+    dietaryTags: ["Vegetarian", "Quick 20-Min", "Comfort Food"],
+    ingredients: [
+      { id: "i1", name: "Fettuccine or Penne Pasta", amount: 350, unit: "g", category: "Pantry & Spices", isChecked: false },
+      { id: "i2", name: "Heavy Cream or Coconut Cream", amount: 200, unit: "ml", category: "Dairy & Eggs", isChecked: false, notes: "Use coconut cream for dairy-free" },
+      { id: "i3", name: "Garlic Cloves", amount: 4, unit: "minced", category: "Produce", isChecked: false },
+      { id: "i4", name: "Fresh Baby Spinach", amount: 120, unit: "g", category: "Produce", isChecked: false },
+      { id: "i5", name: "Sun-Dried Tomatoes in Oil", amount: 80, unit: "g", category: "Pantry & Spices", isChecked: false },
+      { id: "i6", name: "Grated Aged Parmesan Cheese", amount: 60, unit: "g", category: "Dairy & Eggs", isChecked: false },
+      { id: "i7", name: "Extra Virgin Olive Oil", amount: 2, unit: "tbsp", category: "Pantry & Spices", isChecked: false },
+      { id: "i8", name: "Crushed Red Pepper & Italian Herbs", amount: 1, unit: "tsp", category: "Pantry & Spices", isChecked: false }
+    ],
+    steps: [
+      {
+        stepNumber: 1,
+        title: "Boil Pasta Al Dente",
+        instruction: "Bring a large pot of salted water to a rolling boil. Add fettuccine and cook according to package instructions until al dente.",
+        timerSeconds: 540,
+        tip: "Save 1/2 cup pasta water before draining!"
+      },
+      {
+        stepNumber: 2,
+        title: "Sauté Aromatics",
+        instruction: "In a wide pan, heat olive oil over medium-low heat. Add minced garlic and sun-dried tomatoes. Sauté for 2 minutes until fragrant.",
+        timerSeconds: 120,
+        technique: "Sweating Garlic"
+      },
+      {
+        stepNumber: 3,
+        title: "Simmer Cream Sauce",
+        instruction: "Pour in cream and red pepper flakes. Bring to a gentle simmer for 3 minutes until sauce coats the back of a spoon.",
+        timerSeconds: 180
+      },
+      {
+        stepNumber: 4,
+        title: "Toss & Melt Cheese",
+        instruction: "Stir in spinach and Parmesan until spinach is gently wilted and cheese is velvety. Toss with hot fettuccine, adding pasta water if needed.",
+        timerSeconds: 120,
+        tip: "Serve immediately with a twist of cracked black pepper."
+      }
+    ],
+    substitutions: [
+      { originalIngredient: "Heavy Cream", substitute: "Unsweetened Full-Fat Coconut Milk", ratioOrNote: "1:1 ratio", reason: "Dairy-Free option" },
+      { originalIngredient: "Parmesan Cheese", substitute: "Nutritional Yeast + Pinch of Sea Salt", ratioOrNote: "2 tbsp", reason: "Vegan cheese flavor" },
+      { originalIngredient: "Fettuccine", substitute: "Gluten-Free Rice Pasta or Zucchini Ribbons", ratioOrNote: "1:1 ratio", reason: "Gluten-Free or Low-Carb" }
+    ],
+    chefNotes: "Pair with a crisp Pinot Grigio and warm crusty garlic bread.",
+    nutritionalInfo: { protein: "15g", carbs: "60g", fat: "22g", fiber: "4g" },
+    isFavorite: true,
+    userRating: 5
+  },
+  {
+    id: "starter_2",
+    title: "Zesty Herb Lemon Garlic Grilled Salmon & Quinoa",
+    summary: "Seared Atlantic salmon fillet with crispy skin, drizzled with a fresh dill-chive butter glaze served over a bed of fluffy herb quinoa.",
+    prepTimeMinutes: 12,
+    cookTimeMinutes: 12,
+    servings: 2,
+    difficulty: "Easy",
+    calories: 480,
+    cuisine: "Mediterranean",
+    dietaryTags: ["High-Protein", "Gluten-Free", "Keto Friendly"],
+    ingredients: [
+      { id: "i10", name: "Fresh Salmon Fillets", amount: 2, unit: "6oz fillets", category: "Meat & Seafood", isChecked: false },
+      { id: "i11", name: "Fresh Dill & Chives", amount: 2, unit: "tbsp chopped", category: "Produce", isChecked: false },
+      { id: "i12", name: "Fresh Lemon", amount: 1, unit: "whole", category: "Produce", isChecked: false },
+      { id: "i13", name: "Unsalted Butter or Olive Oil", amount: 2, unit: "tbsp", category: "Dairy & Eggs", isChecked: false },
+      { id: "i14", name: "White Quinoa", amount: 180, unit: "g", category: "Pantry & Spices", isChecked: false },
+      { id: "i15", name: "Garlic Powder & Sea Salt", amount: 1, unit: "tsp", category: "Pantry & Spices", isChecked: false }
+    ],
+    steps: [
+      {
+        stepNumber: 1,
+        title: "Cook Herb Quinoa",
+        instruction: "Rinse quinoa under cold water. Simmer in vegetable broth or salted water for 12 minutes until light and fluffy. Fluff with a fork.",
+        timerSeconds: 720
+      },
+      {
+        stepNumber: 2,
+        title: "Sear Salmon Skin-Down",
+        instruction: "Pat salmon fillets dry with paper towels. Season generously with salt, pepper, and garlic powder. Heat skillet over high heat with oil, then lay salmon skin side down.",
+        timerSeconds: 300,
+        tip: "Press salmon down firmly for 10 seconds to get extra crispy skin!"
+      },
+      {
+        stepNumber: 3,
+        title: "Baste with Dill Lemon Butter",
+        instruction: "Flip salmon over, lower heat to medium, and add butter, lemon juice, and chopped dill. Spoon foamy butter over the fillets for 2 minutes.",
+        timerSeconds: 120,
+        technique: "Arrosé (Butter Basting)"
+      }
+    ],
+    substitutions: [
+      { originalIngredient: "Salmon Fillets", substitute: "Steelhead Trout or Thick Cut Sea Bass", ratioOrNote: "1:1 ratio", reason: "Fish alternative" },
+      { originalIngredient: "Butter", substitute: "Avocado Oil or Ghee", ratioOrNote: "2 tbsp", reason: "Paleo / Dairy-Free alternative" }
+    ],
+    chefNotes: "Salmon internal temp should reach 125°F (52°C) for a tender, flaky medium-rare center.",
+    nutritionalInfo: { protein: "38g", carbs: "28g", fat: "22g", fiber: "3g" },
+    isFavorite: false
+  }
+];
+
+export const INITIAL_COMMUNITY_POSTS: CommunityPost[] = [
+  {
+    id: "post_1",
+    authorName: "Chef Isabella Rossi",
+    authorAvatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=200",
+    authorBadge: "Verified Culinary Master",
+    caption: "Made the Garlic Tuscan Fettuccine with extra sun-dried tomato oil and fried basil leaves! The AI agent suggested replacing heavy cream with cashew cream for my dairy-free guest, and it was absolute perfection! 🍝✨",
+    recipe: STARTER_RECIPES[0],
+    likesCount: 24,
+    hasLiked: false,
+    createdAt: "2 hours ago",
+    comments: [
+      {
+        id: "c1",
+        authorName: "Marco D.",
+        text: "That creamy texture looks incredible! Did you add extra garlic?",
+        createdAt: "1 hour ago",
+        rating: 5
+      },
+      {
+        id: "c2",
+        authorName: "Sarah Jenkins",
+        text: "Tried the cashew cream substitute trick yesterday! Total gamechanger for vegan pasta nights.",
+        createdAt: "30 mins ago"
+      }
+    ]
+  },
+  {
+    id: "post_2",
+    authorName: "David 'Grillmaster' Miller",
+    authorAvatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=200",
+    authorBadge: "Home Chef & Foodie",
+    caption: "Quick 15-minute salmon dinner after a workout! Used the CulinaryAgent AI built-in timer feature right on step 2 so I didn't overcook the salmon skin. Perfectly flaky salmon every single time!",
+    recipe: STARTER_RECIPES[1],
+    likesCount: 18,
+    hasLiked: true,
+    createdAt: "5 hours ago",
+    comments: [
+      {
+        id: "c3",
+        authorName: "Elena Rostova",
+        text: "The step timer feature saved my dinner too! Loving this culinary app.",
+        createdAt: "4 hours ago",
+        rating: 5
+      }
+    ]
+  }
+];
