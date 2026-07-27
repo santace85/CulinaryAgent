@@ -8,6 +8,7 @@ dotenv.config();
 
 const app = express();
 const PORT = 3000;
+const HOSTNAME = "localhost";
 
 app.use(express.json({ limit: "5mb" }));
 
@@ -36,7 +37,9 @@ app.post("/api/recipe", async (req, res) => {
     }
 
     if (!process.env.GEMINI_API_KEY) {
-      console.warn("GEMINI_API_KEY is not set. Returning rich fallback recipe.");
+      console.warn(
+        "GEMINI_API_KEY is not set. Returning rich fallback recipe.",
+      );
       return res.json({
         recipe: getFallbackRecipe(prompt, dietary, servings),
         isFallback: true,
@@ -73,7 +76,10 @@ ${cookTimeMax ? `Maximum cook time limit: ${cookTimeMax} minutes.` : ""}`;
             prepTimeMinutes: { type: Type.INTEGER },
             cookTimeMinutes: { type: Type.INTEGER },
             servings: { type: Type.INTEGER },
-            difficulty: { type: Type.STRING, enum: ["Easy", "Medium", "Advanced"] },
+            difficulty: {
+              type: Type.STRING,
+              enum: ["Easy", "Medium", "Advanced"],
+            },
             calories: { type: Type.INTEGER },
             cuisine: { type: Type.STRING },
             dietaryTags: {
@@ -91,7 +97,14 @@ ${cookTimeMax ? `Maximum cook time limit: ${cookTimeMax} minutes.` : ""}`;
                   unit: { type: Type.STRING },
                   category: {
                     type: Type.STRING,
-                    enum: ["Produce", "Dairy & Eggs", "Meat & Seafood", "Pantry & Spices", "Bakery", "Other"],
+                    enum: [
+                      "Produce",
+                      "Dairy & Eggs",
+                      "Meat & Seafood",
+                      "Pantry & Spices",
+                      "Bakery",
+                      "Other",
+                    ],
                   },
                   notes: { type: Type.STRING },
                   optional: { type: Type.BOOLEAN },
@@ -206,7 +219,12 @@ app.post("/api/substitute", async (req, res) => {
               ratioOrNote: { type: Type.STRING },
               reason: { type: Type.STRING },
             },
-            required: ["originalIngredient", "substitute", "ratioOrNote", "reason"],
+            required: [
+              "originalIngredient",
+              "substitute",
+              "ratioOrNote",
+              "reason",
+            ],
           },
         },
       },
@@ -223,14 +241,19 @@ app.post("/api/substitute", async (req, res) => {
 });
 
 // Fallback recipes generator
-function getFallbackRecipe(query: string, dietary?: string[], targetServings?: number) {
+function getFallbackRecipe(
+  query: string,
+  dietary?: string[],
+  targetServings?: number,
+) {
   const q = query.toLowerCase();
-  
+
   if (q.includes("pasta") || q.includes("spaghetti") || q.includes("italian")) {
     return {
       id: "recipe_creamy_garlic_tuscan_pasta",
       title: "Creamy Garlic Tuscan Spinach Pasta",
-      summary: "A rich, velvety Italian pasta tossed with sun-dried tomatoes, tender spinach, and freshly grated Parmesan in a garlic cream sauce.",
+      summary:
+        "A rich, velvety Italian pasta tossed with sun-dried tomatoes, tender spinach, and freshly grated Parmesan in a garlic cream sauce.",
       prepTimeMinutes: 10,
       cookTimeMinutes: 15,
       servings: targetServings || 4,
@@ -239,59 +262,135 @@ function getFallbackRecipe(query: string, dietary?: string[], targetServings?: n
       cuisine: "Italian",
       dietaryTags: ["Vegetarian", "Quick 20-Min"],
       ingredients: [
-        { id: "i1", name: "Penne or Fettuccine Pasta", amount: 350, unit: "g", category: "Pantry & Spices" },
-        { id: "i2", name: "Heavy Cream", amount: 200, unit: "ml", category: "Dairy & Eggs", notes: "Or coconut cream for dairy-free" },
-        { id: "i3", name: "Garlic cloves", amount: 4, unit: "minced", category: "Produce" },
-        { id: "i4", name: "Fresh Baby Spinach", amount: 120, unit: "g", category: "Produce" },
-        { id: "i5", name: "Sun-dried Tomatoes in oil", amount: 75, unit: "g", category: "Pantry & Spices", notes: "Drained & sliced" },
-        { id: "i6", name: "Grated Parmesan Cheese", amount: 60, unit: "g", category: "Dairy & Eggs" },
-        { id: "i7", name: "Extra Virgin Olive Oil", amount: 2, unit: "tbsp", category: "Pantry & Spices" },
-        { id: "i8", name: "Italian Seasoning & Red Pepper Flakes", amount: 1, unit: "tsp", category: "Pantry & Spices" }
+        {
+          id: "i1",
+          name: "Penne or Fettuccine Pasta",
+          amount: 350,
+          unit: "g",
+          category: "Pantry & Spices",
+        },
+        {
+          id: "i2",
+          name: "Heavy Cream",
+          amount: 200,
+          unit: "ml",
+          category: "Dairy & Eggs",
+          notes: "Or coconut cream for dairy-free",
+        },
+        {
+          id: "i3",
+          name: "Garlic cloves",
+          amount: 4,
+          unit: "minced",
+          category: "Produce",
+        },
+        {
+          id: "i4",
+          name: "Fresh Baby Spinach",
+          amount: 120,
+          unit: "g",
+          category: "Produce",
+        },
+        {
+          id: "i5",
+          name: "Sun-dried Tomatoes in oil",
+          amount: 75,
+          unit: "g",
+          category: "Pantry & Spices",
+          notes: "Drained & sliced",
+        },
+        {
+          id: "i6",
+          name: "Grated Parmesan Cheese",
+          amount: 60,
+          unit: "g",
+          category: "Dairy & Eggs",
+        },
+        {
+          id: "i7",
+          name: "Extra Virgin Olive Oil",
+          amount: 2,
+          unit: "tbsp",
+          category: "Pantry & Spices",
+        },
+        {
+          id: "i8",
+          name: "Italian Seasoning & Red Pepper Flakes",
+          amount: 1,
+          unit: "tsp",
+          category: "Pantry & Spices",
+        },
       ],
       steps: [
         {
           stepNumber: 1,
           title: "Boil Pasta",
-          instruction: "Bring a large pot of salted water to a rolling boil. Add pasta and cook according to package directions until al dente.",
+          instruction:
+            "Bring a large pot of salted water to a rolling boil. Add pasta and cook according to package directions until al dente.",
           timerSeconds: 540,
-          tip: "Reserve 1/2 cup of starchy pasta water before draining!"
+          tip: "Reserve 1/2 cup of starchy pasta water before draining!",
         },
         {
           stepNumber: 2,
           title: "Sauté Aromatics",
-          instruction: "In a large skillet over medium heat, add olive oil, minced garlic, and sliced sun-dried tomatoes. Sauté until fragrant.",
+          instruction:
+            "In a large skillet over medium heat, add olive oil, minced garlic, and sliced sun-dried tomatoes. Sauté until fragrant.",
           timerSeconds: 120,
-          tip: "Keep garlic on medium-low heat so it turns golden without burning."
+          tip: "Keep garlic on medium-low heat so it turns golden without burning.",
         },
         {
           stepNumber: 3,
           title: "Simmer Cream Sauce",
-          instruction: "Pour in heavy cream, Italian seasoning, and red pepper flakes. Bring to a gentle simmer for 3-4 minutes until slightly thickened.",
+          instruction:
+            "Pour in heavy cream, Italian seasoning, and red pepper flakes. Bring to a gentle simmer for 3-4 minutes until slightly thickened.",
           timerSeconds: 240,
-          technique: "Simmering"
+          technique: "Simmering",
         },
         {
           stepNumber: 4,
           title: "Wilt Spinach & Combine",
-          instruction: "Stir in baby spinach and grated Parmesan until spinach is wilted and cheese melts. Toss with drained pasta, adding pasta water as needed for gloss.",
+          instruction:
+            "Stir in baby spinach and grated Parmesan until spinach is wilted and cheese melts. Toss with drained pasta, adding pasta water as needed for gloss.",
           timerSeconds: 180,
-          tip: "Garnish with fresh basil leaves and extra Parmesan before serving."
-        }
+          tip: "Garnish with fresh basil leaves and extra Parmesan before serving.",
+        },
       ],
       substitutions: [
-        { originalIngredient: "Heavy Cream", substitute: "Full-Fat Coconut Milk + 1 tsp lemon juice", ratioOrNote: "1:1 ratio", reason: "Dairy-Free or Vegan option" },
-        { originalIngredient: "Parmesan Cheese", substitute: "Nutritional Yeast", ratioOrNote: "2 tbsp for cheesy flavor", reason: "Vegan substitute" },
-        { originalIngredient: "Penne Pasta", substitute: "Gluten-Free Brown Rice Pasta or Chickpea Penne", ratioOrNote: "1:1 ratio", reason: "Gluten-Free alternative" }
+        {
+          originalIngredient: "Heavy Cream",
+          substitute: "Full-Fat Coconut Milk + 1 tsp lemon juice",
+          ratioOrNote: "1:1 ratio",
+          reason: "Dairy-Free or Vegan option",
+        },
+        {
+          originalIngredient: "Parmesan Cheese",
+          substitute: "Nutritional Yeast",
+          ratioOrNote: "2 tbsp for cheesy flavor",
+          reason: "Vegan substitute",
+        },
+        {
+          originalIngredient: "Penne Pasta",
+          substitute: "Gluten-Free Brown Rice Pasta or Chickpea Penne",
+          ratioOrNote: "1:1 ratio",
+          reason: "Gluten-Free alternative",
+        },
       ],
-      chefNotes: "This dish comes together in under 20 minutes! For added protein, toss in grilled chicken breast or sautéed jumbo shrimp.",
-      nutritionalInfo: { protein: "16g", carbs: "62g", fat: "24g", fiber: "5g" }
+      chefNotes:
+        "This dish comes together in under 20 minutes! For added protein, toss in grilled chicken breast or sautéed jumbo shrimp.",
+      nutritionalInfo: {
+        protein: "16g",
+        carbs: "62g",
+        fat: "24g",
+        fiber: "5g",
+      },
     };
   }
 
   return {
     id: "recipe_lemon_herb_chicken_bowl",
     title: "Lemon Herb Grilled Chicken Buddha Bowl",
-    summary: "A vibrant, nutrient-dense Mediterranean style bowl with juicy herb chicken, fluffy quinoa, crisp cucumbers, cherry tomatoes, and zesty tzatziki.",
+    summary:
+      "A vibrant, nutrient-dense Mediterranean style bowl with juicy herb chicken, fluffy quinoa, crisp cucumbers, cherry tomatoes, and zesty tzatziki.",
     prepTimeMinutes: 15,
     cookTimeMinutes: 18,
     servings: targetServings || 2,
@@ -300,49 +399,113 @@ function getFallbackRecipe(query: string, dietary?: string[], targetServings?: n
     cuisine: "Mediterranean",
     dietaryTags: ["High-Protein", "Gluten-Free", "Low-Carb Options"],
     ingredients: [
-      { id: "i1", name: "Boneless Chicken Breast or Thighs", amount: 400, unit: "g", category: "Meat & Seafood" },
-      { id: "i2", name: "Cooked Quinoa or Brown Rice", amount: 250, unit: "g", category: "Pantry & Spices" },
-      { id: "i3", name: "Fresh Lemon (Juice & Zest)", amount: 1, unit: "whole", category: "Produce" },
-      { id: "i4", name: "Extra Virgin Olive Oil", amount: 2, unit: "tbsp", category: "Pantry & Spices" },
-      { id: "i5", name: "Dried Oregano & Garlic Powder", amount: 1, unit: "tbsp", category: "Pantry & Spices" },
-      { id: "i6", name: "English Cucumber & Cherry Tomatoes", amount: 200, unit: "g", category: "Produce", notes: "Diced & halved" },
-      { id: "i7", name: "Greek Yogurt Tzatziki Sauce", amount: 4, unit: "tbsp", category: "Dairy & Eggs" },
-      { id: "i8", name: "Kalamata Olives & Feta Cheese", amount: 50, unit: "g", category: "Dairy & Eggs" }
+      {
+        id: "i1",
+        name: "Boneless Chicken Breast or Thighs",
+        amount: 400,
+        unit: "g",
+        category: "Meat & Seafood",
+      },
+      {
+        id: "i2",
+        name: "Cooked Quinoa or Brown Rice",
+        amount: 250,
+        unit: "g",
+        category: "Pantry & Spices",
+      },
+      {
+        id: "i3",
+        name: "Fresh Lemon (Juice & Zest)",
+        amount: 1,
+        unit: "whole",
+        category: "Produce",
+      },
+      {
+        id: "i4",
+        name: "Extra Virgin Olive Oil",
+        amount: 2,
+        unit: "tbsp",
+        category: "Pantry & Spices",
+      },
+      {
+        id: "i5",
+        name: "Dried Oregano & Garlic Powder",
+        amount: 1,
+        unit: "tbsp",
+        category: "Pantry & Spices",
+      },
+      {
+        id: "i6",
+        name: "English Cucumber & Cherry Tomatoes",
+        amount: 200,
+        unit: "g",
+        category: "Produce",
+        notes: "Diced & halved",
+      },
+      {
+        id: "i7",
+        name: "Greek Yogurt Tzatziki Sauce",
+        amount: 4,
+        unit: "tbsp",
+        category: "Dairy & Eggs",
+      },
+      {
+        id: "i8",
+        name: "Kalamata Olives & Feta Cheese",
+        amount: 50,
+        unit: "g",
+        category: "Dairy & Eggs",
+      },
     ],
     steps: [
       {
         stepNumber: 1,
         title: "Marinate Chicken",
-        instruction: "Coat chicken with olive oil, lemon juice, lemon zest, garlic powder, oregano, salt, and black pepper. Let rest for 10 minutes.",
+        instruction:
+          "Coat chicken with olive oil, lemon juice, lemon zest, garlic powder, oregano, salt, and black pepper. Let rest for 10 minutes.",
         timerSeconds: 600,
-        tip: "Marinating in lemon juice tenderizes the poultry fibers."
+        tip: "Marinating in lemon juice tenderizes the poultry fibers.",
       },
       {
         stepNumber: 2,
         title: "Sear Chicken",
-        instruction: "Heat a skillet or grill pan over medium-high heat. Sear chicken for 6-7 minutes per side until golden and internal temperature reaches 165°F (74°C).",
+        instruction:
+          "Heat a skillet or grill pan over medium-high heat. Sear chicken for 6-7 minutes per side until golden and internal temperature reaches 165°F (74°C).",
         timerSeconds: 420,
-        technique: "Pan Searing"
+        technique: "Pan Searing",
       },
       {
         stepNumber: 3,
         title: "Assemble Bowl",
-        instruction: "Divide cooked quinoa into bowls. Slice cooked chicken into strips and arrange alongside diced cucumber, tomatoes, olives, and crumbled feta.",
-        timerSeconds: 180
+        instruction:
+          "Divide cooked quinoa into bowls. Slice cooked chicken into strips and arrange alongside diced cucumber, tomatoes, olives, and crumbled feta.",
+        timerSeconds: 180,
       },
       {
         stepNumber: 4,
         title: "Drizzle & Serve",
-        instruction: "Top with a generous dollop of tzatziki sauce and garnish with fresh parsley or dill.",
-        timerSeconds: 60
-      }
+        instruction:
+          "Top with a generous dollop of tzatziki sauce and garnish with fresh parsley or dill.",
+        timerSeconds: 60,
+      },
     ],
     substitutions: [
-      { originalIngredient: "Chicken Breast", substitute: "Firm Tofu or Crispy Chickpeas", ratioOrNote: "Press tofu and pan sear for 10 mins", reason: "Vegetarian / Vegan swap" },
-      { originalIngredient: "Greek Tzatziki", substitute: "Tahini Lemon Dressing or Hummus", ratioOrNote: "2 tbsp tahini + 1 tbsp water + lemon", reason: "Dairy-Free substitute" }
+      {
+        originalIngredient: "Chicken Breast",
+        substitute: "Firm Tofu or Crispy Chickpeas",
+        ratioOrNote: "Press tofu and pan sear for 10 mins",
+        reason: "Vegetarian / Vegan swap",
+      },
+      {
+        originalIngredient: "Greek Tzatziki",
+        substitute: "Tahini Lemon Dressing or Hummus",
+        ratioOrNote: "2 tbsp tahini + 1 tbsp water + lemon",
+        reason: "Dairy-Free substitute",
+      },
     ],
-    chefNotes: "Great for meal prep! Pack sauce separately and keep veggies crisp until ready to eat.",
-    nutritionalInfo: { protein: "42g", carbs: "38g", fat: "16g", fiber: "6g" }
+    chefNotes:
+      "Great for meal prep! Pack sauce separately and keep veggies crisp until ready to eat.",
+    nutritionalInfo: { protein: "42g", carbs: "38g", fat: "16g", fiber: "6g" },
   };
 }
 
@@ -350,21 +513,61 @@ function getFallbackSubstitutions(ingredient: string) {
   const ing = (ingredient || "").toLowerCase();
   if (ing.includes("butter")) {
     return [
-      { originalIngredient: "Butter", substitute: "Coconut Oil (Solid)", ratioOrNote: "1:1 ratio", reason: "Dairy-free substitute with similar baking consistency." },
-      { originalIngredient: "Butter", substitute: "Mashed Avocado or Applesauce", ratioOrNote: "1:1 in quick breads/muffins", reason: "Low-fat health alternative." },
-      { originalIngredient: "Butter", substitute: "Extra Virgin Olive Oil", ratioOrNote: "3/4 cup oil per 1 cup butter", reason: "Savory cooking swap." }
+      {
+        originalIngredient: "Butter",
+        substitute: "Coconut Oil (Solid)",
+        ratioOrNote: "1:1 ratio",
+        reason: "Dairy-free substitute with similar baking consistency.",
+      },
+      {
+        originalIngredient: "Butter",
+        substitute: "Mashed Avocado or Applesauce",
+        ratioOrNote: "1:1 in quick breads/muffins",
+        reason: "Low-fat health alternative.",
+      },
+      {
+        originalIngredient: "Butter",
+        substitute: "Extra Virgin Olive Oil",
+        ratioOrNote: "3/4 cup oil per 1 cup butter",
+        reason: "Savory cooking swap.",
+      },
     ];
   }
   if (ing.includes("egg")) {
     return [
-      { originalIngredient: "Egg (1 whole)", substitute: "Flax Egg (1 tbsp ground flaxseed + 3 tbsp water)", ratioOrNote: "Let rest 5 mins until gelled", reason: "Best for baking muffins, cookies, and pancakes." },
-      { originalIngredient: "Egg (1 whole)", substitute: "Mashed Banana or Applesauce", ratioOrNote: "1/4 cup per egg", reason: "Sweet baking binder." },
-      { originalIngredient: "Egg (1 whole)", substitute: "Silken Tofu", ratioOrNote: "1/4 cup blended silken tofu", reason: "Moist baking & savory quiches." }
+      {
+        originalIngredient: "Egg (1 whole)",
+        substitute: "Flax Egg (1 tbsp ground flaxseed + 3 tbsp water)",
+        ratioOrNote: "Let rest 5 mins until gelled",
+        reason: "Best for baking muffins, cookies, and pancakes.",
+      },
+      {
+        originalIngredient: "Egg (1 whole)",
+        substitute: "Mashed Banana or Applesauce",
+        ratioOrNote: "1/4 cup per egg",
+        reason: "Sweet baking binder.",
+      },
+      {
+        originalIngredient: "Egg (1 whole)",
+        substitute: "Silken Tofu",
+        ratioOrNote: "1/4 cup blended silken tofu",
+        reason: "Moist baking & savory quiches.",
+      },
     ];
   }
   return [
-    { originalIngredient: ingredient, substitute: "Greek Yogurt or Sour Cream", ratioOrNote: "1:1 ratio", reason: "Rich texture & slight tang." },
-    { originalIngredient: ingredient, substitute: "Olive Oil + Lemon Juice", ratioOrNote: "1 tbsp oil + 1 tsp lemon", reason: "Acidity and fat balance." }
+    {
+      originalIngredient: ingredient,
+      substitute: "Greek Yogurt or Sour Cream",
+      ratioOrNote: "1:1 ratio",
+      reason: "Rich texture & slight tang.",
+    },
+    {
+      originalIngredient: ingredient,
+      substitute: "Olive Oil + Lemon Juice",
+      ratioOrNote: "1 tbsp oil + 1 tsp lemon",
+      reason: "Acidity and fat balance.",
+    },
   ];
 }
 
@@ -384,8 +587,8 @@ async function startServer() {
     });
   }
 
-  app.listen(PORT, "0.0.0.0", () => {
-    console.log(`CulinaryAgent AI Server listening on http://0.0.0.0:${PORT}`);
+  app.listen(PORT, HOSTNAME, () => {
+    console.log(`CulinaryAgent AI Server listening on ${HOSTNAME}:${PORT}`);
   });
 }
 

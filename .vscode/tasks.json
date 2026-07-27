@@ -1,0 +1,29 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "npm: dev",
+      "type": "npm",
+      "script": "dev",
+      "isBackground": true,
+      "problemMatcher": {
+        "owner": "typescript",
+        "pattern": {
+          "regexp": "^(ERROR - .*|WARNING - .*)$",
+          "file": 1,
+          "location": 2,
+          "severity": 3
+        },
+        "background": {
+          "activeOnStart": true,
+          "beginsPattern": ".*Compiled successfully|DONE Compiled|ready - started server on",
+          "endsPattern": ".*(?:App not buildable|Failed to compile).*"
+        }
+      },
+      "presentation": {
+        "reveal": "always",
+        "panel": "new"
+      }
+    }
+  ]
+}
