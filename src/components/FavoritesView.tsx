@@ -1,13 +1,29 @@
 import React, { useState } from "react";
 import { Recipe, Ingredient } from "../types";
 import { DynamicRecipeCard } from "./DynamicRecipeCard";
-import { Heart, Search, Utensils, Sparkles, Trash2, ArrowLeft } from "lucide-react";
+import {
+  Heart,
+  Search,
+  Utensils,
+  Sparkles,
+  Trash2,
+  ArrowLeft,
+} from "lucide-react";
 
 interface FavoritesViewProps {
   favorites: Recipe[];
   onToggleFavorite: (recipe: Recipe) => void;
-  onAddToShoppingList: (ingredients: Ingredient[], recipeTitle: string, recipeId: string) => void;
-  onStartTimer: (label: string, seconds: number, recipeTitle?: string, stepNumber?: number) => void;
+  onAddToShoppingList: (
+    ingredients: Ingredient[],
+    recipeTitle: string,
+    recipeId: string,
+  ) => void;
+  onStartTimer: (
+    label: string,
+    seconds: number,
+    recipeTitle?: string,
+    stepNumber?: number,
+  ) => void;
   onOpenCookingMode: (recipe: Recipe) => void;
   onShareToCommunity: (recipe: Recipe) => void;
   onRequestSubstitution?: (ingredientName: string) => void;
@@ -96,9 +112,12 @@ export const FavoritesView: React.FC<FavoritesViewProps> = ({
       ) : favorites.length === 0 ? (
         <div className="text-center py-16 bg-slate-900/40 border border-slate-800 rounded-2xl p-6">
           <Heart className="w-12 h-12 text-slate-600 mx-auto mb-3" />
-          <h2 className="text-base font-bold text-slate-200">No Offline Recipes Saved Yet</h2>
+          <h2 className="text-base font-bold text-slate-200">
+            No Offline Recipes Saved Yet
+          </h2>
           <p className="text-xs text-slate-400 mt-1 max-w-md mx-auto">
-            Click the heart icon on any AI Agent recipe to store it locally for offline cooking in your kitchen!
+            Click the heart icon on any AI Agent recipe to store it locally for
+            offline cooking in your kitchen!
           </p>
         </div>
       ) : (
@@ -131,14 +150,25 @@ export const FavoritesView: React.FC<FavoritesViewProps> = ({
                 </button>
               </div>
 
-              <p className="text-xs text-slate-300 line-clamp-2 leading-relaxed">{recipe.summary}</p>
+              <p className="text-xs text-slate-300 line-clamp-2 leading-relaxed">
+                {recipe.summary}
+              </p>
 
               <div className="flex flex-wrap items-center gap-2 pt-2 border-t border-slate-800/80 text-[11px] text-slate-400">
-                <span>⏱️ {recipe.prepTimeMinutes + recipe.cookTimeMinutes} mins</span>
+                <span>
+                  ⏱️ {recipe.prepTimeMinutes + recipe.cookTimeMinutes} mins
+                </span>
                 <span>•</span>
                 <span>👥 {recipe.servings} servings</span>
                 <span>•</span>
                 <span>🔥 {recipe.calories} kcal</span>
+                {recipe.nutritionalInfo && (
+                  <span className="text-[10px] text-slate-400">
+                    {recipe.nutritionalInfo.protein} P •{" "}
+                    {recipe.nutritionalInfo.carbs} C •{" "}
+                    {recipe.nutritionalInfo.fat} F
+                  </span>
+                )}
               </div>
             </div>
           ))}

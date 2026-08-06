@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from "react";
 import { AgentMessage, Recipe, Ingredient } from "../types";
 import { DynamicRecipeCard } from "./DynamicRecipeCard";
 import { fetchAIRecipe, fetchAISubstitutions } from "../services/api";
+import { getMacroDeltaSummary } from "../utils/nutrition";
 import {
   Send,
   Sparkles,
@@ -22,8 +23,17 @@ interface AgentChatWindowProps {
   setMessages: React.Dispatch<React.SetStateAction<AgentMessage[]>>;
   onToggleFavorite: (recipe: Recipe) => void;
   isFavorite: (id: string) => boolean;
-  onAddToShoppingList: (ingredients: Ingredient[], recipeTitle: string, recipeId: string) => void;
-  onStartTimer: (label: string, seconds: number, recipeTitle?: string, stepNumber?: number) => void;
+  onAddToShoppingList: (
+    ingredients: Ingredient[],
+    recipeTitle: string,
+    recipeId: string,
+  ) => void;
+  onStartTimer: (
+    label: string,
+    seconds: number,
+    recipeTitle?: string,
+    stepNumber?: number,
+  ) => void;
   onOpenCookingMode: (recipe: Recipe) => void;
   onShareToCommunity: (recipe: Recipe) => void;
   onOpenSubstitutions: (ingredientName: string) => void;
@@ -75,7 +85,7 @@ export const AgentChatWindow: React.FC<AgentChatWindowProps> = ({
 
   const toggleDietaryTag = (tag: string) => {
     setSelectedDietary((prev) =>
-      prev.includes(tag) ? prev.filter((t) => t !== tag) : [...prev, tag]
+      prev.includes(tag) ? prev.filter((t) => t !== tag) : [...prev, tag],
     );
   };
 
@@ -88,7 +98,10 @@ export const AgentChatWindow: React.FC<AgentChatWindowProps> = ({
       id: userMsgId,
       sender: "user",
       text: promptToUse,
-      timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
+      timestamp: new Date().toLocaleTimeString([], {
+        hour: "2-digit",
+        minute: "2-digit",
+      }),
     };
 
     const agentThinkingId = "msg_agent_thinking_" + Date.now();
@@ -96,7 +109,10 @@ export const AgentChatWindow: React.FC<AgentChatWindowProps> = ({
       id: agentThinkingId,
       sender: "agent",
       text: "Crafting a custom culinary recipe with step-by-step instructions and ingredient lists...",
-      timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
+      timestamp: new Date().toLocaleTimeString([], {
+        hour: "2-digit",
+        minute: "2-digit",
+      }),
       isThinking: true,
     };
 
@@ -119,12 +135,15 @@ export const AgentChatWindow: React.FC<AgentChatWindowProps> = ({
                   id: "msg_agent_" + Date.now(),
                   sender: "agent",
                   text: `Here are the top chef-approved ingredient substitutions for "${promptToUse}":`,
-                  timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
+                  timestamp: new Date().toLocaleTimeString([], {
+                    hour: "2-digit",
+                    minute: "2-digit",
+                  }),
                   substitutionsList: subs,
                   isThinking: false,
                 }
-              : msg
-          )
+              : msg,
+          ),
         );
       } else {
         // Fetch AI Recipe
@@ -145,12 +164,15 @@ export const AgentChatWindow: React.FC<AgentChatWindowProps> = ({
                   id: "msg_agent_" + Date.now(),
                   sender: "agent",
                   text: agentText,
-                  timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
+                  timestamp: new Date().toLocaleTimeString([], {
+                    hour: "2-digit",
+                    minute: "2-digit",
+                  }),
                   recipe,
                   isThinking: false,
                 }
-              : msg
-          )
+              : msg,
+          ),
         );
       }
     } catch (err: any) {
@@ -162,11 +184,14 @@ export const AgentChatWindow: React.FC<AgentChatWindowProps> = ({
                 id: "msg_agent_" + Date.now(),
                 sender: "agent",
                 text: "I encountered an issue generating your recipe. Don't worry, here is a delicious curated dish for you!",
-                timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
+                timestamp: new Date().toLocaleTimeString([], {
+                  hour: "2-digit",
+                  minute: "2-digit",
+                }),
                 isThinking: false,
               }
-            : msg
-        )
+            : msg,
+        ),
       );
     } finally {
       setIsLoading(false);
@@ -193,7 +218,9 @@ export const AgentChatWindow: React.FC<AgentChatWindowProps> = ({
                 Culinary AI Recipe Agent
                 <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
               </h1>
-              <p className="text-[11px] text-slate-400">Ask for recipes by ingredient, meal, or dietary craving</p>
+              <p className="text-[11px] text-slate-400">
+                Ask for recipes by ingredient, meal, or dietary craving
+              </p>
             </div>
           </div>
 
@@ -208,7 +235,11 @@ export const AgentChatWindow: React.FC<AgentChatWindowProps> = ({
                 className="bg-transparent text-amber-300 font-bold focus:outline-none cursor-pointer"
               >
                 {[1, 2, 4, 6, 8, 12].map((num) => (
-                  <option key={num} value={num} className="bg-slate-900 text-white">
+                  <option
+                    key={num}
+                    value={num}
+                    className="bg-slate-900 text-white"
+                  >
                     {num} people
                   </option>
                 ))}
@@ -257,9 +288,12 @@ export const AgentChatWindow: React.FC<AgentChatWindowProps> = ({
             <div className="w-16 h-16 rounded-2xl bg-gradient-to-tr from-amber-500 via-orange-500 to-emerald-500 flex items-center justify-center mb-4 shadow-xl shadow-orange-500/20">
               <ChefHat className="w-8 h-8 text-white" />
             </div>
-            <h2 className="text-xl font-bold text-white mb-1">What are we cooking today?</h2>
+            <h2 className="text-xl font-bold text-white mb-1">
+              What are we cooking today?
+            </h2>
             <p className="text-sm text-slate-400 max-w-md mb-6 leading-relaxed">
-              Ask your AI Agent for recipes based on what's in your fridge, specific diets, or cooking techniques.
+              Ask your AI Agent for recipes based on what's in your fridge,
+              specific diets, or cooking techniques.
             </p>
 
             <div className="w-full max-w-xl space-y-2">
@@ -290,7 +324,9 @@ export const AgentChatWindow: React.FC<AgentChatWindowProps> = ({
                       </span>
                       <span>{msg.timestamp}</span>
                     </div>
-                    <p className="text-sm font-medium leading-relaxed">{msg.text}</p>
+                    <p className="text-sm font-medium leading-relaxed">
+                      {msg.text}
+                    </p>
                   </div>
                 </div>
               ) : (
@@ -311,7 +347,9 @@ export const AgentChatWindow: React.FC<AgentChatWindowProps> = ({
                       {msg.isThinking ? (
                         <div className="flex items-center space-x-3 py-3 text-orange-300">
                           <Loader2 className="w-5 h-5 animate-spin text-orange-400" />
-                          <span className="text-xs font-medium animate-pulse">{msg.text}</span>
+                          <span className="text-xs font-medium animate-pulse">
+                            {msg.text}
+                          </span>
                         </div>
                       ) : (
                         <div>
@@ -321,10 +359,25 @@ export const AgentChatWindow: React.FC<AgentChatWindowProps> = ({
                           {msg.substitutionsList && (
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 my-2">
                               {msg.substitutionsList.map((s, idx) => (
-                                <div key={idx} className="p-3 rounded-xl bg-slate-950 border border-slate-800 text-xs">
-                                  <div className="font-bold text-amber-300">{s.substitute}</div>
-                                  <div className="text-slate-400 mt-0.5">Ratio: {s.ratioOrNote}</div>
-                                  <div className="text-slate-300 mt-1 italic">{s.reason}</div>
+                                <div
+                                  key={idx}
+                                  className="p-3 rounded-xl bg-slate-950 border border-slate-800 text-xs space-y-1"
+                                >
+                                  <div className="font-bold text-amber-300">
+                                    {s.substitute}
+                                  </div>
+                                  <div className="text-slate-400">
+                                    Ratio: {s.ratioOrNote}
+                                  </div>
+                                  <div className="text-slate-300 italic">
+                                    {s.reason}
+                                  </div>
+                                  {s.macroDelta && (
+                                    <div className="text-[10px] text-emerald-300/90">
+                                      Net macros:{" "}
+                                      {getMacroDeltaSummary(s.macroDelta)}
+                                    </div>
+                                  )}
                                 </div>
                               ))}
                             </div>
@@ -343,7 +396,9 @@ export const AgentChatWindow: React.FC<AgentChatWindowProps> = ({
                         onStartTimer={onStartTimer}
                         onOpenCookingMode={onOpenCookingMode}
                         onShareToCommunity={onShareToCommunity}
-                        onRequestSubstitution={(ing) => onOpenSubstitutions(ing)}
+                        onRequestSubstitution={(ing) =>
+                          onOpenSubstitutions(ing)
+                        }
                       />
                     )}
                   </div>

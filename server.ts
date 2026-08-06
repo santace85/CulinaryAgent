@@ -52,8 +52,8 @@ When given a user query, generate a detailed recipe with:
 1. Precise metric or standard measurements for every ingredient.
 2. Categorized ingredients ('Produce', 'Dairy & Eggs', 'Meat & Seafood', 'Pantry & Spices', 'Bakery', 'Other').
 3. Step-by-step clear instructions with explicit time durations in seconds where applicable (e.g., 600 for 10 mins).
-4. Practical ingredient substitutions for common allergies or missing pantry items.
-5. Chef tips, calorie counts, and nutrition metrics per serving.`;
+4. Practical ingredient substitutions for common allergies or missing pantry items, including a concise net macro delta for each swap.
+5. Chef tips, calorie counts, compact nutrition metrics per serving (protein, carbs, fat, fiber), and a distinct drink pairing suggestion.`;
 
     const userPrompt = `Generate a cooking recipe for: "${prompt}".
 ${dietary && dietary.length ? `Dietary preferences/restrictions: ${dietary.join(", ")}.` : ""}
@@ -136,11 +136,21 @@ ${cookTimeMax ? `Maximum cook time limit: ${cookTimeMax} minutes.` : ""}`;
                   substitute: { type: Type.STRING },
                   ratioOrNote: { type: Type.STRING },
                   reason: { type: Type.STRING },
+                  macroDelta: {
+                    type: Type.OBJECT,
+                    properties: {
+                      protein: { type: Type.STRING },
+                      carbs: { type: Type.STRING },
+                      fat: { type: Type.STRING },
+                      fiber: { type: Type.STRING },
+                    },
+                  },
                 },
                 required: ["originalIngredient", "substitute", "ratioOrNote"],
               },
             },
             chefNotes: { type: Type.STRING },
+            drinkPairing: { type: Type.STRING },
             nutritionalInfo: {
               type: Type.OBJECT,
               properties: {
@@ -161,6 +171,12 @@ ${cookTimeMax ? `Maximum cook time limit: ${cookTimeMax} minutes.` : ""}`;
             "cuisine",
             "ingredients",
             "steps",
+            "calories",
+            "dietaryTags",
+            "substitutions",
+            "chefNotes",
+            "drinkPairing",
+            "nutritionalInfo",
           ],
         },
       },
@@ -172,8 +188,22 @@ ${cookTimeMax ? `Maximum cook time limit: ${cookTimeMax} minutes.` : ""}`;
     }
 
     const recipeData = JSON.parse(text);
+
     if (!recipeData.id) {
       recipeData.id = "recipe_" + Date.now();
+    }
+
+    if (!recipeData.chefNotes) {
+      recipeData.chefNotes =
+        "A simple finishing touch like fresh herbs or a squeeze of citrus will elevate the dish.";
+    }
+
+    if (!recipeData.drinkPairing) {
+      recipeData.drinkPairing = recipeData.cuisine?.includes("Italian")
+        ? "A glass of crisp Pinot Grigio or sparkling water with lemon."
+        : recipeData.cuisine?.includes("Mediterranean")
+          ? "A chilled Sauvignon Blanc or mint tea."
+          : "A light sparkling drink or iced herbal tea.";
     }
 
     return res.json({ recipe: recipeData, isFallback: false });
@@ -218,6 +248,15 @@ app.post("/api/substitute", async (req, res) => {
               substitute: { type: Type.STRING },
               ratioOrNote: { type: Type.STRING },
               reason: { type: Type.STRING },
+              macroDelta: {
+                type: Type.OBJECT,
+                properties: {
+                  protein: { type: Type.STRING },
+                  carbs: { type: Type.STRING },
+                  fat: { type: Type.STRING },
+                  fiber: { type: Type.STRING },
+                },
+              },
             },
             required: [
               "originalIngredient",
@@ -361,22 +400,26 @@ function getFallbackRecipe(
           substitute: "Full-Fat Coconut Milk + 1 tsp lemon juice",
           ratioOrNote: "1:1 ratio",
           reason: "Dairy-Free or Vegan option",
+          macroDelta: { protein: "-2g", carbs: "+1g", fat: "-4g" },
         },
         {
           originalIngredient: "Parmesan Cheese",
           substitute: "Nutritional Yeast",
           ratioOrNote: "2 tbsp for cheesy flavor",
           reason: "Vegan substitute",
+          macroDelta: { protein: "-3g", carbs: "+1g", fat: "-2g" },
         },
         {
           originalIngredient: "Penne Pasta",
           substitute: "Gluten-Free Brown Rice Pasta or Chickpea Penne",
           ratioOrNote: "1:1 ratio",
           reason: "Gluten-Free alternative",
+          macroDelta: { protein: "+1g", carbs: "-2g", fat: "0g" },
         },
       ],
       chefNotes:
         "This dish comes together in under 20 minutes! For added protein, toss in grilled chicken breast or sautéed jumbo shrimp.",
+      drinkPairing: "A crisp Pinot Grigio or sparkling water with lemon.",
       nutritionalInfo: {
         protein: "16g",
         carbs: "62g",
@@ -495,16 +538,19 @@ function getFallbackRecipe(
         substitute: "Firm Tofu or Crispy Chickpeas",
         ratioOrNote: "Press tofu and pan sear for 10 mins",
         reason: "Vegetarian / Vegan swap",
+        macroDelta: { protein: "-12g", carbs: "+4g", fat: "-5g" },
       },
       {
         originalIngredient: "Greek Tzatziki",
         substitute: "Tahini Lemon Dressing or Hummus",
         ratioOrNote: "2 tbsp tahini + 1 tbsp water + lemon",
         reason: "Dairy-Free substitute",
+        macroDelta: { protein: "-2g", carbs: "+1g", fat: "-3g" },
       },
     ],
     chefNotes:
       "Great for meal prep! Pack sauce separately and keep veggies crisp until ready to eat.",
+    drinkPairing: "A chilled Sauvignon Blanc or iced herbal tea.",
     nutritionalInfo: { protein: "42g", carbs: "38g", fat: "16g", fiber: "6g" },
   };
 }
@@ -518,18 +564,21 @@ function getFallbackSubstitutions(ingredient: string) {
         substitute: "Coconut Oil (Solid)",
         ratioOrNote: "1:1 ratio",
         reason: "Dairy-free substitute with similar baking consistency.",
+        macroDelta: { protein: "0g", carbs: "0g", fat: "-2g" },
       },
       {
         originalIngredient: "Butter",
         substitute: "Mashed Avocado or Applesauce",
         ratioOrNote: "1:1 in quick breads/muffins",
         reason: "Low-fat health alternative.",
+        macroDelta: { protein: "0g", carbs: "+2g", fat: "-4g" },
       },
       {
         originalIngredient: "Butter",
         substitute: "Extra Virgin Olive Oil",
         ratioOrNote: "3/4 cup oil per 1 cup butter",
         reason: "Savory cooking swap.",
+        macroDelta: { protein: "0g", carbs: "0g", fat: "-1g" },
       },
     ];
   }
@@ -540,18 +589,21 @@ function getFallbackSubstitutions(ingredient: string) {
         substitute: "Flax Egg (1 tbsp ground flaxseed + 3 tbsp water)",
         ratioOrNote: "Let rest 5 mins until gelled",
         reason: "Best for baking muffins, cookies, and pancakes.",
+        macroDelta: { protein: "-3g", carbs: "+1g", fat: "-2g" },
       },
       {
         originalIngredient: "Egg (1 whole)",
         substitute: "Mashed Banana or Applesauce",
         ratioOrNote: "1/4 cup per egg",
         reason: "Sweet baking binder.",
+        macroDelta: { protein: "-3g", carbs: "+3g", fat: "-1g" },
       },
       {
         originalIngredient: "Egg (1 whole)",
         substitute: "Silken Tofu",
         ratioOrNote: "1/4 cup blended silken tofu",
         reason: "Moist baking & savory quiches.",
+        macroDelta: { protein: "-2g", carbs: "+1g", fat: "-2g" },
       },
     ];
   }
@@ -561,12 +613,14 @@ function getFallbackSubstitutions(ingredient: string) {
       substitute: "Greek Yogurt or Sour Cream",
       ratioOrNote: "1:1 ratio",
       reason: "Rich texture & slight tang.",
+      macroDelta: { protein: "+1g", carbs: "0g", fat: "+1g" },
     },
     {
       originalIngredient: ingredient,
       substitute: "Olive Oil + Lemon Juice",
       ratioOrNote: "1 tbsp oil + 1 tsp lemon",
       reason: "Acidity and fat balance.",
+      macroDelta: { protein: "0g", carbs: "0g", fat: "-1g" },
     },
   ];
 }

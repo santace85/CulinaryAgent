@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { Recipe, Ingredient } from "../types";
+import { getMacroDeltaSummary, getMacroSummary } from "../utils/nutrition";
 import {
   Heart,
   ShoppingBag,
@@ -25,8 +26,17 @@ interface DynamicRecipeCardProps {
   recipe: Recipe;
   onToggleFavorite: (recipe: Recipe) => void;
   isFavorite: boolean;
-  onAddToShoppingList: (ingredients: Ingredient[], recipeTitle: string, recipeId: string) => void;
-  onStartTimer: (label: string, seconds: number, recipeTitle?: string, stepNumber?: number) => void;
+  onAddToShoppingList: (
+    ingredients: Ingredient[],
+    recipeTitle: string,
+    recipeId: string,
+  ) => void;
+  onStartTimer: (
+    label: string,
+    seconds: number,
+    recipeTitle?: string,
+    stepNumber?: number,
+  ) => void;
   onOpenCookingMode: (recipe: Recipe) => void;
   onShareToCommunity: (recipe: Recipe) => void;
   onRequestSubstitution?: (ingredientName: string) => void;
@@ -45,8 +55,12 @@ export const DynamicRecipeCard: React.FC<DynamicRecipeCardProps> = ({
   darkMode = true,
 }) => {
   const [servingMultiplier, setServingMultiplier] = useState<number>(1);
-  const [checkedIngredients, setCheckedIngredients] = useState<Record<string, boolean>>({});
-  const [completedSteps, setCompletedSteps] = useState<Record<number, boolean>>({});
+  const [checkedIngredients, setCheckedIngredients] = useState<
+    Record<string, boolean>
+  >({});
+  const [completedSteps, setCompletedSteps] = useState<Record<number, boolean>>(
+    {},
+  );
   const [showSubstitutions, setShowSubstitutions] = useState<boolean>(true);
   const [copiedAlert, setCopiedAlert] = useState<boolean>(false);
   const [addedShoppingAlert, setAddedShoppingAlert] = useState<boolean>(false);
@@ -69,7 +83,14 @@ export const DynamicRecipeCard: React.FC<DynamicRecipeCardProps> = ({
 
   // Adjust servings
   const baseServings = recipe.servings || 4;
-  const currentServings = Math.max(1, Math.round(baseServings * servingMultiplier));
+  const currentServings = Math.max(
+    1,
+    Math.round(baseServings * servingMultiplier),
+  );
+  const calorieValue = Math.round(
+    (recipe.calories || 450) * (servingMultiplier || 1),
+  );
+  const macroSummary = getMacroSummary(recipe.nutritionalInfo);
 
   // Scale ingredient amounts mathematically
   const getScaledAmount = (amount: number) => {
@@ -133,8 +154,12 @@ export const DynamicRecipeCard: React.FC<DynamicRecipeCardProps> = ({
             ))}
           </div>
 
-          <h2 className="text-xl sm:text-2xl font-bold tracking-tight text-white">{recipe.title}</h2>
-          <p className="text-sm text-slate-300 leading-relaxed">{recipe.summary}</p>
+          <h2 className="text-xl sm:text-2xl font-bold tracking-tight text-white">
+            {recipe.title}
+          </h2>
+          <p className="text-sm text-slate-300 leading-relaxed">
+            {recipe.summary}
+          </p>
         </div>
 
         {/* Favorite & Share Buttons */}
@@ -147,9 +172,15 @@ export const DynamicRecipeCard: React.FC<DynamicRecipeCardProps> = ({
                 ? "bg-rose-500/20 text-rose-400 border-rose-500/40 shadow-sm shadow-rose-500/20"
                 : "bg-slate-800/80 text-slate-400 border-slate-700 hover:text-slate-200 hover:bg-slate-800"
             }`}
-            title={isFavorite ? "Saved to Favorites" : "Save Favorite for Offline Access"}
+            title={
+              isFavorite
+                ? "Saved to Favorites"
+                : "Save Favorite for Offline Access"
+            }
           >
-            <Heart className={`w-5 h-5 ${isFavorite ? "fill-rose-400 text-rose-400" : ""}`} />
+            <Heart
+              className={`w-5 h-5 ${isFavorite ? "fill-rose-400 text-rose-400" : ""}`}
+            />
           </button>
 
           <button
@@ -178,31 +209,45 @@ export const DynamicRecipeCard: React.FC<DynamicRecipeCardProps> = ({
         <div className="flex items-center space-x-2.5 p-2.5 rounded-xl bg-slate-950/50 border border-slate-800">
           <Clock className="w-4 h-4 text-amber-400 shrink-0" />
           <div>
-            <div className="text-[11px] uppercase tracking-wider text-slate-400 font-semibold">Prep Time</div>
-            <div className="text-xs font-bold text-slate-200">{recipe.prepTimeMinutes || 10} mins</div>
+            <div className="text-[11px] uppercase tracking-wider text-slate-400 font-semibold">
+              Prep Time
+            </div>
+            <div className="text-xs font-bold text-slate-200">
+              {recipe.prepTimeMinutes || 10} mins
+            </div>
           </div>
         </div>
 
         <div className="flex items-center space-x-2.5 p-2.5 rounded-xl bg-slate-950/50 border border-slate-800">
           <TimerIcon className="w-4 h-4 text-orange-400 shrink-0" />
           <div>
-            <div className="text-[11px] uppercase tracking-wider text-slate-400 font-semibold">Cook Time</div>
-            <div className="text-xs font-bold text-slate-200">{recipe.cookTimeMinutes || 15} mins</div>
+            <div className="text-[11px] uppercase tracking-wider text-slate-400 font-semibold">
+              Cook Time
+            </div>
+            <div className="text-xs font-bold text-slate-200">
+              {recipe.cookTimeMinutes || 15} mins
+            </div>
           </div>
         </div>
 
         <div className="flex items-center space-x-2.5 p-2.5 rounded-xl bg-slate-950/50 border border-slate-800">
           <Users className="w-4 h-4 text-emerald-400 shrink-0" />
           <div className="flex-1">
-            <div className="text-[11px] uppercase tracking-wider text-slate-400 font-semibold">Servings</div>
+            <div className="text-[11px] uppercase tracking-wider text-slate-400 font-semibold">
+              Servings
+            </div>
             <div className="flex items-center space-x-1 mt-0.5">
               <button
-                onClick={() => setServingMultiplier((m) => Math.max(0.5, m - 0.5))}
+                onClick={() =>
+                  setServingMultiplier((m) => Math.max(0.5, m - 0.5))
+                }
                 className="w-5 h-5 rounded bg-slate-800 text-slate-300 flex items-center justify-center font-bold text-xs hover:bg-slate-700"
               >
                 -
               </button>
-              <span className="text-xs font-bold text-emerald-300 px-1">{currentServings}</span>
+              <span className="text-xs font-bold text-emerald-300 px-1">
+                {currentServings}
+              </span>
               <button
                 onClick={() => setServingMultiplier((m) => m + 0.5)}
                 className="w-5 h-5 rounded bg-slate-800 text-slate-300 flex items-center justify-center font-bold text-xs hover:bg-slate-700"
@@ -216,9 +261,16 @@ export const DynamicRecipeCard: React.FC<DynamicRecipeCardProps> = ({
         <div className="flex items-center space-x-2.5 p-2.5 rounded-xl bg-slate-950/50 border border-slate-800">
           <Flame className="w-4 h-4 text-rose-400 shrink-0" />
           <div>
-            <div className="text-[11px] uppercase tracking-wider text-slate-400 font-semibold">Calories</div>
-            <div className="text-xs font-bold text-slate-200">
-              {recipe.calories ? Math.round(recipe.calories * (servingMultiplier || 1)) : 450} kcal
+            <div className="text-[11px] uppercase tracking-wider text-slate-400 font-semibold">
+              Calories
+            </div>
+            <div className="flex items-baseline gap-2">
+              <div className="text-xs font-bold text-slate-200">
+                {calorieValue} kcal
+              </div>
+              {macroSummary && (
+                <div className="text-[10px] text-slate-400">{macroSummary}</div>
+              )}
             </div>
           </div>
         </div>
@@ -232,7 +284,10 @@ export const DynamicRecipeCard: React.FC<DynamicRecipeCardProps> = ({
             <div className="flex items-center space-x-2">
               <ChefHat className="w-4 h-4 text-amber-400" />
               <h3 className="font-bold text-sm text-slate-200">
-                Ingredients <span className="text-xs font-normal text-slate-400">({recipe.ingredients.length})</span>
+                Ingredients{" "}
+                <span className="text-xs font-normal text-slate-400">
+                  ({recipe.ingredients.length})
+                </span>
               </h3>
             </div>
             <button
@@ -267,8 +322,14 @@ export const DynamicRecipeCard: React.FC<DynamicRecipeCardProps> = ({
                       )}
                     </button>
                     <div>
-                      <span className="font-medium text-xs sm:text-sm">{ing.name}</span>
-                      {ing.notes && <div className="text-[11px] text-slate-400">{ing.notes}</div>}
+                      <span className="font-medium text-xs sm:text-sm">
+                        {ing.name}
+                      </span>
+                      {ing.notes && (
+                        <div className="text-[11px] text-slate-400">
+                          {ing.notes}
+                        </div>
+                      )}
                     </div>
                   </div>
 
@@ -303,12 +364,19 @@ export const DynamicRecipeCard: React.FC<DynamicRecipeCardProps> = ({
               <h3 className="font-bold text-sm text-slate-200">
                 Step-by-Step Cooking Guide{" "}
                 <span className="text-xs font-normal text-slate-400">
-                  ({Object.keys(completedSteps).filter((k) => completedSteps[Number(k)]).length}/{recipe.steps.length}{" "}
-                  Done)
+                  (
+                  {
+                    Object.keys(completedSteps).filter(
+                      (k) => completedSteps[Number(k)],
+                    ).length
+                  }
+                  /{recipe.steps.length} Done)
                 </span>
               </h3>
             </div>
-            <div className="text-xs text-slate-400">Click step checkbox or timer button</div>
+            <div className="text-xs text-slate-400">
+              Click step checkbox or timer button
+            </div>
           </div>
 
           <div className="space-y-3">
@@ -339,7 +407,9 @@ export const DynamicRecipeCard: React.FC<DynamicRecipeCardProps> = ({
 
                     <div className="flex-1 space-y-1.5">
                       <div className="flex items-center justify-between">
-                        <h4 className={`font-semibold text-sm ${isCompleted ? "line-through text-slate-400" : "text-white"}`}>
+                        <h4
+                          className={`font-semibold text-sm ${isCompleted ? "line-through text-slate-400" : "text-white"}`}
+                        >
                           {step.title}
                         </h4>
 
@@ -351,19 +421,23 @@ export const DynamicRecipeCard: React.FC<DynamicRecipeCardProps> = ({
                                 `${recipe.title} (Step ${step.stepNumber})`,
                                 step.timerSeconds!,
                                 recipe.title,
-                                step.stepNumber
+                                step.stepNumber,
                               )
                             }
                             className="flex items-center space-x-1 px-2.5 py-1 rounded-lg bg-amber-500/10 text-amber-300 border border-amber-500/30 text-xs font-semibold hover:bg-amber-500/20 transition-all shadow-sm"
                             title={`Start ${Math.round(step.timerSeconds / 60)} minute timer`}
                           >
                             <TimerIcon className="w-3.5 h-3.5" />
-                            <span>⏱️ {Math.round(step.timerSeconds / 60)}m Timer</span>
+                            <span>
+                              ⏱️ {Math.round(step.timerSeconds / 60)}m Timer
+                            </span>
                           </button>
                         )}
                       </div>
 
-                      <p className={`text-xs sm:text-sm leading-relaxed ${isCompleted ? "text-slate-500" : "text-slate-300"}`}>
+                      <p
+                        className={`text-xs sm:text-sm leading-relaxed ${isCompleted ? "text-slate-500" : "text-slate-300"}`}
+                      >
                         {step.instruction}
                       </p>
 
@@ -393,24 +467,42 @@ export const DynamicRecipeCard: React.FC<DynamicRecipeCardProps> = ({
           >
             <div className="flex items-center space-x-2">
               <Repeat className="w-4 h-4 text-emerald-400" />
-              <span>Ingredient Substitutions & Swaps ({recipe.substitutions.length})</span>
+              <span>
+                Ingredient Substitutions & Swaps ({recipe.substitutions.length})
+              </span>
             </div>
-            {showSubstitutions ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+            {showSubstitutions ? (
+              <ChevronUp className="w-4 h-4" />
+            ) : (
+              <ChevronDown className="w-4 h-4" />
+            )}
           </button>
 
           {showSubstitutions && (
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 mt-2">
               {recipe.substitutions.map((sub, idx) => (
-                <div key={idx} className="p-2.5 rounded-lg bg-slate-950/60 border border-slate-800 text-xs space-y-1">
+                <div
+                  key={idx}
+                  className="p-2.5 rounded-lg bg-slate-950/60 border border-slate-800 text-xs space-y-1"
+                >
                   <div className="flex items-center justify-between font-semibold">
-                    <span className="text-rose-300/90 line-through">{sub.originalIngredient}</span>
+                    <span className="text-rose-300/90 line-through">
+                      {sub.originalIngredient}
+                    </span>
                     <span className="text-slate-500">➜</span>
-                    <span className="text-emerald-300 font-bold">{sub.substitute}</span>
+                    <span className="text-emerald-300 font-bold">
+                      {sub.substitute}
+                    </span>
                   </div>
                   <div className="text-[11px] text-slate-400 flex justify-between">
                     <span>Ratio: {sub.ratioOrNote}</span>
                     <span className="text-amber-300/80">{sub.reason}</span>
                   </div>
+                  {sub.macroDelta && (
+                    <div className="text-[10px] text-emerald-300/90">
+                      Net macros: {getMacroDeltaSummary(sub.macroDelta)}
+                    </div>
+                  )}
                 </div>
               ))}
             </div>
@@ -418,20 +510,42 @@ export const DynamicRecipeCard: React.FC<DynamicRecipeCardProps> = ({
         </div>
       )}
 
-      {/* Chef Notes & Footer Action Bar */}
-      <div className="mt-5 pt-3 border-t border-slate-800/80 flex flex-wrap items-center justify-between gap-3 text-xs">
-        {recipe.chefNotes && (
-          <div className="text-slate-400 italic text-xs max-w-xl">
-            💡 <strong>Chef Notes:</strong> {recipe.chefNotes}
-          </div>
-        )}
+      {/* Chef Notes, Drink Pairing & Footer Action Bar */}
+      <div className="mt-5 pt-3 border-t border-slate-800/80 space-y-3 text-xs">
+        <div className="flex flex-col gap-3 sm:flex-row">
+          {recipe.chefNotes && (
+            <div className="flex-1 rounded-xl border border-amber-500/20 bg-amber-500/10 p-3 text-slate-200">
+              <div className="text-[11px] font-semibold uppercase tracking-wider text-amber-300">
+                Chef Notes
+              </div>
+              <div className="mt-1 text-sm text-slate-300">
+                {recipe.chefNotes}
+              </div>
+            </div>
+          )}
 
-        <div className="flex items-center space-x-2 ml-auto">
+          {recipe.drinkPairing && (
+            <div className="flex-1 rounded-xl border border-cyan-500/20 bg-cyan-500/10 p-3 text-slate-200">
+              <div className="text-[11px] font-semibold uppercase tracking-wider text-cyan-300">
+                Drink Pairing
+              </div>
+              <div className="mt-1 text-sm text-slate-300">
+                {recipe.drinkPairing}
+              </div>
+            </div>
+          )}
+        </div>
+
+        <div className="flex items-center justify-end">
           <button
             onClick={handleCopyRecipe}
             className="flex items-center space-x-1 px-3 py-1.5 rounded-lg bg-slate-800 text-slate-300 hover:text-white border border-slate-700 transition-colors"
           >
-            {copiedAlert ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Printer className="w-3.5 h-3.5" />}
+            {copiedAlert ? (
+              <Check className="w-3.5 h-3.5 text-emerald-400" />
+            ) : (
+              <Printer className="w-3.5 h-3.5" />
+            )}
             <span>{copiedAlert ? "Copied!" : "Copy Recipe"}</span>
           </button>
         </div>

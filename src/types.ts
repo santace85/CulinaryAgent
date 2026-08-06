@@ -32,6 +32,12 @@ export interface Substitution {
   substitute: string;
   ratioOrNote: string;
   reason: string;
+  macroDelta?: {
+    protein?: string;
+    carbs?: string;
+    fat?: string;
+    fiber?: string;
+  };
 }
 
 export interface Recipe {
@@ -49,6 +55,7 @@ export interface Recipe {
   steps: RecipeStep[];
   substitutions: Substitution[];
   chefNotes?: string;
+  drinkPairing?: string;
   nutritionalInfo?: {
     protein: string;
     carbs: string;
