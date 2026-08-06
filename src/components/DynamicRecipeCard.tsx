@@ -11,7 +11,6 @@ import {
   Circle,
   Timer as TimerIcon,
   Repeat,
-  Share2,
   Printer,
   Sparkles,
   ChevronDown,
@@ -38,7 +37,6 @@ interface DynamicRecipeCardProps {
     stepNumber?: number,
   ) => void;
   onOpenCookingMode: (recipe: Recipe) => void;
-  onShareToCommunity: (recipe: Recipe) => void;
   onRequestSubstitution?: (ingredientName: string) => void;
   darkMode?: boolean;
 }
@@ -50,7 +48,6 @@ export const DynamicRecipeCard: React.FC<DynamicRecipeCardProps> = ({
   onAddToShoppingList,
   onStartTimer,
   onOpenCookingMode,
-  onShareToCommunity,
   onRequestSubstitution,
   darkMode = true,
 }) => {
@@ -181,15 +178,6 @@ export const DynamicRecipeCard: React.FC<DynamicRecipeCardProps> = ({
             <Heart
               className={`w-5 h-5 ${isFavorite ? "fill-rose-400 text-rose-400" : ""}`}
             />
-          </button>
-
-          <button
-            id={`btn-share-${recipe.id}`}
-            onClick={() => onShareToCommunity(recipe)}
-            className="p-2.5 rounded-xl border bg-slate-800/80 text-slate-300 border-slate-700 hover:text-white hover:bg-slate-800 transition-colors"
-            title="Share with Culinary Community"
-          >
-            <Share2 className="w-5 h-5" />
           </button>
 
           <button

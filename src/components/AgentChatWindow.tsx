@@ -35,7 +35,6 @@ interface AgentChatWindowProps {
     stepNumber?: number,
   ) => void;
   onOpenCookingMode: (recipe: Recipe) => void;
-  onShareToCommunity: (recipe: Recipe) => void;
   onOpenSubstitutions: (ingredientName: string) => void;
 }
 
@@ -65,7 +64,6 @@ export const AgentChatWindow: React.FC<AgentChatWindowProps> = ({
   onAddToShoppingList,
   onStartTimer,
   onOpenCookingMode,
-  onShareToCommunity,
   onOpenSubstitutions,
 }) => {
   const [inputText, setInputText] = useState("");
@@ -395,7 +393,6 @@ export const AgentChatWindow: React.FC<AgentChatWindowProps> = ({
                         onAddToShoppingList={onAddToShoppingList}
                         onStartTimer={onStartTimer}
                         onOpenCookingMode={onOpenCookingMode}
-                        onShareToCommunity={onShareToCommunity}
                         onRequestSubstitution={(ing) =>
                           onOpenSubstitutions(ing)
                         }

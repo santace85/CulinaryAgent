@@ -90,29 +90,6 @@ export interface CookingTimer {
   stepNumber?: number;
 }
 
-export interface Comment {
-  id: string;
-  authorName: string;
-  authorAvatar?: string;
-  text: string;
-  createdAt: string;
-  rating?: number;
-}
-
-export interface CommunityPost {
-  id: string;
-  recipe: Recipe;
-  authorName: string;
-  authorAvatar?: string;
-  authorBadge?: string;
-  caption: string;
-  likesCount: number;
-  hasLiked?: boolean;
-  comments: Comment[];
-  createdAt: string;
-  photoUrl?: string;
-}
-
 export interface AgentMessage {
   id: string;
   sender: "user" | "agent";

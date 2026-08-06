@@ -1,9 +1,8 @@
-import { Recipe, ShoppingListItem, CookingTimer, CommunityPost } from "../types";
+import { Recipe, ShoppingListItem, CookingTimer } from "../types";
 
 const FAVORITES_KEY = "culinary_favorites_v1";
 const SHOPPING_KEY = "culinary_shopping_list_v1";
 const TIMERS_KEY = "culinary_active_timers_v1";
-const POSTS_KEY = "culinary_community_posts_v1";
 
 // Favorites Local Storage
 export function getStoredFavorites(): Recipe[] {
@@ -58,20 +57,6 @@ export function getStoredTimers(): CookingTimer[] {
 
 export function saveStoredTimers(timers: CookingTimer[]): void {
   localStorage.setItem(TIMERS_KEY, JSON.stringify(timers));
-}
-
-// Community Posts Local Storage
-export function getStoredPosts(): CommunityPost[] {
-  try {
-    const raw = localStorage.getItem(POSTS_KEY);
-    return raw ? JSON.parse(raw) : [];
-  } catch {
-    return [];
-  }
-}
-
-export function saveStoredPosts(posts: CommunityPost[]): void {
-  localStorage.setItem(POSTS_KEY, JSON.stringify(posts));
 }
 
 // Export shopping list as formatted plaintext or downloadable file

@@ -5,7 +5,6 @@ import {
   ShoppingBag,
   Timer as TimerIcon,
   Repeat,
-  Users,
   Sparkles,
   UtensilsCrossed,
   Sun,
@@ -13,9 +12,9 @@ import {
 } from "lucide-react";
 
 interface NavbarHeaderProps {
-  activeTab: "agent" | "favorites" | "shopping" | "substitutions" | "community";
+  activeTab: "agent" | "favorites" | "shopping" | "substitutions";
   setActiveTab: (
-    tab: "agent" | "favorites" | "shopping" | "substitutions" | "community",
+    tab: "agent" | "favorites" | "shopping" | "substitutions",
   ) => void;
   favoritesCount: number;
   shoppingListCount: number;
@@ -125,19 +124,6 @@ export const NavbarHeader: React.FC<NavbarHeaderProps> = ({
               <Repeat className="w-4 h-4" />
               <span>Substitutions</span>
             </button>
-
-            {/* <button
-              id="tab-community"
-              onClick={() => setActiveTab("community")}
-              className={`flex items-center space-x-2 px-3.5 py-1.5 rounded-lg text-sm font-medium transition-all ${
-                activeTab === "community"
-                  ? "bg-gradient-to-r from-orange-600 to-amber-600 text-white shadow-md shadow-orange-600/30"
-                  : "text-slate-400 hover:text-slate-200 hover:bg-slate-800/60"
-              }`}
-            >
-              <Users className="w-4 h-4" />
-              <span>Social Creations</span>
-            </button> */}
           </nav>
 
           {/* Action Buttons: Timers & Theme */}
@@ -216,15 +202,6 @@ export const NavbarHeader: React.FC<NavbarHeaderProps> = ({
         >
           <Repeat className="w-4 h-4" />
           <span>Substitutes</span>
-        </button>
-        <button
-          onClick={() => setActiveTab("community")}
-          className={`flex flex-col items-center text-[10px] font-medium ${
-            activeTab === "community" ? "text-orange-400" : "text-slate-400"
-          }`}
-        >
-          <Users className="w-4 h-4" />
-          <span>Feed</span>
         </button>
       </div>
     </header>

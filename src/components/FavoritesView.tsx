@@ -25,7 +25,6 @@ interface FavoritesViewProps {
     stepNumber?: number,
   ) => void;
   onOpenCookingMode: (recipe: Recipe) => void;
-  onShareToCommunity: (recipe: Recipe) => void;
   onRequestSubstitution?: (ingredientName: string) => void;
 }
 
@@ -35,7 +34,6 @@ export const FavoritesView: React.FC<FavoritesViewProps> = ({
   onAddToShoppingList,
   onStartTimer,
   onOpenCookingMode,
-  onShareToCommunity,
   onRequestSubstitution,
 }) => {
   const [searchQuery, setSearchQuery] = useState("");
@@ -105,7 +103,6 @@ export const FavoritesView: React.FC<FavoritesViewProps> = ({
             onAddToShoppingList={onAddToShoppingList}
             onStartTimer={onStartTimer}
             onOpenCookingMode={onOpenCookingMode}
-            onShareToCommunity={onShareToCommunity}
             onRequestSubstitution={onRequestSubstitution}
           />
         </div>
