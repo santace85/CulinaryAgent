@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Recipe, Ingredient } from "../types";
 import { getMacroDeltaSummary, getMacroSummary } from "../utils/nutrition";
 import {
@@ -80,18 +80,13 @@ export const DynamicRecipeCard: React.FC<DynamicRecipeCardProps> = ({
 
   // Adjust servings
   const baseServings = recipe.servings || 4;
-  const currentServings = Math.max(
-    1,
-    Math.round(baseServings * servingMultiplier),
-  );
-  const calorieValue = Math.round(
-    (recipe.calories || 450) * (servingMultiplier || 1),
-  );
+  const currentServings = Math.max(1, Math.round(servingMultiplier));
+  const calorieValue = recipe.calories || 0;
   const macroSummary = getMacroSummary(recipe.nutritionalInfo);
 
   // Scale ingredient amounts mathematically
   const getScaledAmount = (amount: number) => {
-    const val = amount * servingMultiplier;
+    const val = (amount * currentServings) / baseServings;
     return Number.isInteger(val) ? val.toString() : val.toFixed(1);
   };
 
@@ -183,7 +178,7 @@ export const DynamicRecipeCard: React.FC<DynamicRecipeCardProps> = ({
           <button
             id={`btn-cooking-mode-${recipe.id}`}
             onClick={() => onOpenCookingMode(recipe)}
-            className="flex items-center space-x-1.5 px-3 py-2 rounded-xl bg-gradient-to-r from-orange-600 to-amber-600 text-white font-medium text-xs shadow-md shadow-orange-600/30 hover:brightness-110 transition-all"
+            className="flex items-center space-x-1.5 px-3 py-2 rounded-xl bg-linear-to-r from-orange-600 to-amber-600 text-white font-medium text-xs shadow-md shadow-orange-600/30 hover:brightness-110 transition-all"
             title="Open Hands-Free Step-by-Step Cooking Mode"
           >
             <Maximize2 className="w-4 h-4" />
@@ -226,9 +221,7 @@ export const DynamicRecipeCard: React.FC<DynamicRecipeCardProps> = ({
             </div>
             <div className="flex items-center space-x-1 mt-0.5">
               <button
-                onClick={() =>
-                  setServingMultiplier((m) => Math.max(0.5, m - 0.5))
-                }
+                onClick={() => setServingMultiplier((m) => Math.max(1, m - 1))}
                 className="w-5 h-5 rounded bg-slate-800 text-slate-300 flex items-center justify-center font-bold text-xs hover:bg-slate-700"
               >
                 -
@@ -237,7 +230,7 @@ export const DynamicRecipeCard: React.FC<DynamicRecipeCardProps> = ({
                 {currentServings}
               </span>
               <button
-                onClick={() => setServingMultiplier((m) => m + 0.5)}
+                onClick={() => setServingMultiplier((m) => m + 1)}
                 className="w-5 h-5 rounded bg-slate-800 text-slate-300 flex items-center justify-center font-bold text-xs hover:bg-slate-700"
               >
                 +
