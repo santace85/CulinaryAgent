@@ -71,7 +71,6 @@ app.post("/api/recipe", rateLimitMiddleware, async (req, res) => {
         "GEMINI_API_KEY is not set. Returning rich fallback recipe.",
       );
       return res.json({
-        recipe: getFallbackRecipe(prompt, dietary, servings),
         isFallback: true,
         error: "AI API key is unavailable. Serving curated fallback recipes.",
         recommendedRecipes: POPULAR_FALLBACK_RECIPES,
@@ -243,9 +242,8 @@ ${cookTimeMax ? `Maximum cook time limit: ${cookTimeMax} minutes.` : ""}`;
     console.error("Error generating recipe with Gemini:", error);
     // Graceful fallback if error or quota limit
     return res.json({
-      recipe: getFallbackRecipe(req.body.prompt || "Healthy Delicious Meal"),
-      error: error.message || "Failed to generate AI recipe",
       isFallback: true,
+      error: error.message || "Failed to generate AI recipe",
       recommendedRecipes: POPULAR_FALLBACK_RECIPES,
     });
   }

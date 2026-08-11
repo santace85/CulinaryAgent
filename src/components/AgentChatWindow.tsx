@@ -153,8 +153,8 @@ export const AgentChatWindow: React.FC<AgentChatWindowProps> = ({
           });
 
         const agentText = isFallback
-          ? `I ran into an issue generating your custom recipe: ${error || "Unable to reach the AI service."} Here’s a tasty curated recipe and some popular alternatives you can load instantly.`
-          : `Here is your custom AI Agent created recipe for **${recipe.title}**, complete with interactive ingredient checkboxes, step-by-step timers, and substitutions:`;
+          ? error || "Unable to reach the AI service right now."
+          : `Here is your custom AI Agent created recipe for **${recipe?.title}**, complete with interactive ingredient checkboxes, step-by-step timers, and substitutions:`;
 
         setMessages((prev) =>
           prev.map((msg) =>
@@ -167,7 +167,7 @@ export const AgentChatWindow: React.FC<AgentChatWindowProps> = ({
                     hour: "2-digit",
                     minute: "2-digit",
                   }),
-                  recipe,
+                  recipe: isFallback ? undefined : recipe,
                   recommendedRecipes: isFallback
                     ? recommendedRecipes
                     : undefined,
@@ -286,8 +286,8 @@ export const AgentChatWindow: React.FC<AgentChatWindowProps> = ({
       {/* Messages Scroll Area */}
       <div className="flex-1 overflow-y-auto space-y-4 pr-1 sm:pr-2 custom-scrollbar">
         {messages.length === 0 ? (
-          <div className="flex flex-col items-center justify-center min-h-[350px] text-center p-6 bg-slate-900/60 border border-slate-800/80 rounded-2xl">
-            <div className="w-16 h-16 rounded-2xl bg-gradient-to-tr from-amber-500 via-orange-500 to-emerald-500 flex items-center justify-center mb-4 shadow-xl shadow-orange-500/20">
+          <div className="flex flex-col items-center justify-center min-h-87.5 text-center p-6 bg-slate-900/60 border border-slate-800/80 rounded-2xl">
+            <div className="w-16 h-16 rounded-2xl bg-linear-to-tr from-amber-500 via-orange-500 to-emerald-500 flex items-center justify-center mb-4 shadow-xl shadow-orange-500/20">
               <ChefHat className="w-8 h-8 text-white" />
             </div>
             <h2 className="text-xl font-bold text-white mb-1">
@@ -319,7 +319,7 @@ export const AgentChatWindow: React.FC<AgentChatWindowProps> = ({
             <div key={msg.id} className="space-y-2">
               {msg.sender === "user" ? (
                 <div className="flex justify-end">
-                  <div className="max-w-2xl bg-gradient-to-r from-orange-600 to-amber-600 text-white rounded-2xl rounded-tr-none px-4 py-3 shadow-md">
+                  <div className="max-w-2xl bg-linear-to-r from-orange-600 to-amber-600 text-white rounded-2xl rounded-tr-none px-4 py-3 shadow-md">
                     <div className="flex items-center justify-between text-[10px] text-orange-200/80 mb-1">
                       <span className="font-semibold flex items-center gap-1">
                         <User className="w-3 h-3" /> You
@@ -477,7 +477,7 @@ export const AgentChatWindow: React.FC<AgentChatWindowProps> = ({
           <button
             type="submit"
             disabled={!inputText.trim() || isLoading}
-            className="px-4 py-2.5 rounded-xl bg-gradient-to-r from-orange-600 to-amber-600 text-white font-semibold text-sm flex items-center space-x-1.5 hover:brightness-110 disabled:opacity-50 transition-all shadow-md shadow-orange-600/30"
+            className="px-4 py-2.5 rounded-xl bg-linear-to-r from-orange-600 to-amber-600 text-white font-semibold text-sm flex items-center space-x-1.5 hover:brightness-110 disabled:opacity-50 transition-all shadow-md shadow-orange-600/30"
           >
             {isLoading ? (
               <Loader2 className="w-4 h-4 animate-spin" />

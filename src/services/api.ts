@@ -1,4 +1,5 @@
 import { Recipe, Substitution } from "../types";
+import { POPULAR_FALLBACK_RECIPES } from "../data/fallbackRecipes";
 
 export interface GenerateRecipeOptions {
   prompt: string;
@@ -8,10 +9,35 @@ export interface GenerateRecipeOptions {
 }
 
 export interface FetchRecipeResponse {
-  recipe: Recipe;
+  recipe?: Recipe;
   isFallback: boolean;
   error?: string;
   recommendedRecipes?: Recipe[];
+}
+
+function getFriendlyError(message: string, status?: number) {
+  const normalized = (message || "").toLowerCase();
+  if (
+    status === 401 ||
+    status === 403 ||
+    normalized.includes("api key") ||
+    normalized.includes("auth") ||
+    normalized.includes("unauthorized")
+  ) {
+    return "AI API authentication error. Check your API key.";
+  }
+  if (status === 429 || normalized.includes("rate limit")) {
+    return "Rate limit exceeded. Please wait a moment before retrying.";
+  }
+  if (
+    normalized.includes("failed to fetch") ||
+    normalized.includes("network") ||
+    normalized.includes("disconnected") ||
+    normalized.includes("timeout")
+  ) {
+    return "Network disconnect. Please check your connection and try again.";
+  }
+  return "Unable to reach the AI service right now. Please try again shortly.";
 }
 
 export async function fetchAIRecipe(
@@ -26,24 +52,33 @@ export async function fetchAIRecipe(
       body: JSON.stringify(options),
     });
 
-    if (!response.ok) {
-      throw new Error(`Server returned HTTP ${response.status}`);
+    const data = await response.json().catch(() => ({}));
+
+    if (!response.ok || !data.recipe) {
+      return {
+        isFallback: true,
+        error: getFriendlyError(
+          data?.error || response.statusText || `HTTP ${response.status}`,
+          response.status,
+        ),
+        recommendedRecipes: POPULAR_FALLBACK_RECIPES,
+      };
     }
 
-    const data = await response.json();
-    if (!data.recipe) {
-      throw new Error("Invalid response schema from backend.");
-    }
-
+    const isFallback = !!data.isFallback || !response.ok;
     return {
-      recipe: data.recipe,
-      isFallback: !!data.isFallback,
+      recipe: isFallback ? undefined : data.recipe,
+      isFallback,
       error: data.error,
       recommendedRecipes: data.recommendedRecipes,
     };
   } catch (error: any) {
     console.warn("Error calling /api/recipe, fallback triggered:", error);
-    throw error;
+    return {
+      isFallback: true,
+      error: getFriendlyError(error?.message || ""),
+      recommendedRecipes: POPULAR_FALLBACK_RECIPES,
+    };
   }
 }
 

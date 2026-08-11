@@ -61,7 +61,6 @@ export default function App() {
         hour: "2-digit",
         minute: "2-digit",
       }),
-      recipe: STARTER_RECIPES[0],
     },
   ]);
 

@@ -441,4 +441,272 @@ export const POPULAR_FALLBACK_RECIPES: Recipe[] = [
     drinkPairing: "Iced coffee or a cold latte.",
     nutritionalInfo: { protein: "10g", carbs: "42g", fat: "18g", fiber: "6g" },
   },
+  {
+    id: "popular_6",
+    title: "Korean Beef Bibimbap Bowls",
+    summary:
+      "Colorful rice bowls topped with marinated beef, crisp vegetables, a fried egg, and spicy gochujang sauce.",
+    prepTimeMinutes: 15,
+    cookTimeMinutes: 20,
+    servings: 4,
+    difficulty: "Medium",
+    calories: 540,
+    cuisine: "Korean",
+    dietaryTags: ["High-Protein", "Meal Prep", "Comfort Food"],
+    ingredients: [
+      {
+        id: "f6_i1",
+        name: "Ground Beef",
+        amount: 500,
+        unit: "g",
+        category: "Meat & Seafood",
+      },
+      {
+        id: "f6_i2",
+        name: "Cooked Jasmine Rice",
+        amount: 400,
+        unit: "g",
+        category: "Pantry & Spices",
+      },
+      {
+        id: "f6_i3",
+        name: "Spinach",
+        amount: 120,
+        unit: "g",
+        category: "Produce",
+      },
+      {
+        id: "f6_i4",
+        name: "Carrot",
+        amount: 1,
+        unit: "whole",
+        category: "Produce",
+      },
+      {
+        id: "f6_i5",
+        name: "Gochujang Sauce",
+        amount: 2,
+        unit: "tbsp",
+        category: "Pantry & Spices",
+      },
+      {
+        id: "f6_i6",
+        name: "Eggs",
+        amount: 4,
+        unit: "whole",
+        category: "Dairy & Eggs",
+      },
+    ],
+    steps: [
+      {
+        stepNumber: 1,
+        title: "Cook the Beef",
+        instruction:
+          "Stir-fry beef with garlic, soy sauce, and sesame oil until browned and caramelized.",
+        timerSeconds: 300,
+      },
+      {
+        stepNumber: 2,
+        title: "Prepare the Vegetables",
+        instruction:
+          "Quickly sauté spinach, julienned carrot, and sliced mushrooms until tender-crisp.",
+        timerSeconds: 240,
+      },
+      {
+        stepNumber: 3,
+        title: "Assemble Bowls",
+        instruction:
+          "Divide rice into bowls, top with beef, veggies, a fried egg, and a drizzle of gochujang.",
+        timerSeconds: 120,
+      },
+    ],
+    substitutions: [
+      {
+        originalIngredient: "Ground Beef",
+        substitute: "Ground Turkey or Crumbled Tofu",
+        ratioOrNote: "1:1 ratio",
+        reason: "Lean or vegetarian alternative",
+      },
+    ],
+    chefNotes:
+      "Mix everything together before eating so every bite gets a little spicy, sweet, and savory.",
+    drinkPairing: "Cold barley tea or a citrusy lager.",
+    nutritionalInfo: { protein: "32g", carbs: "55g", fat: "18g", fiber: "6g" },
+  },
+  {
+    id: "popular_7",
+    title: "Roasted Cauliflower Tacos with Avocado Crema",
+    summary:
+      "Smoky roasted cauliflower tacos with crunchy cabbage slaw, creamy avocado crema, and lime-cilantro dressing.",
+    prepTimeMinutes: 15,
+    cookTimeMinutes: 25,
+    servings: 4,
+    difficulty: "Easy",
+    calories: 420,
+    cuisine: "Mexican",
+    dietaryTags: ["Vegetarian", "Meatless", "Flavorful"],
+    ingredients: [
+      {
+        id: "f7_i1",
+        name: "Cauliflower Florets",
+        amount: 600,
+        unit: "g",
+        category: "Produce",
+      },
+      {
+        id: "f7_i2",
+        name: "Taco Seasoning",
+        amount: 2,
+        unit: "tbsp",
+        category: "Pantry & Spices",
+      },
+      {
+        id: "f7_i3",
+        name: "Corn Tortillas",
+        amount: 8,
+        unit: "pieces",
+        category: "Bakery",
+      },
+      {
+        id: "f7_i4",
+        name: "Red Cabbage Slaw",
+        amount: 150,
+        unit: "g",
+        category: "Produce",
+      },
+      {
+        id: "f7_i5",
+        name: "Avocado",
+        amount: 1,
+        unit: "whole",
+        category: "Produce",
+      },
+      {
+        id: "f7_i6",
+        name: "Greek Yogurt or Cashew Cream",
+        amount: 60,
+        unit: "g",
+        category: "Dairy & Eggs",
+      },
+    ],
+    steps: [
+      {
+        stepNumber: 1,
+        title: "Roast the Cauliflower",
+        instruction:
+          "Toss cauliflower with oil, taco seasoning, and salt, then roast until golden and crisp.",
+        timerSeconds: 1500,
+      },
+      {
+        stepNumber: 2,
+        title: "Make the Crema",
+        instruction:
+          "Blend avocado, yogurt, lime juice, and cilantro until smooth and creamy.",
+        timerSeconds: 120,
+      },
+      {
+        stepNumber: 3,
+        title: "Build the Tacos",
+        instruction:
+          "Warm tortillas, layer with cauliflower, cabbage slaw, crema, and fresh lime.",
+        timerSeconds: 120,
+      },
+    ],
+    substitutions: [
+      {
+        originalIngredient: "Greek Yogurt",
+        substitute: "Silken Tofu or Coconut Yogurt",
+        ratioOrNote: "1:1 ratio",
+        reason: "Dairy-free alternative",
+      },
+    ],
+    chefNotes:
+      "A quick squeeze of lime and sprinkle of cotija or feta is a great finishing touch.",
+    drinkPairing: "Horchata or a light Mexican lager.",
+    nutritionalInfo: { protein: "12g", carbs: "48g", fat: "20g", fiber: "9g" },
+  },
+  {
+    id: "popular_8",
+    title: "Coconut Curry Lentil Stew with Sweet Potato",
+    summary:
+      "A cozy, fragrant red lentil stew simmered with sweet potatoes, spinach, and warming curry spices.",
+    prepTimeMinutes: 15,
+    cookTimeMinutes: 30,
+    servings: 4,
+    difficulty: "Easy",
+    calories: 390,
+    cuisine: "Indian",
+    dietaryTags: ["Vegan", "Gluten-Free", "Hearty"],
+    ingredients: [
+      {
+        id: "f8_i1",
+        name: "Red Lentils",
+        amount: 200,
+        unit: "g",
+        category: "Pantry & Spices",
+      },
+      {
+        id: "f8_i2",
+        name: "Sweet Potato",
+        amount: 300,
+        unit: "g",
+        category: "Produce",
+      },
+      {
+        id: "f8_i3",
+        name: "Coconut Milk",
+        amount: 400,
+        unit: "ml",
+        category: "Dairy & Eggs",
+      },
+      {
+        id: "f8_i4",
+        name: "Spinach",
+        amount: 120,
+        unit: "g",
+        category: "Produce",
+      },
+      {
+        id: "f8_i5",
+        name: "Garlic, Ginger & Curry Powder",
+        amount: 3,
+        unit: "tbsp",
+        category: "Pantry & Spices",
+      },
+    ],
+    steps: [
+      {
+        stepNumber: 1,
+        title: "Sauté the Base",
+        instruction:
+          "Cook onion, garlic, ginger, and curry powder until fragrant in a splash of oil.",
+        timerSeconds: 180,
+      },
+      {
+        stepNumber: 2,
+        title: "Simmer the Stew",
+        instruction:
+          "Add lentils, sweet potato, vegetable broth, and coconut milk. Simmer until the lentils are tender.",
+        timerSeconds: 1800,
+      },
+      {
+        stepNumber: 3,
+        title: "Finish with Greens",
+        instruction:
+          "Stir in spinach until wilted, then season with lime juice and cilantro.",
+        timerSeconds: 120,
+      },
+    ],
+    substitutions: [
+      {
+        originalIngredient: "Red Lentils",
+        substitute: "Yellow Split Peas or Brown Lentils",
+        ratioOrNote: "1:1 ratio with adjusted cook time",
+        reason: "Pantry variation",
+      },
+    ],
+    chefNotes: "Serve with warm naan or basmati rice for a comforting bowl.",
+    drinkPairing: "Mango lassi or chai tea.",
+    nutritionalInfo: { protein: "18g", carbs: "52g", fat: "14g", fiber: "12g" },
+  },
 ];
