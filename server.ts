@@ -3,6 +3,7 @@ import path from "path";
 import { createServer as createViteServer } from "vite";
 import { GoogleGenAI, Type } from "@google/genai";
 import dotenv from "dotenv";
+import { POPULAR_FALLBACK_RECIPES } from "./src/data/fallbackRecipes";
 
 dotenv.config();
 
@@ -72,6 +73,8 @@ app.post("/api/recipe", rateLimitMiddleware, async (req, res) => {
       return res.json({
         recipe: getFallbackRecipe(prompt, dietary, servings),
         isFallback: true,
+        error: "AI API key is unavailable. Serving curated fallback recipes.",
+        recommendedRecipes: POPULAR_FALLBACK_RECIPES,
       });
     }
 
@@ -243,6 +246,7 @@ ${cookTimeMax ? `Maximum cook time limit: ${cookTimeMax} minutes.` : ""}`;
       recipe: getFallbackRecipe(req.body.prompt || "Healthy Delicious Meal"),
       error: error.message || "Failed to generate AI recipe",
       isFallback: true,
+      recommendedRecipes: POPULAR_FALLBACK_RECIPES,
     });
   }
 });

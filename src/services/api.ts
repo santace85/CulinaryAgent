@@ -7,9 +7,16 @@ export interface GenerateRecipeOptions {
   cookTimeMax?: number;
 }
 
+export interface FetchRecipeResponse {
+  recipe: Recipe;
+  isFallback: boolean;
+  error?: string;
+  recommendedRecipes?: Recipe[];
+}
+
 export async function fetchAIRecipe(
   options: GenerateRecipeOptions,
-): Promise<{ recipe: Recipe; isFallback: boolean }> {
+): Promise<FetchRecipeResponse> {
   try {
     const response = await fetch("/api/recipe", {
       method: "POST",
@@ -31,6 +38,8 @@ export async function fetchAIRecipe(
     return {
       recipe: data.recipe,
       isFallback: !!data.isFallback,
+      error: data.error,
+      recommendedRecipes: data.recommendedRecipes,
     };
   } catch (error: any) {
     console.warn("Error calling /api/recipe, fallback triggered:", error);

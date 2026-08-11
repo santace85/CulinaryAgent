@@ -145,14 +145,15 @@ export const AgentChatWindow: React.FC<AgentChatWindowProps> = ({
         );
       } else {
         // Fetch AI Recipe
-        const { recipe, isFallback } = await fetchAIRecipe({
-          prompt: promptToUse,
-          dietary: selectedDietary,
-          servings: targetServings,
-        });
+        const { recipe, isFallback, error, recommendedRecipes } =
+          await fetchAIRecipe({
+            prompt: promptToUse,
+            dietary: selectedDietary,
+            servings: targetServings,
+          });
 
         const agentText = isFallback
-          ? `Here is a custom curated recipe for **${recipe.title}**:`
+          ? `I ran into an issue generating your custom recipe: ${error || "Unable to reach the AI service."} Here’s a tasty curated recipe and some popular alternatives you can load instantly.`
           : `Here is your custom AI Agent created recipe for **${recipe.title}**, complete with interactive ingredient checkboxes, step-by-step timers, and substitutions:`;
 
         setMessages((prev) =>
@@ -167,6 +168,9 @@ export const AgentChatWindow: React.FC<AgentChatWindowProps> = ({
                     minute: "2-digit",
                   }),
                   recipe,
+                  recommendedRecipes: isFallback
+                    ? recommendedRecipes
+                    : undefined,
                   isThinking: false,
                 }
               : msg,
@@ -352,6 +356,51 @@ export const AgentChatWindow: React.FC<AgentChatWindowProps> = ({
                       ) : (
                         <div>
                           <p className="mb-3 font-medium">{msg.text}</p>
+
+                          {msg.recommendedRecipes &&
+                            msg.recommendedRecipes.length > 0 && (
+                              <div className="space-y-3 mb-4">
+                                <div className="text-xs uppercase tracking-wider text-slate-500 font-semibold">
+                                  Popular fallback recipes:
+                                </div>
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                                  {msg.recommendedRecipes.map((recipe) => (
+                                    <button
+                                      key={recipe.id}
+                                      type="button"
+                                      onClick={() => {
+                                        const recipeMessage: AgentMessage = {
+                                          id:
+                                            "msg_agent_recipe_" +
+                                            Date.now() +
+                                            Math.random().toString(36).slice(2),
+                                          sender: "agent",
+                                          text: `Loading **${recipe.title}** into the chat for you.`,
+                                          timestamp:
+                                            new Date().toLocaleTimeString([], {
+                                              hour: "2-digit",
+                                              minute: "2-digit",
+                                            }),
+                                          recipe,
+                                        };
+                                        setMessages((prev) => [
+                                          ...prev,
+                                          recipeMessage,
+                                        ]);
+                                      }}
+                                      className="w-full rounded-2xl border border-orange-500/25 bg-slate-950/90 px-4 py-3 text-left text-sm text-slate-100 hover:border-orange-400/40 hover:bg-slate-900 transition-all"
+                                    >
+                                      <div className="font-semibold text-amber-200 underline decoration-orange-500/40 decoration-2 underline-offset-4">
+                                        {recipe.title}
+                                      </div>
+                                      <div className="text-[11px] text-slate-400 mt-1">
+                                        {recipe.summary}
+                                      </div>
+                                    </button>
+                                  ))}
+                                </div>
+                              </div>
+                            )}
 
                           {/* Substitutions List if requested */}
                           {msg.substitutionsList && (

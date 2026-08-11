@@ -97,6 +97,7 @@ export interface AgentMessage {
   timestamp: string;
   recipe?: Recipe;
   substitutionsList?: Substitution[];
+  recommendedRecipes?: Recipe[];
   isThinking?: boolean;
   quickPrompts?: string[];
 }
