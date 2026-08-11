@@ -206,6 +206,39 @@ export const AgentChatWindow: React.FC<AgentChatWindowProps> = ({
     }
   };
 
+  const handleSelectFallbackRecipe = (recipe: Recipe) => {
+    const loadingMessageId = "msg_agent_loading_" + Date.now();
+    const loadingMsg: AgentMessage = {
+      id: loadingMessageId,
+      sender: "agent",
+      text: `Loading **${recipe.title}** into the chat for you...`,
+      timestamp: new Date().toLocaleTimeString([], {
+        hour: "2-digit",
+        minute: "2-digit",
+      }),
+      isThinking: true,
+    };
+
+    setMessages((prev) => [...prev, loadingMsg]);
+
+    setTimeout(() => {
+      setMessages((prev) =>
+        prev.map((msg) =>
+          msg.id === loadingMessageId
+            ? {
+                ...msg,
+                id: "msg_agent_recipe_" + Date.now(),
+                sender: "agent",
+                text: `Here is your fallback recipe for **${recipe.title}**.`,
+                isThinking: false,
+                recipe,
+              }
+            : msg,
+        ),
+      );
+    }, 3000);
+  };
+
   return (
     <div className="flex flex-col h-[calc(100vh-5rem)] max-w-6xl mx-auto px-2 sm:px-4 py-4">
       {/* Top Agent Controls Bar */}
@@ -368,26 +401,9 @@ export const AgentChatWindow: React.FC<AgentChatWindowProps> = ({
                                     <button
                                       key={recipe.id}
                                       type="button"
-                                      onClick={() => {
-                                        const recipeMessage: AgentMessage = {
-                                          id:
-                                            "msg_agent_recipe_" +
-                                            Date.now() +
-                                            Math.random().toString(36).slice(2),
-                                          sender: "agent",
-                                          text: `Loading **${recipe.title}** into the chat for you.`,
-                                          timestamp:
-                                            new Date().toLocaleTimeString([], {
-                                              hour: "2-digit",
-                                              minute: "2-digit",
-                                            }),
-                                          recipe,
-                                        };
-                                        setMessages((prev) => [
-                                          ...prev,
-                                          recipeMessage,
-                                        ]);
-                                      }}
+                                      onClick={() =>
+                                        handleSelectFallbackRecipe(recipe)
+                                      }
                                       className="w-full rounded-2xl border border-orange-500/25 bg-slate-950/90 px-4 py-3 text-left text-sm text-slate-100 hover:border-orange-400/40 hover:bg-slate-900 transition-all"
                                     >
                                       <div className="font-semibold text-amber-200 underline decoration-orange-500/40 decoration-2 underline-offset-4">
@@ -445,6 +461,7 @@ export const AgentChatWindow: React.FC<AgentChatWindowProps> = ({
                         onRequestSubstitution={(ing) =>
                           onOpenSubstitutions(ing)
                         }
+                        initialServings={targetServings}
                       />
                     )}
                   </div>

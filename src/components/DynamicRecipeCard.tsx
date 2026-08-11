@@ -38,6 +38,7 @@ interface DynamicRecipeCardProps {
   ) => void;
   onOpenCookingMode: (recipe: Recipe) => void;
   onRequestSubstitution?: (ingredientName: string) => void;
+  initialServings?: number;
   darkMode?: boolean;
 }
 
@@ -49,9 +50,16 @@ export const DynamicRecipeCard: React.FC<DynamicRecipeCardProps> = ({
   onStartTimer,
   onOpenCookingMode,
   onRequestSubstitution,
+  initialServings,
   darkMode = true,
 }) => {
-  const [servingMultiplier, setServingMultiplier] = useState<number>(1);
+  const [currentServings, setCurrentServings] = useState<number>(
+    initialServings ?? recipe.servings ?? 4,
+  );
+
+  useEffect(() => {
+    setCurrentServings(initialServings ?? recipe.servings ?? 4);
+  }, [initialServings, recipe.servings]);
   const [checkedIngredients, setCheckedIngredients] = useState<
     Record<string, boolean>
   >({});
@@ -80,7 +88,6 @@ export const DynamicRecipeCard: React.FC<DynamicRecipeCardProps> = ({
 
   // Adjust servings
   const baseServings = recipe.servings || 4;
-  const currentServings = Math.max(1, Math.round(servingMultiplier));
   const calorieValue = recipe.calories || 0;
   const macroSummary = getMacroSummary(recipe.nutritionalInfo);
 
@@ -92,9 +99,12 @@ export const DynamicRecipeCard: React.FC<DynamicRecipeCardProps> = ({
 
   // Export checked or all ingredients to shopping list
   const handleExportShoppingList = () => {
+    const ratio = currentServings / baseServings;
     const itemsToAdd = recipe.ingredients.map((ing) => ({
       ...ing,
-      amount: ing.amount * servingMultiplier,
+      amount: Number.isInteger(ing.amount * ratio)
+        ? ing.amount * ratio
+        : Number(Number.parseFloat((ing.amount * ratio).toFixed(1))),
     }));
     onAddToShoppingList(itemsToAdd, recipe.title, recipe.id);
     setAddedShoppingAlert(true);
@@ -221,7 +231,9 @@ export const DynamicRecipeCard: React.FC<DynamicRecipeCardProps> = ({
             </div>
             <div className="flex items-center space-x-1 mt-0.5">
               <button
-                onClick={() => setServingMultiplier((m) => Math.max(1, m - 1))}
+                onClick={() =>
+                  setCurrentServings((count) => Math.max(1, count - 1))
+                }
                 className="w-5 h-5 rounded bg-slate-800 text-slate-300 flex items-center justify-center font-bold text-xs hover:bg-slate-700"
               >
                 -
@@ -230,7 +242,7 @@ export const DynamicRecipeCard: React.FC<DynamicRecipeCardProps> = ({
                 {currentServings}
               </span>
               <button
-                onClick={() => setServingMultiplier((m) => m + 1)}
+                onClick={() => setCurrentServings((count) => count + 1)}
                 className="w-5 h-5 rounded bg-slate-800 text-slate-300 flex items-center justify-center font-bold text-xs hover:bg-slate-700"
               >
                 +
