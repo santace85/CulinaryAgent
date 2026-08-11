@@ -7,7 +7,9 @@ export interface GenerateRecipeOptions {
   cookTimeMax?: number;
 }
 
-export async function fetchAIRecipe(options: GenerateRecipeOptions): Promise<{ recipe: Recipe; isFallback: boolean }> {
+export async function fetchAIRecipe(
+  options: GenerateRecipeOptions,
+): Promise<{ recipe: Recipe; isFallback: boolean }> {
   try {
     const response = await fetch("/api/recipe", {
       method: "POST",
@@ -36,7 +38,10 @@ export async function fetchAIRecipe(options: GenerateRecipeOptions): Promise<{ r
   }
 }
 
-export async function fetchAISubstitutions(ingredient: string, recipeContext?: string): Promise<Substitution[]> {
+export async function fetchAISubstitutions(
+  ingredient: string,
+  recipeContext?: string,
+): Promise<Substitution[]> {
   try {
     const response = await fetch("/api/substitute", {
       method: "POST",

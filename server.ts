@@ -12,6 +12,35 @@ const HOSTNAME = "localhost";
 
 app.use(express.json({ limit: "5mb" }));
 
+const RATE_LIMIT_WINDOW_MS = 60_000;
+const RATE_LIMIT_MAX_REQUESTS = 5;
+const rateLimitMap = new Map<string, number[]>();
+
+function rateLimitMiddleware(
+  req: express.Request,
+  res: express.Response,
+  next: express.NextFunction,
+) {
+  const ip = req.ip || "unknown";
+  const now = Date.now();
+  const windowStart = now - RATE_LIMIT_WINDOW_MS;
+  const timestamps = rateLimitMap.get(ip) || [];
+  const recentRequests = timestamps.filter((ts) => ts > windowStart);
+
+  if (recentRequests.length >= RATE_LIMIT_MAX_REQUESTS) {
+    const retryAfterSeconds =
+      Math.ceil((recentRequests[0] + RATE_LIMIT_WINDOW_MS - now) / 1000) || 1;
+    res.setHeader("Retry-After", String(retryAfterSeconds));
+    return res.status(429).json({
+      error: `Rate limit exceeded. Max ${RATE_LIMIT_MAX_REQUESTS} requests per minute.`,
+    });
+  }
+
+  recentRequests.push(now);
+  rateLimitMap.set(ip, recentRequests);
+  next();
+}
+
 // Initialize Gemini Client
 const ai = new GoogleGenAI({
   apiKey: process.env.GEMINI_API_KEY || "",
@@ -28,7 +57,7 @@ app.get("/api/health", (_req, res) => {
 });
 
 // AI Recipe Generation Endpoint
-app.post("/api/recipe", async (req, res) => {
+app.post("/api/recipe", rateLimitMiddleware, async (req, res) => {
   try {
     const { prompt, dietary, servings, cookTimeMax } = req.body;
 
@@ -219,7 +248,7 @@ ${cookTimeMax ? `Maximum cook time limit: ${cookTimeMax} minutes.` : ""}`;
 });
 
 // Quick Ingredient Substitution AI endpoint
-app.post("/api/substitute", async (req, res) => {
+app.post("/api/substitute", rateLimitMiddleware, async (req, res) => {
   try {
     const { ingredient, recipeContext } = req.body;
     if (!ingredient) {
