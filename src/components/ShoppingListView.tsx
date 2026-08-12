@@ -17,6 +17,7 @@ import {
   Package,
   Store,
 } from "lucide-react";
+import "./ShoppingListView.css";
 
 interface ShoppingListViewProps {
   shoppingList: ShoppingListItem[];
@@ -45,7 +46,7 @@ export const ShoppingListView: React.FC<ShoppingListViewProps> = ({
 
   const toggleCheck = (id: string) => {
     const updated = shoppingList.map((item) =>
-      item.id === id ? { ...item, isChecked: !item.isChecked } : item
+      item.id === id ? { ...item, isChecked: !item.isChecked } : item,
     );
     setShoppingList(updated);
     saveShoppingList(updated);
@@ -64,7 +65,11 @@ export const ShoppingListView: React.FC<ShoppingListViewProps> = ({
   };
 
   const handleClearAll = () => {
-    if (confirm("Are you sure you want to clear your entire grocery shopping list?")) {
+    if (
+      confirm(
+        "Are you sure you want to clear your entire grocery shopping list?",
+      )
+    ) {
       setShoppingList([]);
       saveShoppingList([]);
     }
@@ -107,55 +112,58 @@ export const ShoppingListView: React.FC<ShoppingListViewProps> = ({
 
   const totalCount = shoppingList.length;
   const checkedCount = shoppingList.filter((i) => i.isChecked).length;
-  const progressPercent = totalCount > 0 ? Math.round((checkedCount / totalCount) * 100) : 0;
+  const progressPercent =
+    totalCount > 0 ? Math.round((checkedCount / totalCount) * 100) : 0;
 
   return (
-    <div className="max-w-5xl mx-auto px-4 py-6 space-y-6">
+    <div className="shop-container">
       {/* Header & Quick Export Controls */}
-      <div className="bg-slate-900 border border-slate-800 rounded-2xl p-5 shadow-xl space-y-4">
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-          <div className="flex items-center space-x-3">
-            <div className="w-10 h-10 rounded-xl bg-emerald-500/20 border border-emerald-500/30 text-emerald-400 flex items-center justify-center">
-              <ShoppingBag className="w-5 h-5" />
+      <div className="shop-header-card">
+        <div className="shop-header-row">
+          <div className="shop-brand">
+            <div className="shop-icon-box">
+              <ShoppingBag />
             </div>
             <div>
-              <h1 className="text-xl font-bold text-white flex items-center gap-2">
+              <h1 className="shop-title">
                 Grocery Shopping List
-                <span className="text-xs font-normal px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-300 border border-emerald-500/20">
-                  LocalStorage Synced 💾
-                </span>
+                <span className="shop-sync-badge">LocalStorage Synced 💾</span>
               </h1>
-              <p className="text-xs text-slate-400">
+              <p className="shop-subtitle">
                 Organized for quick retrieval during grocery store trips
               </p>
             </div>
           </div>
 
-          <div className="flex flex-wrap items-center gap-2">
+          <div className="shop-actions">
             <button
               onClick={handleCopyText}
               disabled={!totalCount}
-              className="flex items-center space-x-1.5 px-3 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-medium border border-slate-700 transition-colors disabled:opacity-50"
+              className="shop-action-btn shop-copy-btn"
             >
-              {copiedAlert ? <Check className="w-4 h-4 text-emerald-400" /> : <Copy className="w-4 h-4" />}
+              {copiedAlert ? (
+                <Check className="shop-copy-icon--copied" />
+              ) : (
+                <Copy />
+              )}
               <span>{copiedAlert ? "Copied!" : "Copy List"}</span>
             </button>
 
             <button
               onClick={handleDownloadFile}
               disabled={!totalCount}
-              className="flex items-center space-x-1.5 px-3 py-2 rounded-xl bg-emerald-600/20 hover:bg-emerald-600/30 text-emerald-300 text-xs font-medium border border-emerald-500/30 transition-colors disabled:opacity-50"
+              className="shop-action-btn shop-export-btn"
             >
-              <Download className="w-4 h-4" />
+              <Download />
               <span>Export .TXT</span>
             </button>
 
             {checkedCount > 0 && (
               <button
                 onClick={handleClearChecked}
-                className="flex items-center space-x-1 px-3 py-2 rounded-xl bg-rose-500/10 text-rose-300 hover:bg-rose-500/20 text-xs font-medium border border-rose-500/20 transition-colors"
+                className="shop-action-btn shop-clear-checked-btn"
               >
-                <Trash2 className="w-3.5 h-3.5" />
+                <Trash2 />
                 <span>Clear Checked ({checkedCount})</span>
               </button>
             )}
@@ -164,18 +172,18 @@ export const ShoppingListView: React.FC<ShoppingListViewProps> = ({
 
         {/* Progress Bar */}
         {totalCount > 0 && (
-          <div className="space-y-1.5 pt-2 border-t border-slate-800">
-            <div className="flex justify-between text-xs font-medium text-slate-300">
-              <span className="flex items-center gap-1">
-                <Store className="w-3.5 h-3.5 text-amber-400" /> Store Trip Progress
+          <div className="shop-progress">
+            <div className="shop-progress-label-row">
+              <span className="shop-progress-label-left">
+                <Store /> Store Trip Progress
               </span>
               <span>
                 {checkedCount} of {totalCount} items ({progressPercent}%)
               </span>
             </div>
-            <div className="w-full h-2.5 bg-slate-950 rounded-full overflow-hidden border border-slate-800">
+            <div className="shop-progress-track">
               <div
-                className="h-full bg-gradient-to-r from-amber-500 to-emerald-500 transition-all duration-300"
+                className="shop-progress-fill"
                 style={{ width: `${progressPercent}%` }}
               />
             </div>
@@ -184,17 +192,17 @@ export const ShoppingListView: React.FC<ShoppingListViewProps> = ({
       </div>
 
       {/* Form: Add Custom Item */}
-      <div className="bg-slate-900/80 border border-slate-800 rounded-2xl p-4">
-        <h3 className="text-xs font-bold uppercase tracking-wider text-slate-400 mb-3 flex items-center gap-1.5">
-          <Plus className="w-4 h-4 text-orange-400" /> Add Custom Grocery Item
+      <div className="shop-form-card">
+        <h3 className="shop-form-heading">
+          <Plus /> Add Custom Grocery Item
         </h3>
-        <form onSubmit={handleAddCustomItem} className="grid grid-cols-1 sm:grid-cols-12 gap-2.5">
+        <form onSubmit={handleAddCustomItem} className="shop-form-grid">
           <input
             type="text"
             placeholder="Item name (e.g. Organic Avocados)"
             value={newItemName}
             onChange={(e) => setNewItemName(e.target.value)}
-            className="sm:col-span-5 bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-orange-500"
+            className="shop-form-input shop-form-input--name"
           />
 
           <input
@@ -204,7 +212,7 @@ export const ShoppingListView: React.FC<ShoppingListViewProps> = ({
             placeholder="Qty"
             value={newItemAmount || ""}
             onChange={(e) => setNewItemAmount(Number(e.target.value))}
-            className="sm:col-span-2 bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-orange-500"
+            className="shop-form-input shop-form-input--qty"
           />
 
           <input
@@ -212,13 +220,15 @@ export const ShoppingListView: React.FC<ShoppingListViewProps> = ({
             placeholder="Unit (bag, oz)"
             value={newItemUnit}
             onChange={(e) => setNewItemUnit(e.target.value)}
-            className="sm:col-span-2 bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-orange-500"
+            className="shop-form-input shop-form-input--unit"
           />
 
           <select
             value={newItemCategory}
-            onChange={(e) => setNewItemCategory(e.target.value as IngredientCategory)}
-            className="sm:col-span-2 bg-slate-950 border border-slate-800 rounded-xl px-2 py-2 text-xs text-slate-300 focus:outline-none focus:border-orange-500"
+            onChange={(e) =>
+              setNewItemCategory(e.target.value as IngredientCategory)
+            }
+            className="shop-form-select"
           >
             {CATEGORIES.map((cat) => (
               <option key={cat} value={cat}>
@@ -230,67 +240,73 @@ export const ShoppingListView: React.FC<ShoppingListViewProps> = ({
           <button
             type="submit"
             disabled={!newItemName.trim()}
-            className="sm:col-span-1 bg-orange-600 hover:bg-orange-500 text-white font-semibold rounded-xl px-3 py-2 text-xs flex items-center justify-center transition-colors disabled:opacity-50"
+            className="shop-form-submit-btn"
           >
-            <Plus className="w-4 h-4" />
+            <Plus />
           </button>
         </form>
       </div>
 
       {/* Department Categorized List */}
       {totalCount === 0 ? (
-        <div className="text-center py-12 bg-slate-900/40 border border-slate-800 rounded-2xl p-6">
-          <Package className="w-12 h-12 text-slate-600 mx-auto mb-3" />
-          <h3 className="text-base font-bold text-slate-200">Your Shopping List is Empty</h3>
-          <p className="text-xs text-slate-400 mt-1">
-            Export ingredients from recipe cards or add custom grocery items above!
+        <div className="shop-empty-state">
+          <Package className="shop-empty-icon" />
+          <h3 className="shop-empty-title">Your Shopping List is Empty</h3>
+          <p className="shop-empty-desc">
+            Export ingredients from recipe cards or add custom grocery items
+            above!
           </p>
         </div>
       ) : (
-        <div className="space-y-4">
+        <div className="shop-list">
           {CATEGORIES.map((category) => {
-            const catItems = shoppingList.filter((item) => item.category === category);
+            const catItems = shoppingList.filter(
+              (item) => item.category === category,
+            );
             if (!catItems.length) return null;
 
             return (
-              <div key={category} className="bg-slate-900 border border-slate-800 rounded-2xl p-4 space-y-2">
-                <div className="flex items-center justify-between pb-2 border-b border-slate-800/80">
-                  <h3 className="text-xs font-bold uppercase tracking-wider text-amber-400 flex items-center gap-1.5">
-                    📌 {category} <span className="text-slate-500 font-normal">({catItems.length})</span>
+              <div key={category} className="shop-category-card">
+                <div className="shop-category-header">
+                  <h3 className="shop-category-heading">
+                    📌 {category}{" "}
+                    <span className="shop-category-count">
+                      ({catItems.length})
+                    </span>
                   </h3>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                <div className="shop-items-grid">
                   {catItems.map((item) => (
                     <div
                       key={item.id}
                       onClick={() => toggleCheck(item.id)}
-                      className={`flex items-center justify-between p-3 rounded-xl border transition-all cursor-pointer ${
+                      className={`shop-item ${
                         item.isChecked
-                          ? "bg-slate-950/40 border-slate-800 text-slate-500 line-through"
-                          : "bg-slate-950 border-slate-800 text-slate-200 hover:border-slate-700"
+                          ? "shop-item--checked"
+                          : "shop-item--unchecked"
                       }`}
                     >
-                      <div className="flex items-center space-x-3">
-                        <button className="text-orange-400">
+                      <div className="shop-item-left">
+                        <button className="shop-item-check-btn">
                           {item.isChecked ? (
-                            <CheckCircle2 className="w-4 h-4 text-emerald-400" />
+                            <CheckCircle2 className="shop-item-check-icon--checked" />
                           ) : (
-                            <Circle className="w-4 h-4 text-slate-500" />
+                            <Circle className="shop-item-check-icon--unchecked" />
                           )}
                         </button>
                         <div>
-                          <span className="font-medium text-xs sm:text-sm">{item.name}</span>
+                          <span className="shop-item-name">{item.name}</span>
                           {item.recipeSource && (
-                            <span className="block text-[10px] text-slate-500">
+                            <span className="shop-item-source">
                               From: {item.recipeSource}
                             </span>
                           )}
                         </div>
                       </div>
 
-                      <div className="flex items-center space-x-2">
-                        <span className="text-xs font-bold px-2 py-0.5 rounded bg-slate-800 text-amber-300">
+                      <div className="shop-item-right">
+                        <span className="shop-item-amount">
                           {item.amount > 0 ? item.amount : ""} {item.unit}
                         </span>
                         <button
@@ -298,9 +314,9 @@ export const ShoppingListView: React.FC<ShoppingListViewProps> = ({
                             e.stopPropagation();
                             handleRemoveItem(item.id);
                           }}
-                          className="text-slate-500 hover:text-rose-400 p-1"
+                          className="shop-item-remove-btn"
                         >
-                          <Trash2 className="w-3.5 h-3.5" />
+                          <Trash2 />
                         </button>
                       </div>
                     </div>
@@ -310,11 +326,8 @@ export const ShoppingListView: React.FC<ShoppingListViewProps> = ({
             );
           })}
 
-          <div className="flex justify-end pt-2">
-            <button
-              onClick={handleClearAll}
-              className="text-xs text-rose-400 hover:text-rose-300 underline"
-            >
+          <div className="shop-clear-all-row">
+            <button onClick={handleClearAll} className="shop-clear-all-btn">
               Clear Entire Grocery List
             </button>
           </div>
