@@ -1,1 +1,343 @@
+/* src/index.css */
 @import "tailwindcss";
+@import "tailwindcss/preflight";
+@tailwind utilities;
+
+:root {
+  --color-primary: #fef08a; /* Amber-400 */
+  --color-primary-dark: #eab308; /* Amber-500 */
+  --color-secondary: #93c5fd; /* Indigo-300 */
+  --color-background: #020617; /* Slate-950 */
+  --color-background-alt: #0f172a; /* Slate-900 */
+  --color-background-hover: #1e293b; /* Slate-800 */
+  --color-border: #334155; /* Slate-700 */
+  --color-border-alt: #475569; /* Slate-700 */
+  --color-text-primary: #f8fafc; /* Slate-50 */
+  --color-text-secondary: #64748b; /* Slate-500 */
+  --color-text-hover: #ffffff; /* White */
+
+  /* Specific Tailwind-like shades */
+  --color-slate-100: #f1f5f9;
+  --color-slate-200: #e2e8f0;
+  --color-slate-300: #cbd5e1;
+  --color-slate-400: #94a3b8;
+  --color-slate-500: #64748b;
+  --color-slate-600: #475569;
+  --color-slate-700: #334155;
+  --color-slate-800: #1e293b;
+  --color-slate-900: #0f172a;
+  --color-slate-950: #020617;
+
+  --color-amber-200: #fde68a;
+  --color-amber-300: #fcd34d;
+  --color-amber-400: #fbbf24;
+  --color-amber-500: #f59e0b;
+  --color-amber-600: #d97706;
+
+  --color-orange-300: #fdba74;
+  --color-orange-400: #fb923c;
+  --color-orange-500: #f97316;
+  --color-orange-600: #ea580c;
+
+  --color-emerald-300: #6ee7b7;
+  --color-emerald-400: #34d399;
+
+  --color-rose-400: #fb7185;
+
+  --color-white: #ffffff;
+
+  /* Alpha-blended surfaces (can be overridden by themes) */
+  --controls-bg-alpha: rgba(15, 23, 42, 0.9); /* bg-slate-900/90 */
+  --icon-box-bg-alpha: rgba(249, 115, 22, 0.2); /* bg-orange-500/20 */
+  --icon-box-border-alpha: rgba(249, 115, 22, 0.3); /* border-orange-500/30 */
+  --tag-selected-bg-alpha: rgba(249, 115, 22, 0.2);
+  --tag-selected-border-alpha: rgba(249, 115, 22, 0.4);
+  --tag-unselected-bg-alpha: rgba(2, 6, 23, 0.6); /* bg-slate-950/60 */
+  --tag-unselected-border-alpha: rgba(
+    33,
+    44,
+    55,
+    0.8
+  ); /* Example: Slate-700/80 */
+
+  --empty-state-bg-alpha: rgba(15, 23, 42, 0.6); /* bg-slate-900/60 */
+  --empty-state-border-alpha: rgba(30, 41, 59, 0.8); /* border-slate-800/80 */
+  --prompt-btn-bg-alpha: rgba(2, 6, 23, 0.8); /* bg-slate-950/80 */
+  --prompt-btn-hover-border-alpha: rgba(
+    249,
+    115,
+    22,
+    0.4
+  ); /* Example: Orange-500/40 */
+
+  --user-bubble-header-color-alpha: rgba(
+    254,
+    215,
+    170,
+    0.8
+  ); /* text-orange-200/80 */
+  --fallback-card-border-alpha: rgba(
+    249,
+    115,
+    22,
+    0.25
+  ); /* Example: Orange-500/25 */
+  --fallback-card-bg-alpha: rgba(2, 6, 23, 0.9); /* Example: Slate-950/90 */
+  --fallback-card-hover-border-alpha: rgba(
+    251,
+    146,
+    60,
+    0.4
+  ); /* Example: Orange-400/40 */
+  --fallback-title-decoration-color: rgba(
+    249,
+    115,
+    22,
+    0.4
+  ); /* Example: Orange-500/40 */
+  --sub-macro-color-alpha: rgba(110, 231, 183, 0.9); /* text-emerald-300/90 */
+  --logo-shadow-color: rgba(249, 115, 22, 0.2); /* Example: Orange-500/20 */
+  --send-btn-shadow-color: rgba(234, 88, 12, 0.3); /* Example: Orange-600/30 */
+  --input-focus-border-alpha: rgba(
+    249,
+    115,
+    22,
+    0.5
+  ); /* Example: Orange-500/50 */
+  --scrollbar-thumb-color: rgba(51, 65, 85, 0.8); /* Example: Slate-700/80 */
+
+  /* Gradients */
+  --gradient-empty-icon: linear-gradient(
+    to top right,
+    var(--color-amber-500),
+    var(--color-orange-500),
+    var(--color-emerald-400)
+  );
+  --gradient-user-bubble: linear-gradient(
+    to right,
+    var(--color-orange-600),
+    var(--color-amber-600)
+  );
+  --gradient-send-btn: linear-gradient(
+    to right,
+    var(--color-orange-600),
+    var(--color-amber-600)
+  );
+
+  /* Spacing */
+  --spacing-0_5: 0.125rem;
+  --spacing-1: 0.25rem;
+  --spacing-1_5: 0.375rem;
+  --spacing-2: 0.5rem;
+  --spacing-2_5: 0.625rem;
+  --spacing-3: 0.75rem;
+  --spacing-4: 1rem;
+  --spacing-6: 1.5rem;
+
+  /* Radii */
+  --border-radius-lg: 0.5rem;
+  --border-radius-xl: 0.75rem;
+  --border-radius-2xl: 1rem;
+  --border-radius-full: 9999px;
+
+  /* Typography */
+  --font-size-2xs: 10px; /* text-[10px] */
+  --font-size-xxs: 11px; /* text-[11px] */
+  --font-size-xs: 0.75rem; /* text-xs */
+  --font-size-sm: 0.875rem; /* text-sm */
+  --font-size-xl: 1.25rem; /* text-xl */
+  --tracking-wider: 0.05em;
+
+  /* Shadows */
+  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.2), 0 2px 4px -2px rgb(0 0 0 / 0.2);
+  --shadow-lg:
+    0 10px 15px -3px rgb(0 0 0 / 0.3), 0 4px 6px -4px rgb(0 0 0 / 0.3);
+  --shadow-xl:
+    0 20px 25px -5px rgb(0 0 0 / 0.3), 0 8px 10px -6px rgb(0 0 0 / 0.3);
+
+  /* Transitions */
+  --transition-all: all 0.15s ease-in-out;
+}
+
+/* Default Light Theme */
+html.light {
+  /* --- Base Colors --- */
+  --color-primary: #f97316; /* Orange-500 */
+  --color-primary-dark: #ea580c; /* Orange-600 */
+  --color-secondary: #6366f1; /* Indigo-500 */
+  --color-background: #ffffff; /* White */
+  --color-background-alt: #f8fafc; /* Slate-50 - Lighter background for alt */
+  --color-background-hover: #e2e8f0; /* Slate-200 - Lighter hover */
+  --color-border: #e2e8f0; /* Slate-200 - Light border */
+  --color-border-alt: #cbd5e1; /* Slate-300 - Light border alt */
+  --color-text-primary: #0f172a; /* Slate-900 - Dark text */
+  --color-text-secondary: #64748b; /* Slate-500 - Medium gray text */
+  --color-text-hover: #020617; /* Slate-950 - Very dark text hover */
+
+  /* --- Alpha-blended surfaces --- */
+  /* Light theme specific alpha blends */
+  --controls-bg-alpha: rgba(
+    255,
+    255,
+    255,
+    0.9
+  ); /* White background, slightly transparent */
+  --icon-box-bg-alpha: rgba(249, 115, 22, 0.2); /* Orange-500/20 */
+  --icon-box-border-alpha: rgba(249, 115, 22, 0.3); /* Orange-500/30 */
+  --tag-selected-bg-alpha: rgba(249, 115, 22, 0.2); /* Orange-500/20 */
+  --tag-selected-border-alpha: rgba(249, 115, 22, 0.4); /* Orange-500/40 */
+  --tag-unselected-bg-alpha: rgba(248, 250, 252, 0.6); /* Slate-50/60 */
+  --tag-unselected-border-alpha: rgba(226, 232, 240, 0.8); /* Slate-200/80 */
+
+  --empty-state-bg-alpha: rgba(248, 250, 252, 0.6); /* Slate-50/60 */
+  --empty-state-border-alpha: rgba(226, 232, 240, 0.8); /* Slate-200/80 */
+  --prompt-btn-bg-alpha: rgba(248, 250, 252, 0.8); /* Slate-50/80 */
+  --prompt-btn-hover-border-alpha: rgba(249, 115, 22, 0.4); /* Orange-500/40 */
+
+  --user-bubble-header-color-alpha: rgba(
+    254,
+    215,
+    170,
+    0.8
+  ); /* text-orange-200/80 */
+  --fallback-card-border-alpha: rgba(249, 115, 22, 0.25); /* Orange-500/25 */
+  --fallback-card-bg-alpha: rgba(248, 250, 252, 0.9); /* Slate-50/90 */
+  --fallback-card-hover-border-alpha: rgba(
+    251,
+    146,
+    60,
+    0.4
+  ); /* Orange-400/40 */
+  --fallback-title-decoration-color: rgba(
+    249,
+    115,
+    22,
+    0.4
+  ); /* Orange-500/40 */
+  --sub-macro-color-alpha: rgba(52, 211, 153, 0.9); /* text-emerald-400/90 */
+  --logo-shadow-color: rgba(249, 115, 22, 0.2); /* Orange-500/20 */
+  --send-btn-shadow-color: rgba(234, 88, 12, 0.3); /* Orange-600/30 */
+  --input-focus-border-alpha: rgba(249, 115, 22, 0.5); /* Orange-500/50 */
+  --scrollbar-thumb-color: rgba(201, 203, 206, 0.8); /* Slate-300/80 */
+
+  /* Gradients for light theme */
+  --gradient-empty-icon: linear-gradient(
+    to top right,
+    var(--color-orange-500),
+    var(--color-amber-500),
+    var(--color-emerald-400)
+  );
+  --gradient-user-bubble: linear-gradient(
+    to right,
+    var(--color-orange-500),
+    var(--color-amber-500)
+  );
+  --gradient-send-btn: linear-gradient(
+    to right,
+    var(--color-orange-500),
+    var(--color-amber-500)
+  );
+}
+
+/* Dark Theme Overrides */
+html.dark {
+  /* Base colors are already set to dark defaults in :root */
+
+  /* Dark theme specific alpha blends */
+  --controls-bg-alpha: rgba(15, 23, 42, 0.9); /* bg-slate-900/90 */
+  --icon-box-bg-alpha: rgba(245, 158, 11, 0.2); /* bg-amber-500/20 */
+  --icon-box-border-alpha: rgba(245, 158, 11, 0.3); /* border-amber-500/30 */
+  --tag-selected-bg-alpha: rgba(245, 158, 11, 0.2);
+  --tag-selected-border-alpha: rgba(245, 158, 11, 0.4);
+  --tag-unselected-bg-alpha: rgba(2, 6, 23, 0.6); /* bg-slate-950/60 */
+  --tag-unselected-border-alpha: rgba(51, 65, 85, 0.8); /* Slate-700/80 */
+
+  --empty-state-bg-alpha: rgba(15, 23, 42, 0.6); /* bg-slate-900/60 */
+  --empty-state-border-alpha: rgba(30, 41, 59, 0.8); /* border-slate-800/80 */
+  --prompt-btn-bg-alpha: rgba(2, 6, 23, 0.8); /* bg-slate-950/80 */
+  --prompt-btn-hover-border-alpha: rgba(
+    245,
+    158,
+    11,
+    0.4
+  ); /* Example: Amber-500/40 */
+
+  --user-bubble-header-color-alpha: rgba(
+    254,
+    215,
+    170,
+    0.8
+  ); /* text-orange-200/80 */
+  --fallback-card-border-alpha: rgba(
+    245,
+    158,
+    11,
+    0.25
+  ); /* Example: Amber-500/25 */
+  --fallback-card-bg-alpha: rgba(2, 6, 23, 0.9); /* Example: Slate-950/90 */
+  --fallback-card-hover-border-alpha: rgba(
+    251,
+    176,
+    64,
+    0.4
+  ); /* Example: Amber-400/40 */
+  --fallback-title-decoration-color: rgba(
+    245,
+    158,
+    11,
+    0.4
+  ); /* Example: Amber-500/40 */
+  --sub-macro-color-alpha: rgba(110, 231, 183, 0.9); /* text-emerald-300/90 */
+  --logo-shadow-color: rgba(245, 158, 11, 0.2); /* Example: Amber-500/20 */
+  --send-btn-shadow-color: rgba(217, 119, 6, 0.3); /* Example: Amber-600/30 */
+  --input-focus-border-alpha: rgba(
+    245,
+    158,
+    11,
+    0.5
+  ); /* Example: Amber-500/50 */
+  --scrollbar-thumb-color: rgba(51, 65, 85, 0.8); /* Example: Slate-700/80 */
+
+  /* Gradients for dark theme */
+  --gradient-empty-icon: linear-gradient(
+    to top right,
+    var(--color-amber-500),
+    var(--color-orange-500),
+    var(--color-emerald-400)
+  );
+  --gradient-user-bubble: linear-gradient(
+    to right,
+    var(--color-orange-600),
+    var(--color-amber-600)
+  );
+  --gradient-send-btn: linear-gradient(
+    to right,
+    var(--color-orange-600),
+    var(--color-amber-600)
+  );
+}
+
+.backdrop-blur-md {
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+}
+
+html {
+  background-color: var(--color-background);
+  color: var(--color-text-primary);
+  transition:
+    background-color 0.3s ease,
+    color 0.3s ease;
+}
+
+body {
+  font-family: "Inter", sans-serif;
+  transition:
+    background-color 0.3s ease,
+    color 0.3s ease;
+}
+
+main {
+  background-color: var(--color-background);
+  color: var(--color-text-primary);
+}

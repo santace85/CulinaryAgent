@@ -23,8 +23,11 @@ import {
   saveStoredTimers,
 } from "./utils/storage";
 import { STARTER_RECIPES } from "./data/mockRecipes";
+import { useTheme } from "./context/ThemeContext";
 
 export default function App() {
+  const { theme, toggleTheme, darkMode } = useTheme(); // Consume theme context
+
   const [activeTab, setActiveTab] = useState<
     "agent" | "favorites" | "shopping" | "substitutions"
   >("agent");
@@ -49,7 +52,6 @@ export default function App() {
     null,
   );
   const [substitutionQuery, setSubstitutionQuery] = useState("");
-  const [darkMode, setDarkMode] = useState(true);
 
   // Initial Agent Messages
   const [messages, setMessages] = useState<AgentMessage[]>([
@@ -130,9 +132,7 @@ export default function App() {
   };
 
   return (
-    <div
-      className={`min-h-screen ${darkMode ? "bg-slate-950 text-slate-100" : "bg-slate-50 text-slate-900"} font-sans antialiased`}
-    >
+    <div className={`font-sans antialiased`}>
       {/* Navbar Header */}
       <NavbarHeader
         activeTab={activeTab}
@@ -142,7 +142,7 @@ export default function App() {
         activeTimersCount={timers.filter((t) => t.isRunning).length}
         onOpenTimers={() => setIsTimersOpen(true)}
         darkMode={darkMode}
-        setDarkMode={setDarkMode}
+        setDarkMode={toggleTheme}
       />
 
       {/* Main Tab View Router */}
