@@ -1,16 +1,20 @@
-name: Security
+name: Deploy to GitHub Pages
 
 on:
   push:
-    branches:
-      - main
-  pull_request:
-  schedule:
-    - cron: "0 3 * * 1"
-  workflow_dispatch:
+    branches: ["main"] # Triggers on pushes to the main branch
+  workflow_dispatch: # Allows you to trigger the workflow manually
 
+# Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
 permissions:
   contents: read
+  pages: write
+  id-token: write
+
+# Allow only one concurrent deployment, skipping runs queued between the run in-progress and latest queued.
+concurrency:
+  group: "pages"
+  cancel-in-progress: true
 
 jobs:
   secrets:
@@ -90,6 +94,37 @@ jobs:
       - name: Build
         run: npm run build
 
-        # This block injects the GitHub data as local process.env variables
+  build-and-deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: "npm" # Can be 'yarn' or 'pnpm' depending on your project
+
+      - name: Install dependencies
+        run: npm ci # Ensures a clean, predictable install
+
+      - name: Build project
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+        run: npm run build # Compiles TS and bundles production assets
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: "./dist"
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
