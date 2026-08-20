@@ -149,7 +149,7 @@ export const NavbarHeader: React.FC<NavbarHeaderProps> = ({
               )}
             </button>
 
-            <button
+            {/* <button
               id="btn-toggle-theme"
               onClick={() => setDarkMode((prev) => !prev)}
               className="p-2 rounded-xl bg-slate-800 border border-slate-700 text-slate-300 hover:text-white transition-colors"
@@ -160,7 +160,7 @@ export const NavbarHeader: React.FC<NavbarHeaderProps> = ({
               ) : (
                 <Moon className="w-4 h-4 text-indigo-300" />
               )}
-            </button>
+            </button> */}
           </div>
         </div>
       </div>
