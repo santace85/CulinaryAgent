@@ -4,12 +4,38 @@ import { createServer as createViteServer } from "vite";
 import { GoogleGenAI, Type } from "@google/genai";
 import dotenv from "dotenv";
 import { POPULAR_FALLBACK_RECIPES } from "./src/data/fallbackRecipes";
+import cors from "cors"; // Import the cors package
 
 dotenv.config();
 
 const app = express();
-const PORT = parseInt(process.env.PORT || "3000", 10); // Use env var for port
-const HOSTNAME = process.env.HOSTNAME; //"0.0.0.0"; // Listen on all interfaces for Render
+const PORT = parseInt(process.env.PORT || "3000", 10);
+const HOSTNAME = process.env.HOSTNAME || "0.0.0.0";
+
+const corsOptions = {
+  origin: (
+    origin: string | undefined,
+    callback: (error: Error | null, success?: boolean) => void,
+  ) => {
+    // Allow requests from localhost during development
+    const allowedOrigins = [
+      "http://localhost:3000",
+      "https://culinaryagent.onrender.com",
+      "https://github.io",
+    ];
+
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error("Not allowed by CORS"));
+    }
+  },
+  methods: "GET,POST", // Specify allowed HTTP methods
+  credentials: true, // Allow cookies or authorization headers to be sent
+};
+
+// Enable CORS for all routes, or specific ones if you prefer
+app.use(cors(corsOptions));
 
 app.use(express.json({ limit: "5mb" }));
 
