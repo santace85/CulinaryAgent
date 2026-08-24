@@ -115,6 +115,7 @@ jobs:
       - name: Build project
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          API_BASE_URL: ${{ secrets.API_BASE_URL }}
         run: npm run build # Compiles TS and bundles production assets
 
       - name: Setup Pages

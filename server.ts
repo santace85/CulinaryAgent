@@ -9,7 +9,7 @@ dotenv.config();
 
 const app = express();
 const PORT = parseInt(process.env.PORT || "3000", 10); // Use env var for port
-const HOSTNAME = "0.0.0.0"; // Listen on all interfaces for Render
+const HOSTNAME = process.env.HOSTNAME; //"0.0.0.0"; // Listen on all interfaces for Render
 
 app.use(express.json({ limit: "5mb" }));
 
