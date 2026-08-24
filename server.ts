@@ -8,8 +8,8 @@ import { POPULAR_FALLBACK_RECIPES } from "./src/data/fallbackRecipes";
 dotenv.config();
 
 const app = express();
-const PORT = 3000;
-const HOSTNAME = "localhost";
+const PORT = parseInt(process.env.PORT || "3000", 10); // Use env var for port
+const HOSTNAME = process.env.HOSTNAME || "0.0.0.0"; // Listen on all interfaces for Render
 
 app.use(express.json({ limit: "5mb" }));
 
@@ -673,6 +673,7 @@ async function startServer() {
   }
 
   app.listen(PORT, HOSTNAME, () => {
+    // Use the new PORT and HOSTNAME
     console.log(`CulinaryAgent AI Server listening on ${HOSTNAME}:${PORT}`);
   });
 }
