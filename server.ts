@@ -21,7 +21,7 @@ const corsOptions = {
     const allowedOrigins = [
       "http://localhost:3000",
       "https://culinaryagent.onrender.com",
-      "https://github.io",
+      "https://santace85.github.io",
     ];
 
     if (!origin || allowedOrigins.includes(origin)) {
