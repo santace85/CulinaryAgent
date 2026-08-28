@@ -86,7 +86,7 @@ app.get("/api/health", (_req, res) => {
 // AI Recipe Generation Endpoint
 app.post("/api/recipe", rateLimitMiddleware, async (req, res) => {
   try {
-    const { prompt, dietary, servings, cookTimeMax } = req.body;
+    const { prompt, dietary, servings, cookTimeMax, history } = req.body;
 
     if (!prompt || typeof prompt !== "string") {
       return res.status(400).json({ error: "A recipe prompt is required." });
@@ -106,13 +106,16 @@ app.post("/api/recipe", rateLimitMiddleware, async (req, res) => {
     const systemInstruction = `You are CulinaryAgent AI, a world-class professional chef and culinary scientist.
 Your task is to generate complete, structured, highly accurate cooking recipes formatted strictly as JSON.
 When given a user query, generate a detailed recipe with:
-1. Precise metric or standard measurements for every ingredient.
-2. Categorized ingredients ('Produce', 'Dairy & Eggs', 'Meat & Seafood', 'Pantry & Spices', 'Bakery', 'Other').
-3. Step-by-step clear instructions with explicit time durations in seconds where applicable (e.g., 600 for 10 mins).
-4. Practical ingredient substitutions for common allergies or missing pantry items, including a concise net macro delta for each swap.
-5. Chef tips, calorie counts, compact nutrition metrics per serving (protein, carbs, fat, fiber), and a distinct drink pairing suggestion.`;
+1. A conversational 'agentIntro' (1-2 sentences) that explains why this recipe is a great choice based on their request (e.g., "This hearty pasta is perfect for a cozy winter evening.").
+2. Precise metric or standard measurements for every ingredient.
+3. Categorized ingredients ('Produce', 'Dairy & Eggs', 'Meat & Seafood', 'Pantry & Spices', 'Bakery', 'Other').
+4. Step-by-step clear instructions with explicit time durations in seconds where applicable (e.g., 600 for 10 mins).
+5. Practical ingredient substitutions for common allergies or missing pantry items, including a concise net macro delta for each swap.
+6. Chef tips, calorie counts, compact nutrition metrics per serving (protein, carbs, fat, fiber), and a distinct drink pairing suggestion.`;
 
-    const userPrompt = `Generate a cooking recipe for: "${prompt}".
+    const userPrompt = `
+${history ? `Context of previous conversation: ${JSON.stringify(history)}` : ""}
+Generate a cooking recipe for: "${prompt}".
 ${dietary && dietary.length ? `Dietary preferences/restrictions: ${dietary.join(", ")}.` : ""}
 ${servings ? `Target servings: ${servings}.` : ""}
 ${cookTimeMax ? `Maximum cook time limit: ${cookTimeMax} minutes.` : ""}`;
@@ -127,8 +130,10 @@ ${cookTimeMax ? `Maximum cook time limit: ${cookTimeMax} minutes.` : ""}`;
         responseSchema: {
           type: Type.OBJECT,
           properties: {
+            agentIntro: { type: Type.STRING },
             id: { type: Type.STRING },
             title: { type: Type.STRING },
+
             summary: { type: Type.STRING },
             prepTimeMinutes: { type: Type.INTEGER },
             cookTimeMinutes: { type: Type.INTEGER },

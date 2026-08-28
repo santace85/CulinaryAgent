@@ -6,10 +6,11 @@ export interface GenerateRecipeOptions {
   dietary?: string[];
   servings?: number;
   cookTimeMax?: number;
+  history?: { userPrompt: string; recipeTitle?: string }[];
 }
 
 export interface FetchRecipeResponse {
-  recipe?: Recipe;
+  recipe?: Recipe & { agentIntro?: string };
   isFallback: boolean;
   error?: string;
   recommendedRecipes?: Recipe[];
