@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { CookingTimer } from "../types";
-import { playTimerCompletionChime, playTickSound } from "../utils/audio";
+import { playTimerCompletionChime } from "../utils/audio";
 import {
   Timer as TimerIcon,
   Play,
@@ -34,17 +34,30 @@ export const TimersModal: React.FC<TimersModalProps> = ({
     const interval = setInterval(() => {
       setTimers((prevTimers) => {
         let hasChanged = false;
+
         const updated = prevTimers.map((timer) => {
-          if (timer.isRunning && timer.remainingSeconds > 0) {
-            hasChanged = true;
-            const nextSec = timer.remainingSeconds - 1;
-            if (nextSec === 0) {
-              playTimerCompletionChime();
-            }
-            return { ...timer, remainingSeconds: nextSec, isRunning: nextSec > 0 };
+          // Don't do anything to paused
+          if (!timer.isRunning) {
+            return timer;
           }
-          return timer;
+
+          hasChanged = true;
+
+          const nextSec = timer.remainingSeconds - 1;
+
+          // Timer has finished.
+          // Play the sound.
+          if (nextSec <= 0) {
+            playTimerCompletionChime();
+          }
+
+          return {
+            ...timer,
+            remainingSeconds: nextSec,
+            isRunning: true,
+          };
         });
+
         return hasChanged ? updated : prevTimers;
       });
     }, 1000);
@@ -62,20 +75,55 @@ export const TimersModal: React.FC<TimersModalProps> = ({
       remainingSeconds: totalSec,
       isRunning: true,
     };
+
     setTimers((prev) => [newTimer, ...prev]);
   };
 
   const handleTogglePlay = (id: string) => {
     setTimers((prev) =>
-      prev.map((t) => (t.id === id ? { ...t, isRunning: !t.isRunning } : t))
+      prev.map((t) => {
+        if (t.id !== id) return t;
+
+        // If timer has finished, don't use Play to restart it.
+        // User should use the Repeat button instead.
+        if (t.remainingSeconds === 0) {
+          return t;
+        }
+
+        return {
+          ...t,
+          isRunning: !t.isRunning,
+        };
+      }),
+    );
+  };
+
+  // Manually restart a completed timer
+  const handleRepeat = (id: string) => {
+    setTimers((prev) =>
+      prev.map((t) =>
+        t.id === id
+          ? {
+              ...t,
+              remainingSeconds: t.totalSeconds,
+              isRunning: true,
+            }
+          : t,
+      ),
     );
   };
 
   const handleReset = (id: string) => {
     setTimers((prev) =>
       prev.map((t) =>
-        t.id === id ? { ...t, remainingSeconds: t.totalSeconds, isRunning: false } : t
-      )
+        t.id === id
+          ? {
+              ...t,
+              remainingSeconds: t.totalSeconds,
+              isRunning: false,
+            }
+          : t,
+      ),
     );
   };
 
@@ -88,8 +136,8 @@ export const TimersModal: React.FC<TimersModalProps> = ({
               remainingSeconds: t.remainingSeconds + mins * 60,
               totalSeconds: t.totalSeconds + mins * 60,
             }
-          : t
-      )
+          : t,
+      ),
     );
   };
 
@@ -100,6 +148,7 @@ export const TimersModal: React.FC<TimersModalProps> = ({
   const formatTime = (secs: number) => {
     const m = Math.floor(secs / 60);
     const s = secs % 60;
+
     return `${m.toString().padStart(2, "0")}:${s.toString().padStart(2, "0")}`;
   };
 
@@ -112,6 +161,7 @@ export const TimersModal: React.FC<TimersModalProps> = ({
             <div className="w-10 h-10 rounded-xl bg-amber-500/20 border border-amber-500/30 text-amber-400 flex items-center justify-center">
               <TimerIcon className="w-5 h-5 animate-pulse" />
             </div>
+
             <div>
               <h2 className="text-lg font-bold text-white flex items-center gap-2">
                 Precision Kitchen Timers
@@ -119,7 +169,10 @@ export const TimersModal: React.FC<TimersModalProps> = ({
                   {timers.length} Active
                 </span>
               </h2>
-              <p className="text-xs text-slate-400">Simultaneous cooking timers with audio alerts</p>
+
+              <p className="text-xs text-slate-400">
+                Simultaneous cooking timers with audio alerts
+              </p>
             </div>
           </div>
 
@@ -134,8 +187,10 @@ export const TimersModal: React.FC<TimersModalProps> = ({
         {/* Quick Add Preset Buttons */}
         <div className="space-y-2">
           <label className="text-xs font-semibold uppercase tracking-wider text-slate-400 flex items-center gap-1">
-            <Sparkles className="w-3.5 h-3.5 text-amber-400" /> Quick Add Timer
+            <Sparkles className="w-3.5 h-3.5 text-amber-400" />
+            Quick Add Timer
           </label>
+
           <div className="flex flex-wrap gap-2">
             {[1, 3, 5, 8, 10, 15, 20, 30].map((m) => (
               <button
@@ -153,8 +208,13 @@ export const TimersModal: React.FC<TimersModalProps> = ({
         <form
           onSubmit={(e) => {
             e.preventDefault();
+
             if (customMinutes > 0) {
-              handleAddTimer(customLabel.trim() || `${customMinutes} Min Timer`, customMinutes * 60);
+              handleAddTimer(
+                customLabel.trim() || `${customMinutes} Min Timer`,
+                customMinutes * 60,
+              );
+
               setCustomLabel("");
             }
           }}
@@ -167,6 +227,7 @@ export const TimersModal: React.FC<TimersModalProps> = ({
             onChange={(e) => setCustomLabel(e.target.value)}
             className="sm:col-span-6 bg-slate-900 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-amber-500"
           />
+
           <input
             type="number"
             min="1"
@@ -175,6 +236,7 @@ export const TimersModal: React.FC<TimersModalProps> = ({
             onChange={(e) => setCustomMinutes(Number(e.target.value))}
             className="sm:col-span-3 bg-slate-900 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-amber-500"
           />
+
           <button
             type="submit"
             className="sm:col-span-3 bg-gradient-to-r from-amber-600 to-orange-600 text-white font-semibold text-xs rounded-xl px-3 py-2 flex items-center justify-center space-x-1 hover:brightness-110"
@@ -188,14 +250,21 @@ export const TimersModal: React.FC<TimersModalProps> = ({
         <div className="space-y-3">
           {timers.length === 0 ? (
             <div className="text-center py-8 text-slate-500 text-xs bg-slate-950/40 rounded-2xl border border-slate-800/80 p-4">
-              No active timers running. Click a step timer in any recipe or add one above!
+              No active timers running. Click a step timer in any recipe or add
+              one above!
             </div>
           ) : (
             timers.map((timer) => {
               const percent =
                 timer.totalSeconds > 0
-                  ? Math.max(0, Math.round((timer.remainingSeconds / timer.totalSeconds) * 100))
+                  ? Math.max(
+                      0,
+                      Math.round(
+                        (timer.remainingSeconds / timer.totalSeconds) * 100,
+                      ),
+                    )
                   : 0;
+
               const isFinished = timer.remainingSeconds === 0;
 
               return (
@@ -205,19 +274,33 @@ export const TimersModal: React.FC<TimersModalProps> = ({
                     isFinished
                       ? "bg-rose-500/10 border-rose-500/40 animate-pulse"
                       : timer.isRunning
-                      ? "bg-slate-950 border-amber-500/30 shadow-md"
-                      : "bg-slate-950/60 border-slate-800"
+                        ? "bg-slate-950 border-amber-500/30 shadow-md"
+                        : "bg-slate-950/60 border-slate-800"
                   }`}
                 >
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                    {/* Timer Info */}
                     <div className="space-y-1">
                       <div className="flex items-center space-x-2">
-                        {isFinished && <BellRing className="w-4 h-4 text-rose-400 animate-bounce" />}
-                        <span className="font-bold text-sm text-white">{timer.label}</span>
+                        {isFinished && (
+                          <BellRing className="w-4 h-4 text-rose-400 animate-bounce" />
+                        )}
+
+                        <span className="font-bold text-sm text-white">
+                          {timer.label}
+                        </span>
+
+                        {isFinished && (
+                          <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-rose-500/20 text-rose-300 border border-rose-500/30">
+                            TIME'S UP
+                          </span>
+                        )}
                       </div>
+
                       {timer.recipeTitle && (
                         <div className="text-[11px] text-slate-400">
-                          Recipe: {timer.recipeTitle} {timer.stepNumber ? `(Step ${timer.stepNumber})` : ""}
+                          Recipe: {timer.recipeTitle}{" "}
+                          {timer.stepNumber ? `(Step ${timer.stepNumber})` : ""}
                         </div>
                       )}
                     </div>
@@ -226,7 +309,11 @@ export const TimersModal: React.FC<TimersModalProps> = ({
                     <div className="flex items-center space-x-3">
                       <span
                         className={`font-mono text-2xl font-bold tracking-wider ${
-                          isFinished ? "text-rose-400" : timer.isRunning ? "text-amber-300" : "text-slate-400"
+                          isFinished
+                            ? "text-rose-400"
+                            : timer.isRunning
+                              ? "text-amber-300"
+                              : "text-slate-400"
                         }`}
                       >
                         {formatTime(timer.remainingSeconds)}
@@ -234,13 +321,29 @@ export const TimersModal: React.FC<TimersModalProps> = ({
 
                       {/* Timer Controls */}
                       <div className="flex items-center space-x-1">
-                        <button
-                          onClick={() => handleTogglePlay(timer.id)}
-                          className="p-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200"
-                          title={timer.isRunning ? "Pause" : "Start"}
-                        >
-                          {timer.isRunning ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4" />}
-                        </button>
+                        {/* Repeat button appears ONLY when timer is finished */}
+                        {isFinished ? (
+                          <button
+                            onClick={() => handleRepeat(timer.id)}
+                            className="px-3 py-2 rounded-xl bg-amber-600 hover:bg-amber-500 text-white text-xs font-semibold flex items-center gap-1.5"
+                            title="Repeat Timer"
+                          >
+                            <RotateCcw className="w-4 h-4" />
+                            Repeat
+                          </button>
+                        ) : (
+                          <button
+                            onClick={() => handleTogglePlay(timer.id)}
+                            className="p-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200"
+                            title={timer.isRunning ? "Pause" : "Start"}
+                          >
+                            {timer.isRunning ? (
+                              <Pause className="w-4 h-4" />
+                            ) : (
+                              <Play className="w-4 h-4" />
+                            )}
+                          </button>
+                        )}
 
                         <button
                           onClick={() => handleAddMinutes(timer.id, 1)}
@@ -273,9 +376,13 @@ export const TimersModal: React.FC<TimersModalProps> = ({
                   <div className="w-full h-1.5 bg-slate-900 rounded-full overflow-hidden mt-3 border border-slate-800">
                     <div
                       className={`h-full transition-all duration-1000 ${
-                        isFinished ? "bg-rose-500" : "bg-gradient-to-r from-orange-500 to-amber-400"
+                        isFinished
+                          ? "bg-rose-500"
+                          : "bg-gradient-to-r from-orange-500 to-amber-400"
                       }`}
-                      style={{ width: `${percent}%` }}
+                      style={{
+                        width: `${percent}%`,
+                      }}
                     />
                   </div>
                 </div>
