@@ -71,11 +71,25 @@ export const AgentChatWindow: React.FC<AgentChatWindowProps> = ({
   const [selectedDietary, setSelectedDietary] = useState<string[]>([]);
   const [targetServings, setTargetServings] = useState<number>(4);
   const [isLoading, setIsLoading] = useState(false);
+  const [history, setHistory] = useState<
+    { userPrompt: string; recipeTitle?: string }[]
+  >([]);
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const chatAreaRef = useRef<HTMLDivElement>(null);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
+
+  const scrollToNewRecipe = (id: string) => {
+    // Wait for DOM update
+    setTimeout(() => {
+      const element = document.getElementById(id);
+      if (element && chatAreaRef.current) {
+        element.scrollIntoView({ behavior: "smooth", block: "start" });
+      }
+    }, 100);
   };
 
   useEffect(() => {
@@ -145,23 +159,27 @@ export const AgentChatWindow: React.FC<AgentChatWindowProps> = ({
           ),
         );
       } else {
-        // Fetch AI Recipe
+        // Fetch AI Recipe with History
         const { recipe, isFallback, error, recommendedRecipes } =
           await fetchAIRecipe({
             prompt: promptToUse,
             dietary: selectedDietary,
             servings: targetServings,
+            history: history.slice(-5), // Keep last 3 interactions for context
           });
 
         const agentText = isFallback
           ? error || "Unable to reach the AI service right now."
-          : `Here is your custom AI Agent created recipe for **${recipe?.title}**, complete with interactive ingredient checkboxes, step-by-step timers, and substitutions:`;
+          : recipe?.agentIntro ||
+            `Here is your custom AI Agent created recipe for **${recipe?.title}**.`;
+
+        const agentMsgId = "msg_agent_" + Date.now();
 
         setMessages((prev) =>
           prev.map((msg) =>
             msg.id === agentThinkingId
               ? {
-                  id: "msg_agent_" + Date.now(),
+                  id: agentMsgId,
                   sender: "agent",
                   text: agentText,
                   timestamp: new Date().toLocaleTimeString([], {
@@ -177,6 +195,14 @@ export const AgentChatWindow: React.FC<AgentChatWindowProps> = ({
               : msg,
           ),
         );
+
+        if (!isFallback && recipe) {
+          setHistory((prev) => [
+            ...prev,
+            { userPrompt: promptToUse, recipeTitle: recipe.title },
+          ]);
+          scrollToNewRecipe(agentMsgId);
+        }
       }
     } catch (err: any) {
       console.error("Agent error:", err);
@@ -204,6 +230,7 @@ export const AgentChatWindow: React.FC<AgentChatWindowProps> = ({
   const handleClearChat = () => {
     if (confirm("Clear conversation history?")) {
       setMessages([]);
+      setHistory([]);
     }
   };
 
@@ -316,7 +343,7 @@ export const AgentChatWindow: React.FC<AgentChatWindowProps> = ({
       </div>
 
       {/* Messages Scroll Area */}
-      <div className="chat-messages chat-scrollbar">
+      <div ref={chatAreaRef} className="chat-messages chat-scrollbar">
         {messages.length === 0 ? (
           <div className="chat-empty-state">
             <div className="chat-empty-icon-box">
@@ -344,7 +371,7 @@ export const AgentChatWindow: React.FC<AgentChatWindowProps> = ({
           </div>
         ) : (
           messages.map((msg) => (
-            <div key={msg.id} className="chat-message">
+            <div key={msg.id} id={msg.id} className="chat-message">
               {msg.sender === "user" ? (
                 <div className="chat-user-row">
                   <div className="chat-user-bubble">

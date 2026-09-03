@@ -6,10 +6,11 @@ export interface GenerateRecipeOptions {
   dietary?: string[];
   servings?: number;
   cookTimeMax?: number;
+  history?: { userPrompt: string; recipeTitle?: string }[];
 }
 
 export interface FetchRecipeResponse {
-  recipe?: Recipe;
+  recipe?: Recipe & { agentIntro?: string };
   isFallback: boolean;
   error?: string;
   recommendedRecipes?: Recipe[];
@@ -40,11 +41,14 @@ function getFriendlyError(message: string, status?: number) {
   return "Unable to reach the AI service right now. Please try again shortly.";
 }
 
+const BASE_URL = import.meta.env.VITE_API_BASE_URL; // <-- Your Render API URL
+
 export async function fetchAIRecipe(
   options: GenerateRecipeOptions,
 ): Promise<FetchRecipeResponse> {
   try {
-    const response = await fetch("/api/recipe", {
+    // Construct the full URL using the hardcoded BASE_URL
+    const response = await fetch(`${BASE_URL}/api/recipe`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -87,7 +91,7 @@ export async function fetchAISubstitutions(
   recipeContext?: string,
 ): Promise<Substitution[]> {
   try {
-    const response = await fetch("/api/substitute", {
+    const response = await fetch(`${BASE_URL}/api/substitute`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

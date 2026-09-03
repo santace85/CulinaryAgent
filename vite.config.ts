@@ -6,6 +6,7 @@ import { defineConfig } from "vite";
 export default defineConfig(() => {
   return {
     plugins: [react(), tailwindcss()],
+    envDir: "./",
     resolve: {
       alias: {
         "@": path.resolve(__dirname, "."),
@@ -15,5 +16,6 @@ export default defineConfig(() => {
       hmr: process.env.DISABLE_HMR !== "true",
       watch: process.env.DISABLE_HMR === "true" ? null : {},
     },
+    base: "/CulinaryAgent/",
   };
 });
