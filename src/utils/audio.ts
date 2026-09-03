@@ -1,42 +1,76 @@
-/**
- * Web Audio API helper to play kitchen timer chime alerts without external assets.
- */
-export function playTimerCompletionChime(): void {
+let audioContext: AudioContext | null = null;
+let completionAlertInterval: number | null = null;
+
+function getAudioContext(): AudioContext | null {
+  if (typeof window === "undefined") return null;
+
+  const AudioCtx = window.AudioContext || (window as any).webkitAudioContext;
+  if (!AudioCtx) return null;
+
   try {
-    const AudioCtx = window.AudioContext || (window as any).webkitAudioContext;
-    if (!AudioCtx) return;
+    audioContext ??= new AudioCtx();
+    return audioContext;
+  } catch {
+    return null;
+  }
+}
 
-    const ctx = new AudioCtx();
+/** Resume the shared context while handling a user gesture. */
+export function unlockAudio(): void {
+  const ctx = getAudioContext();
+  if (ctx?.state === "suspended") {
+    void ctx.resume().catch(() => undefined);
+  }
+}
 
-    // Play a friendly multi-tone kitchen bell alert
-    const notes = [523.25, 659.25, 783.99, 1046.50]; // C5, E5, G5, C6
-    notes.forEach((freq, idx) => {
-      const osc = ctx.createOscillator();
+function playCompletionChimeOnce(): void {
+  const ctx = getAudioContext();
+  if (!ctx || ctx.state !== "running") return;
+
+  try {
+    const notes = [523.25, 659.25, 783.99, 1046.5];
+    const startTime = ctx.currentTime;
+
+    notes.forEach((frequency, index) => {
+      const start = startTime + index * 0.15;
+      const oscillator = ctx.createOscillator();
       const gain = ctx.createGain();
 
-      osc.type = "sine";
-      osc.frequency.setValueAtTime(freq, ctx.currentTime + idx * 0.15);
+      oscillator.type = "sine";
+      oscillator.frequency.setValueAtTime(frequency, start);
+      gain.gain.setValueAtTime(0, start);
+      gain.gain.linearRampToValueAtTime(0.3, start + 0.02);
+      gain.gain.exponentialRampToValueAtTime(0.001, start + 0.6);
 
-      gain.gain.setValueAtTime(0, ctx.currentTime + idx * 0.15);
-      gain.gain.linearRampToValueAtTime(0.3, ctx.currentTime + idx * 0.15 + 0.02);
-      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + idx * 0.15 + 0.6);
-
-      osc.connect(gain);
+      oscillator.connect(gain);
       gain.connect(ctx.destination);
-
-      osc.start(ctx.currentTime + idx * 0.15);
-      osc.stop(ctx.currentTime + idx * 0.15 + 0.65);
+      oscillator.start(start);
+      oscillator.stop(start + 0.65);
     });
-  } catch (e) {
-    console.warn("Audio Context alert not permitted or failed:", e);
+  } catch {
+    // Audio can become unavailable when the browser suspends the page.
+  }
+}
+
+export function startTimerCompletionAlert(): void {
+  if (completionAlertInterval !== null) return;
+
+  unlockAudio();
+  playCompletionChimeOnce();
+  completionAlertInterval = window.setInterval(playCompletionChimeOnce, 1500);
+}
+
+export function stopTimerCompletionAlert(): void {
+  if (completionAlertInterval !== null) {
+    window.clearInterval(completionAlertInterval);
+    completionAlertInterval = null;
   }
 }
 
 export function playTickSound(): void {
   try {
-    const AudioCtx = window.AudioContext || (window as any).webkitAudioContext;
-    if (!AudioCtx) return;
-    const ctx = new AudioCtx();
+    const ctx = getAudioContext();
+    if (!ctx || ctx.state !== "running") return;
     const osc = ctx.createOscillator();
     const gain = ctx.createGain();
     osc.type = "triangle";

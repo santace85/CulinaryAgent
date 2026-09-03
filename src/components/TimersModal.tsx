@@ -1,6 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { CookingTimer } from "../types";
-import { playTimerCompletionChime } from "../utils/audio";
+import {
+  startTimerCompletionAlert,
+  stopTimerCompletionAlert,
+  unlockAudio,
+} from "../utils/audio";
 import {
   Timer as TimerIcon,
   Play,
@@ -46,9 +50,8 @@ export const TimersModal: React.FC<TimersModalProps> = ({
           const nextSec = timer.remainingSeconds - 1;
 
           // Timer has finished.
-          // Play the sound.
-          if (nextSec <= 0) {
-            playTimerCompletionChime();
+          if (timer.remainingSeconds > 0 && nextSec <= 0) {
+            startTimerCompletionAlert();
           }
 
           return {
@@ -68,6 +71,7 @@ export const TimersModal: React.FC<TimersModalProps> = ({
   if (!isOpen) return null;
 
   const handleAddTimer = (label: string, totalSec: number) => {
+    unlockAudio();
     const newTimer: CookingTimer = {
       id: "timer_" + Date.now() + "_" + Math.random().toString(36).substr(2, 4),
       label: label || "Kitchen Timer",
@@ -80,13 +84,14 @@ export const TimersModal: React.FC<TimersModalProps> = ({
   };
 
   const handleTogglePlay = (id: string) => {
+    unlockAudio();
     setTimers((prev) =>
       prev.map((t) => {
         if (t.id !== id) return t;
 
         // If timer has finished, don't use Play to restart it.
         // User should use the Repeat button instead.
-        if (t.remainingSeconds === 0) {
+        if (t.remainingSeconds <= 0) {
           return t;
         }
 
@@ -100,8 +105,8 @@ export const TimersModal: React.FC<TimersModalProps> = ({
 
   // Manually restart a completed timer
   const handleRepeat = (id: string) => {
-    setTimers((prev) =>
-      prev.map((t) =>
+    setTimers((prev) => {
+      const updated = prev.map((t) =>
         t.id === id
           ? {
               ...t,
@@ -109,13 +114,19 @@ export const TimersModal: React.FC<TimersModalProps> = ({
               isRunning: true,
             }
           : t,
-      ),
-    );
+      );
+
+      if (!updated.some((timer) => timer.remainingSeconds <= 0)) {
+        stopTimerCompletionAlert();
+      }
+
+      return updated;
+    });
   };
 
   const handleReset = (id: string) => {
-    setTimers((prev) =>
-      prev.map((t) =>
+    setTimers((prev) => {
+      const updated = prev.map((t) =>
         t.id === id
           ? {
               ...t,
@@ -123,13 +134,19 @@ export const TimersModal: React.FC<TimersModalProps> = ({
               isRunning: false,
             }
           : t,
-      ),
-    );
+      );
+
+      if (!updated.some((timer) => timer.remainingSeconds <= 0)) {
+        stopTimerCompletionAlert();
+      }
+
+      return updated;
+    });
   };
 
   const handleAddMinutes = (id: string, mins: number) => {
-    setTimers((prev) =>
-      prev.map((t) =>
+    setTimers((prev) => {
+      const updated = prev.map((t) =>
         t.id === id
           ? {
               ...t,
@@ -137,19 +154,34 @@ export const TimersModal: React.FC<TimersModalProps> = ({
               totalSeconds: t.totalSeconds + mins * 60,
             }
           : t,
-      ),
-    );
+      );
+
+      if (!updated.some((timer) => timer.remainingSeconds <= 0)) {
+        stopTimerCompletionAlert();
+      }
+
+      return updated;
+    });
   };
 
   const handleDeleteTimer = (id: string) => {
-    setTimers((prev) => prev.filter((t) => t.id !== id));
+    setTimers((prev) => {
+      const updated = prev.filter((t) => t.id !== id);
+
+      if (!updated.some((timer) => timer.remainingSeconds <= 0)) {
+        stopTimerCompletionAlert();
+      }
+
+      return updated;
+    });
   };
 
   const formatTime = (secs: number) => {
-    const m = Math.floor(secs / 60);
-    const s = secs % 60;
+    const elapsedSeconds = Math.abs(secs);
+    const m = Math.floor(elapsedSeconds / 60);
+    const s = elapsedSeconds % 60;
 
-    return `${m.toString().padStart(2, "0")}:${s.toString().padStart(2, "0")}`;
+    return `${secs < 0 ? "-" : ""}${m.toString().padStart(2, "0")}:${s.toString().padStart(2, "0")}`;
   };
 
   return (
@@ -265,7 +297,7 @@ export const TimersModal: React.FC<TimersModalProps> = ({
                     )
                   : 0;
 
-              const isFinished = timer.remainingSeconds === 0;
+              const isFinished = timer.remainingSeconds <= 0;
 
               return (
                 <div

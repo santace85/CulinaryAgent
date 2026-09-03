@@ -139,7 +139,9 @@ export default function App() {
         setActiveTab={setActiveTab}
         favoritesCount={favorites.length}
         shoppingListCount={shoppingList.length}
-        activeTimersCount={timers.filter((t) => t.isRunning).length}
+        activeTimersCount={
+          timers.filter((t) => t.isRunning && t.remainingSeconds > 0).length
+        }
         onOpenTimers={() => setIsTimersOpen(true)}
         darkMode={darkMode}
         setDarkMode={setDarkMode}
