@@ -121,7 +121,7 @@ export const AgentChatWindow: React.FC<AgentChatWindowProps> = ({
     const newThinkingMsg: AgentMessage = {
       id: agentThinkingId,
       sender: "agent",
-      text: "Crafting a custom culinary recipe with step-by-step instructions and ingredient lists...",
+      text: "Building your recipe...",
       timestamp: new Date().toLocaleTimeString([], {
         hour: "2-digit",
         minute: "2-digit",
@@ -147,7 +147,7 @@ export const AgentChatWindow: React.FC<AgentChatWindowProps> = ({
               ? {
                   id: "msg_agent_" + Date.now(),
                   sender: "agent",
-                  text: `Here are the top chef-approved ingredient substitutions for "${promptToUse}":`,
+                  text: `Good swaps for "${promptToUse}":`,
                   timestamp: new Date().toLocaleTimeString([], {
                     hour: "2-digit",
                     minute: "2-digit",
@@ -170,8 +170,7 @@ export const AgentChatWindow: React.FC<AgentChatWindowProps> = ({
 
         const agentText = isFallback
           ? error || "Unable to reach the AI service right now."
-          : recipe?.agentIntro ||
-            `Here is your custom AI Agent created recipe for **${recipe?.title}**.`;
+          : recipe?.agentIntro || `Here's **${recipe?.title}**.`;
 
         const agentMsgId = "msg_agent_" + Date.now();
 
@@ -212,7 +211,7 @@ export const AgentChatWindow: React.FC<AgentChatWindowProps> = ({
             ? {
                 id: "msg_agent_" + Date.now(),
                 sender: "agent",
-                text: "I encountered an issue generating your recipe. Don't worry, here is a delicious curated dish for you!",
+                text: "I couldn't make that recipe. Try again, or choose a dish below.",
                 timestamp: new Date().toLocaleTimeString([], {
                   hour: "2-digit",
                   minute: "2-digit",
@@ -239,7 +238,7 @@ export const AgentChatWindow: React.FC<AgentChatWindowProps> = ({
     const loadingMsg: AgentMessage = {
       id: loadingMessageId,
       sender: "agent",
-      text: `Loading **${recipe.title}** into the chat for you...`,
+      text: `Loading **${recipe.title}**...`,
       timestamp: new Date().toLocaleTimeString([], {
         hour: "2-digit",
         minute: "2-digit",
@@ -257,7 +256,7 @@ export const AgentChatWindow: React.FC<AgentChatWindowProps> = ({
                 ...msg,
                 id: "msg_agent_recipe_" + Date.now(),
                 sender: "agent",
-                text: `Here is your fallback recipe for **${recipe.title}**.`,
+                text: `Try **${recipe.title}**.`,
                 isThinking: false,
                 recipe,
               }
@@ -278,12 +277,10 @@ export const AgentChatWindow: React.FC<AgentChatWindowProps> = ({
             </div>
             <div>
               <h1 className="chat-title">
-                Culinary AI Recipe Agent
+                CooksALotl AI
                 <span className="chat-title-dot"></span>
               </h1>
-              <p className="chat-subtitle">
-                Ask for recipes by ingredient, meal, or dietary craving
-              </p>
+              <p className="chat-subtitle">Tell me what you want to cook</p>
             </div>
           </div>
 
@@ -291,7 +288,7 @@ export const AgentChatWindow: React.FC<AgentChatWindowProps> = ({
             {/* Servings count */}
             <div className="chat-servings">
               <Users className="chat-servings-icon" />
-              <span className="chat-servings-label">Servings:</span>
+              <span className="chat-servings-label">Serves</span>
               <select
                 value={targetServings}
                 onChange={(e) => setTargetServings(Number(e.target.value))}
@@ -303,7 +300,7 @@ export const AgentChatWindow: React.FC<AgentChatWindowProps> = ({
                     value={num}
                     className="chat-servings-option"
                   >
-                    {num} people
+                    {num}
                   </option>
                 ))}
               </select>
@@ -323,7 +320,7 @@ export const AgentChatWindow: React.FC<AgentChatWindowProps> = ({
         <div className="chat-tags-row chat-scrollbar">
           <div className="chat-tags-label">
             <Filter />
-            <span>Filters:</span>
+            <span>Filter</span>
           </div>
           {DIETARY_TAGS.map((tag) => {
             const isSelected = selectedDietary.includes(tag);
@@ -351,12 +348,11 @@ export const AgentChatWindow: React.FC<AgentChatWindowProps> = ({
             </div>
             <h2 className="chat-empty-title">What are we cooking today?</h2>
             <p className="chat-empty-desc">
-              Ask your AI Agent for recipes based on what's in your fridge,
-              specific diets, or cooking techniques.
+              Tell me what's in your fridge, what you avoid, or what you crave.
             </p>
 
             <div className="chat-prompts">
-              <div className="chat-prompts-label">Try asking one of these:</div>
+              <div className="chat-prompts-label">Try a prompt</div>
               {PRESET_PROMPTS.map((prompt, idx) => (
                 <button
                   key={idx}
@@ -394,7 +390,7 @@ export const AgentChatWindow: React.FC<AgentChatWindowProps> = ({
                     <div className="chat-agent-bubble">
                       <div className="chat-agent-bubble-header">
                         <span className="chat-agent-label">
-                          <Sparkles /> CulinaryAgent AI
+                          <Sparkles /> CooksALotl AI
                         </span>
                         <span>{msg.timestamp}</span>
                       </div>
@@ -412,7 +408,7 @@ export const AgentChatWindow: React.FC<AgentChatWindowProps> = ({
                             msg.recommendedRecipes.length > 0 && (
                               <div className="chat-fallback-list">
                                 <div className="chat-fallback-label">
-                                  Popular fallback recipes:
+                                  Try one of these:
                                 </div>
                                 <div className="chat-fallback-grid">
                                   {msg.recommendedRecipes.map((recipe) => (
@@ -501,7 +497,7 @@ export const AgentChatWindow: React.FC<AgentChatWindowProps> = ({
             type="text"
             value={inputText}
             onChange={(e) => setInputText(e.target.value)}
-            placeholder="Ask AI Agent: 'Recipe for dinner with chicken, garlic, spinach...' or 'Egg substitute'"
+            placeholder="Try 'chicken and spinach' or 'egg substitute'"
             className="chat-input"
             disabled={isLoading}
           />

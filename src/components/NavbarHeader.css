@@ -182,6 +182,13 @@
   color: var(--color-white);
 }
 
+.navbar-logo-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: inherit;
+}
+
 .navbar-brand-row {
   display: flex;
   align-items: center;
@@ -410,6 +417,114 @@
 
 .navbar-theme-icon--moon {
   color: var(--color-indigo-300);
+}
+
+/* Brand tokens stay semantic so the header follows the active theme. */
+.navbar-header {
+  background-color: color-mix(
+    in srgb,
+    var(--color-background-alt) 92%,
+    transparent
+  );
+  border-color: var(--color-border);
+  color: var(--color-text-primary);
+}
+
+.navbar-brand {
+  background: transparent;
+  border: 0;
+  color: inherit;
+  text-align: left;
+}
+
+.navbar-logo {
+  background: var(--color-background-hover);
+  box-shadow:
+    var(--shadow-md),
+    0 4px 12px var(--logo-shadow-color);
+}
+
+.navbar-brand-name {
+  background: linear-gradient(
+    90deg,
+    var(--color-brand-cyan),
+    var(--color-brand-pink)
+  );
+  background-clip: text;
+  -webkit-background-clip: text;
+}
+
+.navbar-badge {
+  background-color: var(--color-background-hover);
+  color: var(--color-primary);
+  border-color: var(--color-border-alt);
+}
+
+.navbar-subtitle,
+.navbar-nav-btn--inactive,
+.navbar-timer-icon--inactive,
+.navbar-mobile-btn--inactive {
+  color: var(--color-text-secondary);
+}
+
+.navbar-nav,
+.navbar-theme-btn,
+.navbar-timer-btn--inactive,
+.navbar-mobile-nav {
+  background-color: var(--color-background-alt);
+  border-color: var(--color-border);
+}
+
+.navbar-nav-btn--active {
+  background: linear-gradient(
+    90deg,
+    var(--color-primary-dark),
+    var(--color-primary)
+  );
+}
+
+.navbar-nav-btn--inactive:hover,
+.navbar-timer-btn--inactive:hover,
+.navbar-theme-btn:hover {
+  color: var(--color-text-hover);
+  background-color: var(--color-background-hover);
+}
+
+.navbar-timer-btn--active {
+  color: var(--color-primary);
+  background-color: color-mix(in srgb, var(--color-primary) 12%, transparent);
+  border-color: color-mix(in srgb, var(--color-primary) 45%, transparent);
+}
+
+.navbar-timer-icon--active,
+.navbar-theme-icon--moon {
+  color: var(--color-primary);
+}
+
+.navbar-timer-count {
+  background-color: var(--color-primary);
+  color: var(--color-background);
+}
+
+.navbar-theme-btn {
+  color: var(--color-text-secondary);
+}
+
+.navbar-theme-icon--sun,
+.navbar-mobile-btn--active {
+  color: var(--color-secondary);
+}
+
+.navbar-count-badge--rose {
+  background-color: var(--color-danger-bg);
+  color: var(--color-danger);
+  border-color: color-mix(in srgb, var(--color-danger) 40%, transparent);
+}
+
+.navbar-count-badge--emerald {
+  background-color: var(--color-success-bg);
+  color: var(--color-success);
+  border-color: color-mix(in srgb, var(--color-success) 40%, transparent);
 }
 
 /* =========================================================

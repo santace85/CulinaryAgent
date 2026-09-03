@@ -1,6 +1,6 @@
-# CulinaryAgent
+# CooksALotl AI
 
-A small React + Node app for asking a cooking AI for recipes.
+A small React + Node app for asking an AI cooking companion for recipes.
 
 It runs with Vite on the frontend and Express on the backend. The backend can use Gemini if you set `GEMINI_API_KEY`, and it also has a curated fallback recipe mode so the app still works without the AI key.
 

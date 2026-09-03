@@ -110,10 +110,9 @@ export const FavoritesView: React.FC<FavoritesViewProps> = ({
       ) : favorites.length === 0 ? (
         <div className="fav-empty-state">
           <Heart className="fav-empty-icon" />
-          <h2 className="fav-empty-title">No Offline Recipes Saved Yet</h2>
+          <h2 className="fav-empty-title">No saved recipes</h2>
           <p className="fav-empty-desc">
-            Click the heart icon on any AI Agent recipe to store it locally for
-            offline cooking in your kitchen!
+            Save a recipe with the heart icon to find it here.
           </p>
         </div>
       ) : (

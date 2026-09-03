@@ -38,7 +38,7 @@ function getFriendlyError(message: string, status?: number) {
   ) {
     return "Network disconnect. Please check your connection and try again.";
   }
-  return "Unable to reach the AI service right now. Please try again shortly.";
+  return "AI is unavailable. Please try again.";
 }
 
 const BASE_URL = import.meta.env.VITE_API_BASE_URL; // <-- Your Render API URL

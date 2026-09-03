@@ -197,15 +197,13 @@ export const TimersModal: React.FC<TimersModalProps> = ({
 
             <div>
               <h2 className="timer-modal-title">
-                Precision Kitchen Timers
+                Kitchen timers
                 <span className="timer-modal-count-badge">
                   {timers.length} Active
                 </span>
               </h2>
 
-              <p className="text-xs text-slate-400">
-                Simultaneous cooking timers with audio alerts
-              </p>
+              <p className="text-xs text-slate-400">Keep every step on track</p>
             </div>
           </div>
 

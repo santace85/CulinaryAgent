@@ -64,7 +64,7 @@ export function exportShoppingListAsText(items: ShoppingListItem[]): string {
   if (!items.length) return "Shopping list is empty.";
 
   const categories = Array.from(new Set(items.map((i) => i.category)));
-  let text = `🛒 GROCERY SHOPPING LIST - CulinaryAgent AI\nGenerated: ${new Date().toLocaleDateString()}\n${"─".repeat(40)}\n\n`;
+  let text = `GROCERY LIST - CooksALotl AI\nGenerated: ${new Date().toLocaleDateString()}\n${"-".repeat(40)}\n\n`;
 
   categories.forEach((cat) => {
     const catItems = items.filter((i) => i.category === cat);

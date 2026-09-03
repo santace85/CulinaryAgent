@@ -179,7 +179,7 @@ export const DynamicRecipeCard: React.FC<DynamicRecipeCardProps> = ({
             id={`btn-cooking-mode-${recipe.id}`}
             onClick={() => onOpenCookingMode(recipe)}
             className="recipe-cook-btn"
-            title="Open Hands-Free Step-by-Step Cooking Mode"
+            title="Open cook mode"
           >
             <Maximize2 />
             <span className="recipe-cook-btn-label">Cook Mode</span>
@@ -331,7 +331,7 @@ export const DynamicRecipeCard: React.FC<DynamicRecipeCardProps> = ({
             <div className="recipe-steps-title-row">
               <Sparkles />
               <h3 className="recipe-steps-heading">
-                Step-by-Step Cooking Guide{" "}
+                Cooking steps{" "}
                 <span className="recipe-count-label">
                   (
                   {
@@ -436,9 +436,7 @@ export const DynamicRecipeCard: React.FC<DynamicRecipeCardProps> = ({
           >
             <div className="recipe-subs-toggle-left">
               <Repeat />
-              <span>
-                Ingredient Substitutions & Swaps ({recipe.substitutions.length})
-              </span>
+              <span>Ingredient swaps ({recipe.substitutions.length})</span>
             </div>
             {showSubstitutions ? <ChevronUp /> : <ChevronDown />}
           </button>

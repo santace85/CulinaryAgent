@@ -6,7 +6,6 @@ import {
   Timer as TimerIcon,
   Repeat,
   Sparkles,
-  UtensilsCrossed,
   Sun,
   Moon,
 } from "lucide-react";
@@ -39,23 +38,24 @@ export const NavbarHeader: React.FC<NavbarHeaderProps> = ({
     <header className="navbar-header">
       <div className="navbar-container">
         <div className="navbar-row">
-          {/* Brand & Hybrid Agent Badge */}
-          <div className="navbar-brand" onClick={() => setActiveTab("agent")}>
+          <button
+            className="navbar-brand"
+            onClick={() => setActiveTab("agent")}
+            type="button"
+          >
             <div className="navbar-logo">
-              <UtensilsCrossed className="navbar-logo-icon" />
+              <img className="navbar-logo-image" src="icon-192.png" alt="" />
             </div>
             <div>
               <div className="navbar-brand-row">
-                <span className="navbar-brand-name">CulinaryAgent</span>
+                <span className="navbar-brand-name">CooksALotl AI</span>
                 <span className="navbar-badge">
-                  <Sparkles className="navbar-badge-icon" /> AI Powered
+                  <Sparkles className="navbar-badge-icon" /> AI kitchen
                 </span>
               </div>
-              <p className="navbar-subtitle">
-                Interactive Recipe & Precision Culinary Suite
-              </p>
+              <p className="navbar-subtitle">Recipes from what you have</p>
             </div>
-          </div>
+          </button>
 
           {/* Navigation Tabs */}
           <nav className="navbar-nav">
@@ -69,7 +69,7 @@ export const NavbarHeader: React.FC<NavbarHeaderProps> = ({
               }`}
             >
               <Bot className="navbar-nav-icon" />
-              <span>AI Agent</span>
+              <span>Cook with AI</span>
             </button>
 
             <button
@@ -82,7 +82,7 @@ export const NavbarHeader: React.FC<NavbarHeaderProps> = ({
               }`}
             >
               <Heart className="navbar-nav-icon" />
-              <span>Saved Recipes</span>
+              <span>Saved</span>
               {favoritesCount > 0 && (
                 <span className="navbar-count-badge navbar-count-badge--rose">
                   {favoritesCount}
@@ -100,7 +100,7 @@ export const NavbarHeader: React.FC<NavbarHeaderProps> = ({
               }`}
             >
               <ShoppingBag className="navbar-nav-icon" />
-              <span>Shopping List</span>
+              <span>Groceries</span>
               {shoppingListCount > 0 && (
                 <span className="navbar-count-badge navbar-count-badge--emerald">
                   {shoppingListCount}
@@ -118,7 +118,7 @@ export const NavbarHeader: React.FC<NavbarHeaderProps> = ({
               }`}
             >
               <Repeat className="navbar-nav-icon" />
-              <span>Substitutions</span>
+              <span>Swaps</span>
             </button>
           </nav>
 
@@ -147,18 +147,20 @@ export const NavbarHeader: React.FC<NavbarHeaderProps> = ({
               )}
             </button>
 
-            {/* <button
+            <button
               id="btn-toggle-theme"
               onClick={() => setDarkMode((prev) => !prev)}
               className="navbar-theme-btn"
-              title="Toggle Theme"
+              title={darkMode ? "Use light theme" : "Use dark theme"}
+              aria-label={darkMode ? "Use light theme" : "Use dark theme"}
+              type="button"
             >
               {darkMode ? (
                 <Sun className="navbar-theme-icon navbar-theme-icon--sun" />
               ) : (
                 <Moon className="navbar-theme-icon navbar-theme-icon--moon" />
               )}
-            </button> */}
+            </button>
           </div>
         </div>
       </div>
@@ -174,7 +176,7 @@ export const NavbarHeader: React.FC<NavbarHeaderProps> = ({
           }`}
         >
           <Bot className="navbar-mobile-icon" />
-          <span>AI Agent</span>
+          <span>Cook</span>
         </button>
         <button
           onClick={() => setActiveTab("favorites")}
@@ -196,7 +198,7 @@ export const NavbarHeader: React.FC<NavbarHeaderProps> = ({
           }`}
         >
           <ShoppingBag className="navbar-mobile-icon" />
-          <span>Grocery ({shoppingListCount})</span>
+          <span>Groceries ({shoppingListCount})</span>
         </button>
         <button
           onClick={() => setActiveTab("substitutions")}
@@ -207,7 +209,7 @@ export const NavbarHeader: React.FC<NavbarHeaderProps> = ({
           }`}
         >
           <Repeat className="navbar-mobile-icon" />
-          <span>Substitutes</span>
+          <span>Swaps</span>
         </button>
       </div>
     </header>

@@ -26,7 +26,7 @@ import { STARTER_RECIPES } from "./data/mockRecipes";
 import { useTheme } from "./context/ThemeContext";
 
 export default function App() {
-  const { theme, toggleTheme, darkMode } = useTheme(); // Consume theme context
+  const { toggleTheme, darkMode } = useTheme();
 
   const [activeTab, setActiveTab] = useState<
     "agent" | "favorites" | "shopping" | "substitutions"
@@ -58,7 +58,7 @@ export default function App() {
     {
       id: "msg_welcome",
       sender: "agent",
-      text: "Welcome to **CulinaryAgent AI**! I'm your interactive culinary & recipe agent assistant. Tell me what ingredients you have, dietary restrictions, or meal cravings, and I'll generate a custom recipe with interactive ingredient lists, step-by-step timers, and smart substitutions!",
+      text: "Welcome to **CooksALotl AI**. Tell me what you have, what you like, or what you need to avoid, and I'll turn it into a recipe.",
       timestamp: new Date().toLocaleTimeString([], {
         hour: "2-digit",
         minute: "2-digit",

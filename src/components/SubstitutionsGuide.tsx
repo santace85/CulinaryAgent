@@ -143,12 +143,11 @@ export const SubstitutionsGuide: React.FC<SubstitutionsGuideProps> = ({
           </div>
           <div>
             <h1 className="swap-title">
-              Smart Ingredient Substitution Engine
-              <span className="swap-badge">AI Powered ⚡</span>
+              Ingredient swaps
+              <span className="swap-badge">AI powered</span>
             </h1>
             <p className="swap-subtitle">
-              Missing an ingredient? Find instant culinary swaps for allergies,
-              dietary needs, or empty pantries.
+              Missing something? Find a quick swap for your recipe.
             </p>
           </div>
         </div>
@@ -159,7 +158,7 @@ export const SubstitutionsGuide: React.FC<SubstitutionsGuideProps> = ({
             <Search className="swap-search-icon" />
             <input
               type="text"
-              placeholder="Search ingredient to substitute (e.g. Buttermilk, Eggs, Heavy Cream, Wine, Yeast...)"
+              placeholder="Search an ingredient (e.g. eggs, cream, yeast)"
               value={searchQuery}
               onChange={(e) => {
                 setSearchQuery(e.target.value);
@@ -179,7 +178,7 @@ export const SubstitutionsGuide: React.FC<SubstitutionsGuideProps> = ({
             ) : (
               <>
                 <Sparkles />
-                <span>AI Find Swap</span>
+                <span>Find swap</span>
               </>
             )}
           </button>

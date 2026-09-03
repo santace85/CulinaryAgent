@@ -4,17 +4,23 @@
 @tailwind utilities;
 
 :root {
-  --color-primary: #fef08a; /* Amber-400 */
-  --color-primary-dark: #eab308; /* Amber-500 */
-  --color-secondary: #93c5fd; /* Indigo-300 */
-  --color-background: #020617; /* Slate-950 */
-  --color-background-alt: #0f172a; /* Slate-900 */
-  --color-background-hover: #1e293b; /* Slate-800 */
-  --color-border: #334155; /* Slate-700 */
-  --color-border-alt: #475569; /* Slate-700 */
-  --color-text-primary: #f8fafc; /* Slate-50 */
-  --color-text-secondary: #64748b; /* Slate-500 */
-  --color-text-hover: #ffffff; /* White */
+  --color-primary: #67e8f9;
+  --color-primary-dark: #0891b2;
+  --color-secondary: #f9a8d4;
+  --color-background: #07131f;
+  --color-background-alt: #102536;
+  --color-background-hover: #1b3850;
+  --color-border: #29465d;
+  --color-border-alt: #3c6178;
+  --color-text-primary: #e5f2f7;
+  --color-text-secondary: #9db6c3;
+  --color-text-hover: #ffffff;
+  --color-success: #4ade80;
+  --color-success-bg: rgba(34, 197, 94, 0.16);
+  --color-danger: #fb7185;
+  --color-danger-bg: rgba(244, 63, 94, 0.16);
+  --color-brand-pink: #f472b6;
+  --color-brand-cyan: #67e8f9;
 
   /* Specific Tailwind-like shades */
   --color-slate-100: #f1f5f9;
@@ -162,17 +168,23 @@
 /* Default Light Theme */
 html.light {
   /* --- Base Colors --- */
-  --color-primary: #f97316; /* Orange-500 */
-  --color-primary-dark: #ea580c; /* Orange-600 */
-  --color-secondary: #6366f1; /* Indigo-500 */
-  --color-background: #ffffff; /* White */
-  --color-background-alt: #f8fafc; /* Slate-50 - Lighter background for alt */
-  --color-background-hover: #e2e8f0; /* Slate-200 - Lighter hover */
-  --color-border: #e2e8f0; /* Slate-200 - Light border */
-  --color-border-alt: #cbd5e1; /* Slate-300 - Light border alt */
-  --color-text-primary: #0f172a; /* Slate-900 - Dark text */
-  --color-text-secondary: #64748b; /* Slate-500 - Medium gray text */
-  --color-text-hover: #020617; /* Slate-950 - Very dark text hover */
+  --color-primary: #0891b2;
+  --color-primary-dark: #0e7490;
+  --color-secondary: #db2777;
+  --color-background: #eef7fa;
+  --color-background-alt: #ffffff;
+  --color-background-hover: #d9edf2;
+  --color-border: #c4dce3;
+  --color-border-alt: #a5c5cf;
+  --color-text-primary: #16313e;
+  --color-text-secondary: #55717c;
+  --color-text-hover: #0b202b;
+  --color-success: #15803d;
+  --color-success-bg: rgba(22, 163, 74, 0.12);
+  --color-danger: #be123c;
+  --color-danger-bg: rgba(225, 29, 72, 0.1);
+  --color-brand-pink: #db2777;
+  --color-brand-cyan: #0891b2;
 
   /* --- Alpha-blended surfaces --- */
   /* Light theme specific alpha blends */
@@ -340,4 +352,36 @@ body {
 main {
   background-color: var(--color-background);
   color: var(--color-text-primary);
+}
+
+/* Legacy component aliases keep the existing CSS surfaces on-brand. */
+html.dark,
+html.light {
+  --color-slate-100: var(--color-text-primary);
+  --color-slate-200: var(--color-text-primary);
+  --color-slate-300: var(--color-text-secondary);
+  --color-slate-400: var(--color-text-secondary);
+  --color-slate-500: var(--color-text-secondary);
+  --color-slate-600: var(--color-border-alt);
+  --color-slate-700: var(--color-border);
+  --color-slate-800: var(--color-background-hover);
+  --color-slate-900: var(--color-background-alt);
+  --color-slate-950: var(--color-background);
+  --color-orange-300: var(--color-brand-cyan);
+  --color-orange-400: var(--color-brand-cyan);
+  --color-orange-500: var(--color-primary);
+  --color-orange-600: var(--color-primary-dark);
+  --color-amber-200: var(--color-secondary);
+  --color-amber-300: var(--color-secondary);
+  --color-amber-400: var(--color-secondary);
+  --color-amber-500: var(--color-secondary);
+  --color-amber-600: var(--color-secondary);
+  --color-indigo-300: var(--color-brand-cyan);
+  --color-emerald-300: var(--color-success);
+  --color-emerald-400: var(--color-success);
+  --color-emerald-500: var(--color-success);
+  --color-emerald-600: var(--color-success);
+  --color-rose-300: var(--color-danger);
+  --color-rose-400: var(--color-danger);
+  --color-rose-500: var(--color-danger);
 }
