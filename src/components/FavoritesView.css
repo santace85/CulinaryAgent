@@ -4,69 +4,6 @@
    utility classes used in FavoritesView.tsx
    ========================================================= */
 
-:root {
-  /* --- Color palette --- */
-  --color-white: #ffffff;
-  --color-slate-200: #e2e8f0;
-  --color-slate-300: #cbd5e1;
-  --color-slate-400: #94a3b8;
-  --color-slate-500: #64748b;
-  --color-slate-600: #475569;
-  --color-slate-800: #1e293b;
-  --color-slate-900: #0f172a;
-  --color-slate-950: #020617;
-
-  --color-orange-300: #fdba74;
-  --color-orange-400: #fb923c;
-  --color-orange-500: #f97316;
-
-  --color-rose-300: #fda4af;
-  --color-rose-400: #fb7185;
-  --color-rose-500: #f43f5e;
-
-  /* --- Alpha-blended surfaces --- */
-  --icon-box-bg: rgb(244 63 94 / 0.2);
-  --icon-box-border: rgb(244 63 94 / 0.3);
-  --count-badge-bg: rgb(244 63 94 / 0.1);
-  --count-badge-border: rgb(244 63 94 / 0.2);
-  --empty-state-bg: rgb(15 23 42 / 0.6);
-  --card-footer-border: rgb(30 41 59 / 0.8);
-  --card-hover-border: rgb(249 115 22 / 0.4);
-
-  /* --- Spacing --- */
-  --space-1: 0.25rem;
-  --space-1_5: 0.375rem;
-  --space-2: 0.5rem;
-  --space-3: 0.75rem;
-  --space-4: 1rem;
-  --space-5: 1.25rem;
-  --space-6: 1.5rem;
-  --space-16: 4rem;
-
-  /* --- Radii --- */
-  --radius-xl: 0.75rem;
-  --radius-2xl: 1rem;
-  --radius-full: 9999px;
-
-  /* --- Typography --- */
-  --text-2xs: 10px;
-  --text-xxs: 11px;
-  --text-xs: 0.75rem;
-  --text-base: 1rem;
-  --text-xl: 1.25rem;
-  --tracking-wider: 0.05em;
-
-  /* --- Shadows --- */
-  --shadow-xl:
-    0 20px 25px -5px rgb(0 0 0 / 0.3), 0 8px 10px -6px rgb(0 0 0 / 0.3);
-
-  /* --- Transitions --- */
-  --transition-colors:
-    color 0.15s ease-in-out, background-color 0.15s ease-in-out,
-    border-color 0.15s ease-in-out;
-  --transition-all: all 0.15s ease-in-out;
-}
-
 /* =========================================================
    Layout shell
    ========================================================= */
@@ -144,6 +81,7 @@
 }
 
 .fav-count-badge {
+  display: none;
   font-size: var(--text-xs);
   font-weight: 400;
   padding: var(--space-1) var(--space-2);
@@ -152,7 +90,11 @@
   color: var(--color-rose-300);
   border: 1px solid var(--count-badge-border);
 }
-
+@media (min-width: 768px) {
+  .fav-count-badge {
+    display: flex;
+  }
+}
 .fav-subtitle {
   font-size: var(--text-xs);
   color: var(--color-slate-400);

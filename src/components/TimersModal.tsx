@@ -265,10 +265,7 @@ export const TimersModal: React.FC<TimersModalProps> = ({
             className="timer-modal-form-input timer-modal-form-input--minutes"
           />
 
-          <button
-            type="submit"
-            className="sm:col-span-3 bg-gradient-to-r from-amber-600 to-orange-600 text-white font-semibold text-xs rounded-xl px-3 py-2 flex items-center justify-center space-x-1 hover:brightness-110"
-          >
+          <button type="submit" className="timer-modal-form-submit">
             <Plus className="w-4 h-4" />
             <span>Add Timer</span>
           </button>

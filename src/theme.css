@@ -1,0 +1,412 @@
+/* CooksALotl theme contract: components consume these semantic tokens only. */
+:root {
+  color-scheme: dark;
+  --theme-page: #07131f;
+  --theme-surface: #102536;
+  --theme-surface-raised: #1b3850;
+  --theme-surface-soft: #152e42;
+  --theme-border: #29465d;
+  --theme-border-strong: #3c6178;
+  --theme-ink: #e5f2f7;
+  --theme-ink-muted: #9db6c3;
+  --theme-ink-subtle: #7795a4;
+  --theme-on-accent: #07131f;
+  --theme-primary: #67e8f9;
+  --theme-primary-strong: #0891b2;
+  --theme-secondary: #f9a8d4;
+  --theme-secondary-strong: #f472b6;
+  --theme-success: #4ade80;
+  --theme-success-soft: rgba(74, 222, 128, 0.16);
+  --theme-danger: #fb7185;
+  --theme-danger-soft: rgba(251, 113, 133, 0.16);
+  --theme-warning: #f9a8d4;
+  --theme-warning-soft: rgba(249, 168, 212, 0.14);
+  --theme-focus: #67e8f9;
+  --theme-overlay: rgba(7, 19, 31, 0.82);
+  --theme-shadow: 0 20px 50px rgba(2, 10, 18, 0.32);
+  --theme-shadow-soft: 0 8px 24px rgba(2, 10, 18, 0.2);
+  --theme-radius-sm: 0.375rem;
+  --theme-radius-md: 0.5rem;
+  --theme-radius-lg: 0.75rem;
+  --theme-radius-xl: 1rem;
+  --theme-radius-pill: 9999px;
+  --theme-space-1: 0.25rem;
+  --theme-space-2: 0.5rem;
+  --theme-space-3: 0.75rem;
+  --theme-space-4: 1rem;
+  --theme-space-5: 1.25rem;
+  --theme-space-6: 1.5rem;
+  --theme-transition: 150ms ease;
+
+  --color-primary: var(--theme-primary);
+  --color-primary-dark: var(--theme-primary-strong);
+  --color-secondary: var(--theme-secondary);
+  --color-background: var(--theme-page);
+  --color-background-alt: var(--theme-surface);
+  --color-background-hover: var(--theme-surface-raised);
+  --color-border: var(--theme-border);
+  --color-border-alt: var(--theme-border-strong);
+  --color-text-primary: var(--theme-ink);
+  --color-text-secondary: var(--theme-ink-muted);
+  --color-text-hover: var(--theme-ink);
+  --color-success: var(--theme-success);
+  --color-success-bg: var(--theme-success-soft);
+  --color-danger: var(--theme-danger);
+  --color-danger-bg: var(--theme-danger-soft);
+  --color-brand-pink: var(--theme-secondary-strong);
+  --color-brand-cyan: var(--theme-primary);
+  --color-white: var(--theme-ink);
+  --color-slate-100: var(--theme-ink);
+  --color-slate-200: var(--theme-ink);
+  --color-slate-300: var(--theme-ink-muted);
+  --color-slate-400: var(--theme-ink-muted);
+  --color-slate-500: var(--theme-ink-subtle);
+  --color-slate-600: var(--theme-border-strong);
+  --color-slate-700: var(--theme-border);
+  --color-slate-800: var(--theme-surface-raised);
+  --color-slate-900: var(--theme-surface);
+  --color-slate-950: var(--theme-page);
+  --color-amber-200: var(--theme-secondary);
+  --color-amber-300: var(--theme-secondary);
+  --color-amber-400: var(--theme-secondary);
+  --color-amber-500: var(--theme-secondary-strong);
+  --color-amber-600: var(--theme-secondary-strong);
+  --color-orange-300: var(--theme-primary);
+  --color-orange-400: var(--theme-primary);
+  --color-orange-500: var(--theme-primary);
+  --color-orange-600: var(--theme-primary-strong);
+  --color-emerald-300: var(--theme-success);
+  --color-emerald-400: var(--theme-success);
+  --color-emerald-500: var(--theme-success);
+  --color-emerald-600: var(--theme-success);
+  --color-rose-300: var(--theme-danger);
+  --color-rose-400: var(--theme-danger);
+  --color-rose-500: var(--theme-danger);
+  --color-indigo-300: var(--theme-primary);
+
+  --text-2xs: 10px;
+  --text-xxs: 11px;
+  --text-xs: 0.75rem;
+  --text-sm: 0.875rem;
+  --text-xl: 1.25rem;
+  --tracking-wider: 0.05em;
+
+  --space-0_5: 0.125rem;
+  --space-1: var(--theme-space-1);
+  --space-1_5: 0.375rem;
+  --space-2: var(--theme-space-2);
+  --space-2_5: 0.625rem;
+  --space-3: var(--theme-space-3);
+  --space-3_5: 0.875rem;
+  --space-4: var(--theme-space-4);
+  --space-5: var(--theme-space-5);
+  --space-6: var(--theme-space-6);
+  --space-8: 2rem;
+  --space-12: 3rem;
+  --space-16: 4rem;
+  --spacing-1: var(--theme-space-1);
+  --spacing-1_5: 0.375rem;
+  --spacing-2: var(--theme-space-2);
+  --spacing-2_5: 0.625rem;
+  --spacing-3: var(--theme-space-3);
+  --spacing-4: var(--theme-space-4);
+  --spacing-6: var(--theme-space-6);
+  --radius-md: var(--theme-radius-sm);
+  --radius-lg: var(--theme-radius-md);
+  --radius-xl: var(--theme-radius-lg);
+  --radius-2xl: var(--theme-radius-xl);
+  --radius-3xl: 1.5rem;
+  --radius-full: var(--theme-radius-pill);
+  --border-radius-lg: var(--theme-radius-md);
+  --border-radius-xl: var(--theme-radius-lg);
+  --border-radius-2xl: var(--theme-radius-xl);
+  --border-radius-full: var(--theme-radius-pill);
+  --transition-all: all var(--theme-transition);
+  --transition-colors:
+    color var(--theme-transition), background-color var(--theme-transition),
+    border-color var(--theme-transition);
+  --shadow-sm: var(--theme-shadow-soft);
+  --shadow-md: var(--theme-shadow-soft);
+  --shadow-lg: var(--theme-shadow);
+  --shadow-xl: var(--theme-shadow);
+  --shadow-2xl: var(--theme-shadow);
+
+  --gradient-empty-icon: linear-gradient(
+    135deg,
+    var(--theme-primary),
+    var(--theme-secondary-strong)
+  );
+  --gradient-user-bubble: linear-gradient(
+    90deg,
+    var(--theme-primary-strong),
+    var(--theme-primary)
+  );
+  --gradient-send-btn: linear-gradient(
+    90deg,
+    var(--theme-primary-strong),
+    var(--theme-primary)
+  );
+  --gradient-cook-btn: var(--gradient-send-btn);
+  --gradient-submit-btn: var(--gradient-send-btn);
+  --gradient-nav-active: var(--gradient-send-btn);
+  --gradient-logo: linear-gradient(
+    135deg,
+    var(--theme-surface-raised),
+    var(--theme-primary-strong)
+  );
+  --gradient-brand-text: linear-gradient(
+    90deg,
+    var(--theme-primary),
+    var(--theme-secondary-strong)
+  );
+
+  --controls-bg-alpha: var(--theme-surface);
+  --icon-box-bg-alpha: var(--theme-warning-soft);
+  --icon-box-border-alpha: color-mix(
+    in srgb,
+    var(--theme-secondary) 35%,
+    transparent
+  );
+  --tag-selected-bg-alpha: var(--theme-warning-soft);
+  --tag-selected-border-alpha: color-mix(
+    in srgb,
+    var(--theme-secondary) 45%,
+    transparent
+  );
+  --tag-unselected-bg-alpha: var(--theme-page);
+  --tag-unselected-border-alpha: var(--theme-border);
+  --empty-state-bg-alpha: color-mix(
+    in srgb,
+    var(--theme-surface) 70%,
+    transparent
+  );
+  --empty-state-border-alpha: var(--theme-border);
+  --prompt-btn-bg-alpha: color-mix(in srgb, var(--theme-page) 85%, transparent);
+  --prompt-btn-hover-border-alpha: color-mix(
+    in srgb,
+    var(--theme-primary) 45%,
+    transparent
+  );
+  --fallback-card-border-alpha: color-mix(
+    in srgb,
+    var(--theme-primary) 30%,
+    transparent
+  );
+  --fallback-card-bg-alpha: var(--theme-page);
+  --fallback-card-hover-border-alpha: color-mix(
+    in srgb,
+    var(--theme-primary) 55%,
+    transparent
+  );
+  --fallback-title-decoration-color: color-mix(
+    in srgb,
+    var(--theme-primary) 50%,
+    transparent
+  );
+  --sub-macro-color-alpha: var(--theme-success);
+  --logo-shadow-color: color-mix(
+    in srgb,
+    var(--theme-primary) 25%,
+    transparent
+  );
+  --send-btn-shadow-color: color-mix(
+    in srgb,
+    var(--theme-primary-strong) 35%,
+    transparent
+  );
+  --input-focus-border-alpha: color-mix(
+    in srgb,
+    var(--theme-focus) 60%,
+    transparent
+  );
+  --scrollbar-thumb-color: var(--theme-border-strong);
+
+  --navbar-bg: var(--theme-surface);
+  --nav-pill-bg: var(--theme-page);
+  --active-nav-shadow: var(--theme-shadow-soft);
+  --badge-border-emerald: color-mix(
+    in srgb,
+    var(--theme-success) 35%,
+    transparent
+  );
+  --badge-bg-rose: var(--theme-danger-soft);
+  --badge-border-rose: color-mix(in srgb, var(--theme-danger) 35%, transparent);
+  --badge-bg-emerald: var(--theme-success-soft);
+  --timer-bg-active: var(--theme-warning-soft);
+  --timer-border-active: color-mix(
+    in srgb,
+    var(--theme-warning) 45%,
+    transparent
+  );
+  --timer-bg-inactive: var(--theme-surface-raised);
+  --nav-inactive-hover-bg: var(--theme-surface-raised);
+  --card-dark-bg: var(--theme-surface);
+  --card-header-border: var(--theme-border);
+  --tag-cuisine-bg: color-mix(in srgb, var(--theme-primary) 12%, transparent);
+  --tag-cuisine-border: color-mix(
+    in srgb,
+    var(--theme-primary) 28%,
+    transparent
+  );
+  --tag-difficulty-bg: var(--theme-success-soft);
+  --tag-difficulty-border: color-mix(
+    in srgb,
+    var(--theme-success) 35%,
+    transparent
+  );
+  --fav-active-bg: var(--theme-danger-soft);
+  --fav-active-border: color-mix(in srgb, var(--theme-danger) 45%, transparent);
+  --fav-active-shadow: var(--theme-danger-soft);
+  --fav-inactive-bg: var(--theme-surface-raised);
+  --cook-btn-shadow: var(--send-btn-shadow-color);
+  --meta-item-bg: color-mix(in srgb, var(--theme-page) 72%, transparent);
+  --ingredients-col-bg: color-mix(in srgb, var(--theme-page) 82%, transparent);
+  --export-btn-bg: var(--theme-success-soft);
+  --export-btn-border: color-mix(
+    in srgb,
+    var(--theme-success) 35%,
+    transparent
+  );
+  --export-btn-hover-bg: color-mix(
+    in srgb,
+    var(--theme-success) 24%,
+    transparent
+  );
+  --ingredient-checked-bg: color-mix(
+    in srgb,
+    var(--theme-page) 55%,
+    transparent
+  );
+  --ingredient-unchecked-bg: color-mix(
+    in srgb,
+    var(--theme-page) 85%,
+    transparent
+  );
+  --ingredient-amount-text: var(--theme-secondary);
+  --step-completed-bg: color-mix(in srgb, var(--theme-page) 55%, transparent);
+  --step-completed-border: var(--theme-border);
+  --step-active-bg: color-mix(in srgb, var(--theme-page) 82%, transparent);
+  --timer-btn-bg: var(--theme-warning-soft);
+  --timer-btn-border: color-mix(in srgb, var(--theme-warning) 35%, transparent);
+  --timer-btn-hover-bg: color-mix(
+    in srgb,
+    var(--theme-warning) 24%,
+    transparent
+  );
+  --tip-bg: var(--theme-warning-soft);
+  --tip-border: color-mix(in srgb, var(--theme-warning) 25%, transparent);
+  --tip-text: var(--theme-warning);
+  --subs-card-bg: color-mix(in srgb, var(--theme-page) 65%, transparent);
+  --sub-original-text: var(--theme-danger);
+  --sub-reason-text: var(--theme-warning);
+  --sub-macro-text: var(--theme-success);
+  --chef-notes-border: color-mix(
+    in srgb,
+    var(--theme-warning) 25%,
+    transparent
+  );
+  --chef-notes-bg: var(--theme-warning-soft);
+  --drink-border: color-mix(in srgb, var(--theme-primary) 25%, transparent);
+  --drink-bg: color-mix(in srgb, var(--theme-primary) 12%, transparent);
+  --overlay-bg: var(--theme-overlay);
+  --count-badge-bg: var(--theme-warning-soft);
+  --count-badge-border: color-mix(
+    in srgb,
+    var(--theme-warning) 35%,
+    transparent
+  );
+  --preset-btn-hover-border: color-mix(
+    in srgb,
+    var(--theme-warning) 55%,
+    transparent
+  );
+  --empty-state-bg: color-mix(in srgb, var(--theme-surface) 70%, transparent);
+  --finished-bg: var(--theme-danger-soft);
+  --finished-border: color-mix(in srgb, var(--theme-danger) 45%, transparent);
+  --running-border: color-mix(in srgb, var(--theme-warning) 35%, transparent);
+  --idle-bg: color-mix(in srgb, var(--theme-page) 65%, transparent);
+  --delete-hover-bg: var(--theme-danger-soft);
+  --scrollbar-thumb: var(--theme-border-strong);
+  --icon-box-bg: var(--theme-warning-soft);
+  --icon-box-border: color-mix(in srgb, var(--theme-warning) 35%, transparent);
+  --badge-bg: var(--theme-warning-soft);
+  --badge-border: color-mix(in srgb, var(--theme-warning) 28%, transparent);
+  --ai-results-border: color-mix(
+    in srgb,
+    var(--theme-primary) 35%,
+    transparent
+  );
+  --macro-text: var(--theme-success);
+  --ratio-text: var(--theme-warning);
+  --form-card-bg: color-mix(in srgb, var(--theme-surface) 82%, transparent);
+  --item-checked-bg: color-mix(in srgb, var(--theme-page) 55%, transparent);
+  --sync-badge-bg: var(--theme-success-soft);
+  --sync-badge-border: color-mix(
+    in srgb,
+    var(--theme-success) 28%,
+    transparent
+  );
+  --clear-checked-bg: var(--theme-danger-soft);
+  --clear-checked-hover-bg: color-mix(
+    in srgb,
+    var(--theme-danger) 24%,
+    transparent
+  );
+  --clear-checked-border: color-mix(
+    in srgb,
+    var(--theme-danger) 28%,
+    transparent
+  );
+  --gradient-progress: linear-gradient(
+    90deg,
+    var(--theme-secondary-strong),
+    var(--theme-success)
+  );
+}
+
+html.light {
+  color-scheme: light;
+  --theme-page: #eef7fa;
+  --theme-surface: #ffffff;
+  --theme-surface-raised: #d9edf2;
+  --theme-surface-soft: #f5fafb;
+  --theme-border: #c4dce3;
+  --theme-border-strong: #a5c5cf;
+  --theme-ink: #16313e;
+  --theme-ink-muted: #55717c;
+  --theme-ink-subtle: #6b8792;
+  --theme-on-accent: #ffffff;
+  --theme-primary: #00bed3;
+  --theme-primary-strong: #0891b22e;
+  --theme-secondary: #fc51af;
+  --theme-secondary-strong: #f094c4;
+  --theme-success: #1ac559;
+  --theme-success-soft: rgba(19, 129, 60, 0.12);
+  --theme-danger: #be123c;
+  --theme-danger-soft: rgba(225, 29, 72, 0.1);
+  --theme-warning: #9d174d;
+  --theme-warning-soft: rgba(219, 39, 119, 0.08);
+  --theme-focus: #0891b2;
+  --theme-overlay: rgba(22, 49, 62, 0.34);
+  --theme-shadow: 0 20px 50px rgba(22, 49, 62, 0.12);
+  --theme-shadow-soft: 0 8px 24px rgba(22, 49, 62, 0.08);
+}
+
+html,
+body,
+#root {
+  min-height: 100%;
+  background: var(--theme-page);
+  color: var(--theme-ink);
+}
+
+button,
+input,
+select {
+  font: inherit;
+}
+
+:where(button, input, select):focus-visible {
+  outline: 2px solid var(--theme-focus);
+  outline-offset: 2px;
+}

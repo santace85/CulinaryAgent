@@ -11,11 +11,17 @@ import {
   Sparkles,
   Zap,
 } from "lucide-react";
+import "./CookingModeModal.css";
 
 interface CookingModeModalProps {
   recipe: Recipe | null;
   onClose: () => void;
-  onStartTimer: (label: string, seconds: number, recipeTitle?: string, stepNumber?: number) => void;
+  onStartTimer: (
+    label: string,
+    seconds: number,
+    recipeTitle?: string,
+    stepNumber?: number,
+  ) => void;
 }
 
 export const CookingModeModal: React.FC<CookingModeModalProps> = ({
@@ -24,7 +30,9 @@ export const CookingModeModal: React.FC<CookingModeModalProps> = ({
   onStartTimer,
 }) => {
   const [currentStepIdx, setCurrentStepIdx] = useState<number>(0);
-  const [completedSteps, setCompletedSteps] = useState<Record<number, boolean>>({});
+  const [completedSteps, setCompletedSteps] = useState<Record<number, boolean>>(
+    {},
+  );
   const [isSpeaking, setIsSpeaking] = useState<boolean>(false);
 
   if (!recipe) return null;
@@ -67,28 +75,30 @@ export const CookingModeModal: React.FC<CookingModeModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-slate-950/95 backdrop-blur-md animate-fade-in">
-      <div className="w-full max-w-4xl bg-slate-900 border border-slate-800 rounded-3xl p-6 sm:p-8 shadow-2xl text-slate-100 relative space-y-6 flex flex-col justify-between max-h-[95vh] overflow-y-auto custom-scrollbar">
+    <div className="cooking-mode-overlay">
+      <div className="cooking-mode-modal">
         {/* Top Header */}
-        <div className="flex items-center justify-between border-b border-slate-800 pb-4">
+        <div className="cooking-mode-header">
           <div>
-            <div className="flex items-center space-x-2 text-xs text-orange-400 font-semibold uppercase tracking-wider">
-              <Sparkles className="w-3.5 h-3.5" /> Hands-Free Cooking Assistant
+            <div className="cooking-mode-eyebrow">
+              <Sparkles /> Hands-Free Cooking Assistant
             </div>
-            <h2 className="text-xl sm:text-2xl font-bold text-white mt-1">{recipe.title}</h2>
+            <h2 className="cooking-mode-title">{recipe.title}</h2>
           </div>
 
-          <div className="flex items-center space-x-2">
+          <div>
             <button
               onClick={handleSpeakStep}
-              className={`flex items-center space-x-1.5 px-3 py-2 rounded-xl text-xs font-semibold border transition-all ${
-                isSpeaking
-                  ? "bg-amber-500/20 text-amber-300 border-amber-500/40 animate-pulse"
-                  : "bg-slate-800 text-slate-300 border-slate-700 hover:text-white"
+              className={`cooking-mode-voice ${
+                isSpeaking ? "cooking-mode-voice--active" : ""
               }`}
               title="Read Step Instructions Aloud"
             >
-              {isSpeaking ? <VolumeX className="w-4 h-4 text-amber-400" /> : <Volume2 className="w-4 h-4 text-slate-300" />}
+              {isSpeaking ? (
+                <VolumeX className="cooking-mode-voice-icon" />
+              ) : (
+                <Volume2 className="cooking-mode-voice-icon" />
+              )}
               <span>{isSpeaking ? "Stop Voice" : "Voice Read"}</span>
             </button>
 
@@ -97,33 +107,35 @@ export const CookingModeModal: React.FC<CookingModeModalProps> = ({
                 if (isSpeaking) window.speechSynthesis.cancel();
                 onClose();
               }}
-              className="p-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-white"
+              className="cooking-mode-close"
             >
-              <X className="w-5 h-5" />
+              <X />
             </button>
           </div>
         </div>
 
         {/* Progress Tracker */}
-        <div className="space-y-2">
-          <div className="flex justify-between text-xs font-bold text-slate-400 uppercase tracking-wider">
+        <div className="cooking-mode-progress">
+          <div className="cooking-mode-progress-label">
             <span>
               Step {currentStepIdx + 1} of {totalSteps}
             </span>
-            <span>{Math.round(((currentStepIdx + 1) / totalSteps) * 100)}% Completed</span>
+            <span>
+              {Math.round(((currentStepIdx + 1) / totalSteps) * 100)}% Completed
+            </span>
           </div>
-          <div className="w-full h-3 bg-slate-950 rounded-full overflow-hidden border border-slate-800">
+          <div className="cooking-mode-progress-track">
             <div
-              className="h-full bg-gradient-to-r from-orange-500 to-amber-400 transition-all duration-300"
+              className="cooking-mode-progress-fill"
               style={{ width: `${((currentStepIdx + 1) / totalSteps) * 100}%` }}
             />
           </div>
         </div>
 
         {/* Big Active Step Card */}
-        <div className="bg-slate-950/80 border border-slate-800 rounded-3xl p-6 sm:p-8 space-y-6 shadow-xl my-4">
-          <div className="flex items-center justify-between">
-            <span className="px-3 py-1 rounded-full bg-orange-500/20 text-orange-300 border border-orange-500/30 text-xs font-bold uppercase tracking-wider">
+        <div className="cooking-mode-step">
+          <div className="cooking-mode-step-header">
+            <span className="cooking-mode-step-badge">
               Step #{currentStep.stepNumber}
             </span>
 
@@ -134,28 +146,28 @@ export const CookingModeModal: React.FC<CookingModeModalProps> = ({
                     `${recipe.title} (Step ${currentStep.stepNumber})`,
                     currentStep.timerSeconds!,
                     recipe.title,
-                    currentStep.stepNumber
+                    currentStep.stepNumber,
                   )
                 }
-                className="flex items-center space-x-2 px-4 py-2 rounded-xl bg-amber-500/20 text-amber-300 border border-amber-500/40 text-sm font-bold hover:bg-amber-500/30 transition-all"
+                className="cooking-mode-timer"
               >
-                <TimerIcon className="w-4 h-4 text-amber-400" />
-                <span>⏱️ Start {Math.round(currentStep.timerSeconds / 60)}m Timer</span>
+                <TimerIcon className="cooking-mode-timer-icon" />
+                <span>
+                  ⏱️ Start {Math.round(currentStep.timerSeconds / 60)}m Timer
+                </span>
               </button>
             )}
           </div>
 
-          <h3 className="text-2xl sm:text-3xl font-extrabold text-white">{currentStep.title}</h3>
+          <h3 className="cooking-mode-step-title">{currentStep.title}</h3>
 
-          <p className="text-base sm:text-xl text-slate-200 leading-relaxed font-normal">
-            {currentStep.instruction}
-          </p>
+          <p className="cooking-mode-instruction">{currentStep.instruction}</p>
 
           {currentStep.tip && (
-            <div className="bg-amber-500/10 border border-amber-500/20 text-amber-200 p-4 rounded-2xl text-sm flex items-start gap-2.5">
-              <Zap className="w-5 h-5 text-amber-400 shrink-0 mt-0.5" />
+            <div className="cooking-mode-tip">
+              <Zap className="cooking-mode-tip-icon" />
               <div>
-                <strong className="block text-amber-300 font-bold mb-0.5">Chef Tip:</strong>
+                <strong>Chef Tip:</strong>
                 {currentStep.tip}
               </div>
             </div>
@@ -163,34 +175,36 @@ export const CookingModeModal: React.FC<CookingModeModalProps> = ({
 
           <button
             onClick={() => toggleStepComplete(currentStep.stepNumber)}
-            className={`flex items-center space-x-2 px-5 py-3 rounded-2xl border text-sm font-bold transition-all ${
+            className={`cooking-mode-complete ${
               completedSteps[currentStep.stepNumber]
-                ? "bg-emerald-500/20 text-emerald-300 border-emerald-500/40"
-                : "bg-slate-900 text-slate-300 border-slate-700 hover:border-slate-600"
+                ? "cooking-mode-complete--done"
+                : ""
             }`}
           >
-            <CheckCircle2 className="w-5 h-5" />
+            <CheckCircle2 className="cooking-mode-complete-icon" />
             <span>
-              {completedSteps[currentStep.stepNumber] ? "Step Marked Complete ✓" : "Mark Step Complete"}
+              {completedSteps[currentStep.stepNumber]
+                ? "Step Marked Complete ✓"
+                : "Mark Step Complete"}
             </span>
           </button>
         </div>
 
         {/* Footer Step Navigation */}
-        <div className="flex items-center justify-between pt-4 border-t border-slate-800">
+        <div className="cooking-mode-footer">
           <button
             onClick={() => {
               if (isSpeaking) window.speechSynthesis.cancel();
               setCurrentStepIdx((idx) => Math.max(0, idx - 1));
             }}
             disabled={currentStepIdx === 0}
-            className="flex items-center space-x-2 px-5 py-3 rounded-2xl bg-slate-800 text-slate-200 font-bold text-sm hover:bg-slate-700 disabled:opacity-40 transition-all"
+            className="cooking-mode-nav"
           >
-            <ChevronLeft className="w-5 h-5" />
+            <ChevronLeft />
             <span>Previous Step</span>
           </button>
 
-          <span className="text-xs text-slate-400 font-medium">
+          <span className="cooking-mode-counter">
             {currentStepIdx + 1} / {totalSteps}
           </span>
 
@@ -200,10 +214,10 @@ export const CookingModeModal: React.FC<CookingModeModalProps> = ({
               setCurrentStepIdx((idx) => Math.min(totalSteps - 1, idx + 1));
             }}
             disabled={currentStepIdx === totalSteps - 1}
-            className="flex items-center space-x-2 px-5 py-3 rounded-2xl bg-gradient-to-r from-orange-600 to-amber-600 text-white font-bold text-sm hover:brightness-110 disabled:opacity-40 transition-all shadow-lg"
+            className="cooking-mode-nav cooking-mode-nav--next"
           >
             <span>Next Step</span>
-            <ChevronRight className="w-5 h-5" />
+            <ChevronRight />
           </button>
         </div>
       </div>

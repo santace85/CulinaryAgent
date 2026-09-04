@@ -4,109 +4,6 @@
    utility classes used in NavbarHeader.tsx
    ========================================================= */
 
-:root {
-  /* --- Color palette (Tailwind slate/amber/orange/emerald/rose) --- */
-  --color-slate-100: #f1f5f9;
-  --color-slate-200: #e2e8f0;
-  --color-slate-300: #cbd5e1;
-  --color-slate-400: #94a3b8;
-  --color-slate-700: #334155;
-  --color-slate-800: #1e293b;
-  --color-slate-900: #0f172a;
-  --color-slate-950: #020617;
-
-  --color-amber-300: #fcd34d;
-  --color-amber-400: #fbbf24;
-  --color-amber-500: #f59e0b;
-
-  --color-orange-300: #fdba74;
-  --color-orange-400: #fb923c;
-  --color-orange-500: #f97316;
-  --color-orange-600: #ea580c;
-
-  --color-emerald-300: #6ee7b7;
-  --color-emerald-400: #34d399;
-  --color-emerald-500: #10b981;
-
-  --color-rose-300: #fda4af;
-  --color-rose-500: #f43f5e;
-
-  --color-indigo-300: #a5b4fc;
-  --color-white: #ffffff;
-
-  /* --- Alpha-blended surface colors (Tailwind's /NN opacity modifiers) --- */
-  --navbar-bg: rgb(15 23 42 / 0.9); /* bg-slate-900/90 */
-  --nav-pill-bg: rgb(2 6 23 / 0.6); /* bg-slate-950/60 */
-  --logo-shadow-color: rgb(249 115 22 / 0.2); /* shadow-orange-500/20 */
-  --active-nav-shadow: rgb(234 88 12 / 0.3); /* shadow-orange-600/30 */
-  --badge-border-emerald: rgb(16 185 129 / 0.3);
-  --badge-bg-rose: rgb(244 63 94 / 0.2);
-  --badge-border-rose: rgb(244 63 94 / 0.3);
-  --badge-bg-emerald: rgb(16 185 129 / 0.2);
-  --timer-bg-active: rgb(245 158 11 / 0.1);
-  --timer-border-active: rgb(245 158 11 / 0.4);
-  --timer-bg-inactive: rgb(30 41 59 / 0.8);
-  --nav-inactive-hover-bg: rgb(30 41 59 / 0.6);
-
-  /* --- Gradients --- */
-  --gradient-logo: linear-gradient(
-    to top right,
-    var(--color-amber-500),
-    var(--color-orange-500),
-    var(--color-emerald-500)
-  );
-  --gradient-brand-text: linear-gradient(
-    to right,
-    var(--color-amber-400),
-    var(--color-orange-300),
-    var(--color-emerald-400)
-  );
-  --gradient-nav-active: linear-gradient(
-    to right,
-    var(--color-orange-600),
-    var(--color-amber-600, #d97706)
-  );
-
-  /* --- Spacing scale (mirrors Tailwind's rem-based scale) --- */
-  --space-1: 0.25rem;
-  --space-1_5: 0.375rem;
-  --space-2: 0.5rem;
-  --space-3: 0.75rem;
-  --space-3_5: 0.875rem;
-  --space-4: 1rem;
-  --space-6: 1.5rem;
-  --space-8: 2rem;
-
-  /* --- Radii --- */
-  --radius-lg: 0.5rem;
-  --radius-xl: 0.75rem;
-  --radius-full: 9999px;
-
-  /* --- Typography --- */
-  --text-2xs: 10px;
-  --text-xs: 0.75rem;
-  --text-sm: 0.875rem;
-  --text-md: 0.875rem; /* nav count badge (11px handled inline below) */
-  --text-lg: 1.125rem;
-  --tracking-tight: -0.025em;
-  --tracking-wider: 0.05em;
-
-  /* --- Layout --- */
-  --header-height: 4rem;
-  --content-max-width: 80rem;
-
-  /* --- Shadows --- */
-  --shadow-lg:
-    0 10px 15px -3px rgb(0 0 0 / 0.3), 0 4px 6px -4px rgb(0 0 0 / 0.3);
-  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.2), 0 2px 4px -2px rgb(0 0 0 / 0.2);
-
-  /* --- Transitions --- */
-  --transition-all: all 0.15s ease-in-out;
-  --transition-colors:
-    color 0.15s ease-in-out, background-color 0.15s ease-in-out,
-    border-color 0.15s ease-in-out;
-}
-
 /* =========================================================
    Header shell
    ========================================================= */
@@ -207,7 +104,7 @@
 }
 
 .navbar-badge {
-  display: flex;
+  display: none;
   align-items: center;
   gap: var(--space-1);
   padding: 0.125rem var(--space-2);
@@ -220,7 +117,11 @@
   border: 1px solid var(--badge-border-emerald);
   border-radius: var(--radius-full);
 }
-
+@media (min-width: 1024px) {
+  .navbar-badge {
+    display: flex;
+  }
+}
 .navbar-badge-icon {
   width: 0.625rem;
   height: 0.625rem;
