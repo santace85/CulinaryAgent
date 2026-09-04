@@ -103,7 +103,7 @@ app.post("/api/recipe", rateLimitMiddleware, async (req, res) => {
       });
     }
 
-    const systemInstruction = `You are CulinaryAgent AI, a world-class professional chef and culinary scientist.
+    const systemInstruction = `You are CooksALotl AI, a helpful professional chef and culinary scientist.
 Your task is to generate complete, structured, highly accurate cooking recipes formatted strictly as JSON.
 When given a user query, generate a detailed recipe with:
 1. A conversational 'agentIntro' (1-2 sentences) that explains why this recipe is a great choice based on their request (e.g., "This hearty pasta is perfect for a cozy winter evening.").

@@ -23,8 +23,11 @@ import {
   saveStoredTimers,
 } from "./utils/storage";
 import { STARTER_RECIPES } from "./data/mockRecipes";
+import { useTheme } from "./context/ThemeContext";
 
 export default function App() {
+  const { toggleTheme, darkMode } = useTheme();
+
   const [activeTab, setActiveTab] = useState<
     "agent" | "favorites" | "shopping" | "substitutions"
   >("agent");
@@ -49,14 +52,13 @@ export default function App() {
     null,
   );
   const [substitutionQuery, setSubstitutionQuery] = useState("");
-  const [darkMode, setDarkMode] = useState(true);
 
   // Initial Agent Messages
   const [messages, setMessages] = useState<AgentMessage[]>([
     {
       id: "msg_welcome",
       sender: "agent",
-      text: "Welcome to **CulinaryAgent AI**! I'm your interactive culinary & recipe agent assistant. Tell me what ingredients you have, dietary restrictions, or meal cravings, and I'll generate a custom recipe with interactive ingredient lists, step-by-step timers, and smart substitutions!",
+      text: "Welcome to **CooksALotl AI**. Tell me what you have, what you like, or what you need to avoid, and I'll turn it into a recipe.",
       timestamp: new Date().toLocaleTimeString([], {
         hour: "2-digit",
         minute: "2-digit",
@@ -130,9 +132,7 @@ export default function App() {
   };
 
   return (
-    <div
-      className={`min-h-screen ${darkMode ? "bg-slate-950 text-slate-100" : "bg-slate-50 text-slate-900"} font-sans antialiased`}
-    >
+    <div className={`font-sans antialiased`}>
       {/* Navbar Header */}
       <NavbarHeader
         activeTab={activeTab}
@@ -144,7 +144,7 @@ export default function App() {
         }
         onOpenTimers={() => setIsTimersOpen(true)}
         darkMode={darkMode}
-        setDarkMode={setDarkMode}
+        setDarkMode={toggleTheme}
       />
 
       {/* Main Tab View Router */}

@@ -20,6 +20,7 @@ import {
   Check,
   Zap,
 } from "lucide-react";
+import "./DynamicRecipeCard.css";
 
 interface DynamicRecipeCardProps {
   recipe: Recipe;
@@ -130,49 +131,38 @@ export const DynamicRecipeCard: React.FC<DynamicRecipeCardProps> = ({
     setTimeout(() => setCopiedAlert(false), 2500);
   };
 
-  const cardBg = darkMode
-    ? "bg-slate-900/90 border-slate-800 text-slate-100 shadow-xl"
-    : "bg-white border-slate-200 text-slate-800 shadow-lg";
-
   return (
-    <div className={`rounded-2xl border p-5 sm:p-6 transition-all ${cardBg}`}>
+    <div
+      className={`recipe-card ${darkMode ? "recipe-card--dark" : "recipe-card--light"}`}
+    >
       {/* Top Banner Header */}
-      <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4 pb-5 border-b border-slate-800/80">
-        <div className="space-y-1.5 flex-1">
-          <div className="flex flex-wrap items-center gap-2">
-            <span className="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-orange-500/10 text-orange-400 border border-orange-500/20">
+      <div className="recipe-header">
+        <div className="recipe-header-info">
+          <div className="recipe-tags">
+            <span className="recipe-tag recipe-tag--cuisine">
               {recipe.cuisine || "International"}
             </span>
-            <span className="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+            <span className="recipe-tag recipe-tag--difficulty">
               {recipe.difficulty || "Easy"}
             </span>
             {recipe.dietaryTags?.map((tag, idx) => (
-              <span
-                key={idx}
-                className="px-2.5 py-0.5 rounded-full text-xs font-medium bg-slate-800 text-slate-300 border border-slate-700"
-              >
+              <span key={idx} className="recipe-tag recipe-tag--dietary">
                 {tag}
               </span>
             ))}
           </div>
 
-          <h2 className="text-xl sm:text-2xl font-bold tracking-tight text-white">
-            {recipe.title}
-          </h2>
-          <p className="text-sm text-slate-300 leading-relaxed">
-            {recipe.summary}
-          </p>
+          <h2 className="recipe-title">{recipe.title}</h2>
+          <p className="recipe-summary">{recipe.summary}</p>
         </div>
 
         {/* Favorite & Share Buttons */}
-        <div className="flex items-center space-x-2 shrink-0">
+        <div className="recipe-actions">
           <button
             id={`btn-fav-${recipe.id}`}
             onClick={() => onToggleFavorite(recipe)}
-            className={`p-2.5 rounded-xl border transition-all ${
-              isFavorite
-                ? "bg-rose-500/20 text-rose-400 border-rose-500/40 shadow-sm shadow-rose-500/20"
-                : "bg-slate-800/80 text-slate-400 border-slate-700 hover:text-slate-200 hover:bg-slate-800"
+            className={`recipe-fav-btn ${
+              isFavorite ? "recipe-fav-btn--active" : "recipe-fav-btn--inactive"
             }`}
             title={
               isFavorite
@@ -181,69 +171,61 @@ export const DynamicRecipeCard: React.FC<DynamicRecipeCardProps> = ({
             }
           >
             <Heart
-              className={`w-5 h-5 ${isFavorite ? "fill-rose-400 text-rose-400" : ""}`}
+              className={`recipe-fav-icon ${isFavorite ? "recipe-fav-icon--active" : ""}`}
             />
           </button>
 
           <button
             id={`btn-cooking-mode-${recipe.id}`}
             onClick={() => onOpenCookingMode(recipe)}
-            className="flex items-center space-x-1.5 px-3 py-2 rounded-xl bg-linear-to-r from-orange-600 to-amber-600 text-white font-medium text-xs shadow-md shadow-orange-600/30 hover:brightness-110 transition-all"
-            title="Open Hands-Free Step-by-Step Cooking Mode"
+            className="recipe-cook-btn"
+            title="Open cook mode"
           >
-            <Maximize2 className="w-4 h-4" />
-            <span className="hidden sm:inline">Cook Mode</span>
+            <Maximize2 />
+            <span className="recipe-cook-btn-label">Cook Mode</span>
           </button>
         </div>
       </div>
 
       {/* Meta Bar: Prep Time, Cook Time, Servings Scaler, Calories */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 py-4 border-b border-slate-800/80 my-2">
-        <div className="flex items-center space-x-2.5 p-2.5 rounded-xl bg-slate-950/50 border border-slate-800">
-          <Clock className="w-4 h-4 text-amber-400 shrink-0" />
+      <div className="recipe-meta-grid">
+        <div className="recipe-meta-item">
+          <Clock className="recipe-meta-icon recipe-meta-icon--prep" />
           <div>
-            <div className="text-[11px] uppercase tracking-wider text-slate-400 font-semibold">
-              Prep Time
-            </div>
-            <div className="text-xs font-bold text-slate-200">
+            <div className="recipe-meta-label">Prep Time</div>
+            <div className="recipe-meta-value">
               {recipe.prepTimeMinutes || 10} mins
             </div>
           </div>
         </div>
 
-        <div className="flex items-center space-x-2.5 p-2.5 rounded-xl bg-slate-950/50 border border-slate-800">
-          <TimerIcon className="w-4 h-4 text-orange-400 shrink-0" />
+        <div className="recipe-meta-item">
+          <TimerIcon className="recipe-meta-icon recipe-meta-icon--cook" />
           <div>
-            <div className="text-[11px] uppercase tracking-wider text-slate-400 font-semibold">
-              Cook Time
-            </div>
-            <div className="text-xs font-bold text-slate-200">
+            <div className="recipe-meta-label">Cook Time</div>
+            <div className="recipe-meta-value">
               {recipe.cookTimeMinutes || 15} mins
             </div>
           </div>
         </div>
 
-        <div className="flex items-center space-x-2.5 p-2.5 rounded-xl bg-slate-950/50 border border-slate-800">
-          <Users className="w-4 h-4 text-emerald-400 shrink-0" />
-          <div className="flex-1">
-            <div className="text-[11px] uppercase tracking-wider text-slate-400 font-semibold">
-              Servings
-            </div>
-            <div className="flex items-center space-x-1 mt-0.5">
+        <div className="recipe-meta-item recipe-meta-item--servings">
+          <Users className="recipe-meta-icon recipe-meta-icon--servings" />
+          <div style={{ flex: 1 }}>
+            <div className="recipe-meta-label">Servings</div>
+            <div className="recipe-servings-controls">
               <button
                 onClick={() =>
                   setCurrentServings((count) => Math.max(1, count - 1))
                 }
-                className="w-5 h-5 rounded bg-slate-800 text-slate-300 flex items-center justify-center font-bold text-xs hover:bg-slate-700"
+                className="recipe-servings-btn"
               >
                 -
               </button>
-              <span className="text-xs font-bold text-emerald-300 px-1">
-                {currentServings}
-              </span>
+              <span className="recipe-servings-value">{currentServings}</span>
               <button
                 onClick={() => setCurrentServings((count) => count + 1)}
-                className="w-5 h-5 rounded bg-slate-800 text-slate-300 flex items-center justify-center font-bold text-xs hover:bg-slate-700"
+                className="recipe-servings-btn"
               >
                 +
               </button>
@@ -251,18 +233,14 @@ export const DynamicRecipeCard: React.FC<DynamicRecipeCardProps> = ({
           </div>
         </div>
 
-        <div className="flex items-center space-x-2.5 p-2.5 rounded-xl bg-slate-950/50 border border-slate-800">
-          <Flame className="w-4 h-4 text-rose-400 shrink-0" />
+        <div className="recipe-meta-item">
+          <Flame className="recipe-meta-icon recipe-meta-icon--calories" />
           <div>
-            <div className="text-[11px] uppercase tracking-wider text-slate-400 font-semibold">
-              Calories
-            </div>
-            <div className="flex items-baseline gap-2">
-              <div className="text-xs font-bold text-slate-200">
-                {calorieValue} kcal
-              </div>
+            <div className="recipe-meta-label">Calories</div>
+            <div className="recipe-calories-row">
+              <div className="recipe-meta-value">{calorieValue} kcal</div>
               {macroSummary && (
-                <div className="text-[10px] text-slate-400">{macroSummary}</div>
+                <div className="recipe-macro-summary">{macroSummary}</div>
               )}
             </div>
           </div>
@@ -270,15 +248,15 @@ export const DynamicRecipeCard: React.FC<DynamicRecipeCardProps> = ({
       </div>
 
       {/* Main Grid: Ingredients Checkbox List & Steps */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 my-4">
+      <div className="recipe-main-grid">
         {/* Left Column: Interactive Checkbox Ingredients List */}
-        <div className="lg:col-span-5 space-y-3 bg-slate-950/60 p-4 rounded-xl border border-slate-800/80">
-          <div className="flex items-center justify-between pb-2 border-b border-slate-800">
-            <div className="flex items-center space-x-2">
-              <ChefHat className="w-4 h-4 text-amber-400" />
-              <h3 className="font-bold text-sm text-slate-200">
+        <div className="recipe-ingredients-col">
+          <div className="recipe-ingredients-header">
+            <div className="recipe-ingredients-title-row">
+              <ChefHat />
+              <h3 className="recipe-ingredients-heading">
                 Ingredients{" "}
-                <span className="text-xs font-normal text-slate-400">
+                <span className="recipe-count-label">
                   ({recipe.ingredients.length})
                 </span>
               </h3>
@@ -286,48 +264,46 @@ export const DynamicRecipeCard: React.FC<DynamicRecipeCardProps> = ({
             <button
               id={`btn-add-grocery-${recipe.id}`}
               onClick={handleExportShoppingList}
-              className="flex items-center space-x-1 px-2.5 py-1 rounded-lg bg-emerald-600/20 text-emerald-300 border border-emerald-500/30 text-xs font-medium hover:bg-emerald-600/30 transition-all"
+              className="recipe-export-btn"
             >
-              <ShoppingBag className="w-3.5 h-3.5" />
+              <ShoppingBag />
               <span>{addedShoppingAlert ? "Added!" : "Export to Grocery"}</span>
             </button>
           </div>
 
-          <div className="space-y-2 max-h-96 overflow-y-auto pr-1 custom-scrollbar">
+          <div className="recipe-ingredients-list recipe-scrollbar">
             {recipe.ingredients.map((ing) => {
               const isChecked = !!checkedIngredients[ing.id];
               return (
                 <div
                   key={ing.id}
                   onClick={() => toggleIngredient(ing.id)}
-                  className={`flex items-start justify-between p-2.5 rounded-lg border transition-all cursor-pointer group ${
+                  className={`recipe-ingredient-item ${
                     isChecked
-                      ? "bg-slate-900/40 border-slate-800 text-slate-500 line-through"
-                      : "bg-slate-900/80 border-slate-800 text-slate-200 hover:border-slate-700 hover:bg-slate-800/60"
+                      ? "recipe-ingredient-item--checked"
+                      : "recipe-ingredient-item--unchecked"
                   }`}
                 >
-                  <div className="flex items-start space-x-2.5">
-                    <button className="mt-0.5 text-orange-400">
+                  <div className="recipe-ingredient-left">
+                    <button className="recipe-ingredient-check-btn">
                       {isChecked ? (
-                        <CheckCircle2 className="w-4 h-4 text-emerald-400" />
+                        <CheckCircle2 className="recipe-ingredient-check-icon--checked" />
                       ) : (
-                        <Circle className="w-4 h-4 text-slate-500 group-hover:text-slate-300" />
+                        <Circle className="recipe-ingredient-check-icon--unchecked" />
                       )}
                     </button>
                     <div>
-                      <span className="font-medium text-xs sm:text-sm">
-                        {ing.name}
-                      </span>
+                      <span className="recipe-ingredient-name">{ing.name}</span>
                       {ing.notes && (
-                        <div className="text-[11px] text-slate-400">
+                        <div className="recipe-ingredient-notes">
                           {ing.notes}
                         </div>
                       )}
                     </div>
                   </div>
 
-                  <div className="flex items-center space-x-2">
-                    <span className="text-xs font-semibold px-2 py-0.5 rounded bg-slate-800 text-amber-300/90 whitespace-nowrap">
+                  <div className="recipe-ingredient-right">
+                    <span className="recipe-ingredient-amount">
                       {getScaledAmount(ing.amount)} {ing.unit}
                     </span>
                     {onRequestSubstitution && (
@@ -336,10 +312,10 @@ export const DynamicRecipeCard: React.FC<DynamicRecipeCardProps> = ({
                           e.stopPropagation();
                           onRequestSubstitution(ing.name);
                         }}
-                        className="text-[10px] text-slate-400 hover:text-orange-300 p-1 rounded hover:bg-slate-800"
+                        className="recipe-ingredient-sub-btn"
                         title={`Find AI substitution for ${ing.name}`}
                       >
-                        <Repeat className="w-3 h-3" />
+                        <Repeat />
                       </button>
                     )}
                   </div>
@@ -350,13 +326,13 @@ export const DynamicRecipeCard: React.FC<DynamicRecipeCardProps> = ({
         </div>
 
         {/* Right Column: Interactive Step-by-Step Instructions with Timers */}
-        <div className="lg:col-span-7 space-y-3">
-          <div className="flex items-center justify-between pb-2 border-b border-slate-800">
-            <div className="flex items-center space-x-2">
-              <Sparkles className="w-4 h-4 text-orange-400" />
-              <h3 className="font-bold text-sm text-slate-200">
-                Step-by-Step Cooking Guide{" "}
-                <span className="text-xs font-normal text-slate-400">
+        <div className="recipe-steps-col">
+          <div className="recipe-steps-header">
+            <div className="recipe-steps-title-row">
+              <Sparkles />
+              <h3 className="recipe-steps-heading">
+                Cooking steps{" "}
+                <span className="recipe-count-label">
                   (
                   {
                     Object.keys(completedSteps).filter(
@@ -367,41 +343,41 @@ export const DynamicRecipeCard: React.FC<DynamicRecipeCardProps> = ({
                 </span>
               </h3>
             </div>
-            <div className="text-xs text-slate-400">
+            <div className="recipe-steps-hint">
               Click step checkbox or timer button
             </div>
           </div>
 
-          <div className="space-y-3">
+          <div className="recipe-steps-list">
             {recipe.steps.map((step) => {
               const isCompleted = !!completedSteps[step.stepNumber];
               return (
                 <div
                   key={step.stepNumber}
-                  className={`p-3.5 rounded-xl border transition-all ${
+                  className={`recipe-step-item ${
                     isCompleted
-                      ? "bg-slate-950/40 border-slate-800/60 opacity-60"
-                      : "bg-slate-950/80 border-slate-800 text-slate-200 hover:border-slate-700"
+                      ? "recipe-step-item--completed"
+                      : "recipe-step-item--active"
                   }`}
                 >
-                  <div className="flex items-start gap-3">
+                  <div className="recipe-step-row">
                     <button
                       onClick={() => toggleStep(step.stepNumber)}
-                      className="mt-0.5 shrink-0 text-orange-400"
+                      className="recipe-step-check-btn"
                     >
                       {isCompleted ? (
-                        <CheckCircle2 className="w-5 h-5 text-emerald-400" />
+                        <CheckCircle2 />
                       ) : (
-                        <div className="w-5 h-5 rounded-full border border-slate-600 font-semibold text-[11px] flex items-center justify-center text-slate-400 hover:border-orange-400 hover:text-orange-400">
+                        <div className="recipe-step-number-circle">
                           {step.stepNumber}
                         </div>
                       )}
                     </button>
 
-                    <div className="flex-1 space-y-1.5">
-                      <div className="flex items-center justify-between">
+                    <div className="recipe-step-content">
+                      <div className="recipe-step-title-row">
                         <h4
-                          className={`font-semibold text-sm ${isCompleted ? "line-through text-slate-400" : "text-white"}`}
+                          className={`recipe-step-title ${isCompleted ? "recipe-step-title--completed" : ""}`}
                         >
                           {step.title}
                         </h4>
@@ -417,10 +393,10 @@ export const DynamicRecipeCard: React.FC<DynamicRecipeCardProps> = ({
                                 step.stepNumber,
                               )
                             }
-                            className="flex items-center space-x-1 px-2.5 py-1 rounded-lg bg-amber-500/10 text-amber-300 border border-amber-500/30 text-xs font-semibold hover:bg-amber-500/20 transition-all shadow-sm"
+                            className="recipe-step-timer-btn"
                             title={`Start ${Math.round(step.timerSeconds / 60)} minute timer`}
                           >
-                            <TimerIcon className="w-3.5 h-3.5" />
+                            <TimerIcon />
                             <span>
                               ⏱️ {Math.round(step.timerSeconds / 60)}m Timer
                             </span>
@@ -429,14 +405,14 @@ export const DynamicRecipeCard: React.FC<DynamicRecipeCardProps> = ({
                       </div>
 
                       <p
-                        className={`text-xs sm:text-sm leading-relaxed ${isCompleted ? "text-slate-500" : "text-slate-300"}`}
+                        className={`recipe-step-instruction ${isCompleted ? "recipe-step-instruction--completed" : ""}`}
                       >
                         {step.instruction}
                       </p>
 
                       {step.tip && (
-                        <div className="text-xs bg-amber-500/10 border border-amber-500/20 text-amber-200/90 p-2 rounded-lg mt-1 flex items-start gap-1.5">
-                          <Zap className="w-3.5 h-3.5 text-amber-400 shrink-0 mt-0.5" />
+                        <div className="recipe-step-tip">
+                          <Zap className="recipe-step-tip-icon" />
                           <span>
                             <strong>Chef Tip:</strong> {step.tip}
                           </span>
@@ -453,46 +429,37 @@ export const DynamicRecipeCard: React.FC<DynamicRecipeCardProps> = ({
 
       {/* Ingredient Substitutions Accordion / Panel */}
       {recipe.substitutions && recipe.substitutions.length > 0 && (
-        <div className="mt-4 pt-3 border-t border-slate-800">
+        <div className="recipe-subs-section">
           <button
             onClick={() => setShowSubstitutions((prev) => !prev)}
-            className="flex items-center justify-between w-full py-2 text-xs font-semibold uppercase tracking-wider text-slate-400 hover:text-slate-200"
+            className="recipe-subs-toggle"
           >
-            <div className="flex items-center space-x-2">
-              <Repeat className="w-4 h-4 text-emerald-400" />
-              <span>
-                Ingredient Substitutions & Swaps ({recipe.substitutions.length})
-              </span>
+            <div className="recipe-subs-toggle-left">
+              <Repeat />
+              <span>Ingredient swaps ({recipe.substitutions.length})</span>
             </div>
-            {showSubstitutions ? (
-              <ChevronUp className="w-4 h-4" />
-            ) : (
-              <ChevronDown className="w-4 h-4" />
-            )}
+            {showSubstitutions ? <ChevronUp /> : <ChevronDown />}
           </button>
 
           {showSubstitutions && (
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 mt-2">
+            <div className="recipe-subs-grid">
               {recipe.substitutions.map((sub, idx) => (
-                <div
-                  key={idx}
-                  className="p-2.5 rounded-lg bg-slate-950/60 border border-slate-800 text-xs space-y-1"
-                >
-                  <div className="flex items-center justify-between font-semibold">
-                    <span className="text-rose-300/90 line-through">
+                <div key={idx} className="recipe-sub-card">
+                  <div className="recipe-sub-header">
+                    <span className="recipe-sub-original">
                       {sub.originalIngredient}
                     </span>
-                    <span className="text-slate-500">➜</span>
-                    <span className="text-emerald-300 font-bold">
+                    <span className="recipe-sub-arrow">➜</span>
+                    <span className="recipe-sub-substitute">
                       {sub.substitute}
                     </span>
                   </div>
-                  <div className="text-[11px] text-slate-400 flex justify-between">
+                  <div className="recipe-sub-detail">
                     <span>Ratio: {sub.ratioOrNote}</span>
-                    <span className="text-amber-300/80">{sub.reason}</span>
+                    <span className="recipe-sub-reason">{sub.reason}</span>
                   </div>
                   {sub.macroDelta && (
-                    <div className="text-[10px] text-emerald-300/90">
+                    <div className="recipe-sub-macro">
                       Net macros: {getMacroDeltaSummary(sub.macroDelta)}
                     </div>
                   )}
@@ -504,40 +471,29 @@ export const DynamicRecipeCard: React.FC<DynamicRecipeCardProps> = ({
       )}
 
       {/* Chef Notes, Drink Pairing & Footer Action Bar */}
-      <div className="mt-5 pt-3 border-t border-slate-800/80 space-y-3 text-xs">
-        <div className="flex flex-col gap-3 sm:flex-row">
+      <div className="recipe-footer">
+        <div className="recipe-footer-notes-row">
           {recipe.chefNotes && (
-            <div className="flex-1 rounded-xl border border-amber-500/20 bg-amber-500/10 p-3 text-slate-200">
-              <div className="text-[11px] font-semibold uppercase tracking-wider text-amber-300">
-                Chef Notes
-              </div>
-              <div className="mt-1 text-sm text-slate-300">
-                {recipe.chefNotes}
-              </div>
+            <div className="recipe-chef-notes-box">
+              <div className="recipe-chef-notes-label">Chef Notes</div>
+              <div className="recipe-chef-notes-text">{recipe.chefNotes}</div>
             </div>
           )}
 
           {recipe.drinkPairing && (
-            <div className="flex-1 rounded-xl border border-cyan-500/20 bg-cyan-500/10 p-3 text-slate-200">
-              <div className="text-[11px] font-semibold uppercase tracking-wider text-cyan-300">
-                Drink Pairing
-              </div>
-              <div className="mt-1 text-sm text-slate-300">
-                {recipe.drinkPairing}
-              </div>
+            <div className="recipe-drink-box">
+              <div className="recipe-drink-label">Drink Pairing</div>
+              <div className="recipe-drink-text">{recipe.drinkPairing}</div>
             </div>
           )}
         </div>
 
-        <div className="flex items-center justify-end">
-          <button
-            onClick={handleCopyRecipe}
-            className="flex items-center space-x-1 px-3 py-1.5 rounded-lg bg-slate-800 text-slate-300 hover:text-white border border-slate-700 transition-colors"
-          >
+        <div className="recipe-copy-row">
+          <button onClick={handleCopyRecipe} className="recipe-copy-btn">
             {copiedAlert ? (
-              <Check className="w-3.5 h-3.5 text-emerald-400" />
+              <Check className="recipe-copy-icon--copied" />
             ) : (
-              <Printer className="w-3.5 h-3.5" />
+              <Printer />
             )}
             <span>{copiedAlert ? "Copied!" : "Copy Recipe"}</span>
           </button>

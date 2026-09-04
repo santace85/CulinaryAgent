@@ -1,0 +1,350 @@
+.cooking-mode-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--theme-space-3);
+  overflow: hidden;
+  background: var(--theme-overlay);
+  color: var(--theme-ink);
+  backdrop-filter: blur(12px);
+  animation: cooking-mode-fade-in 180ms ease-out;
+}
+
+.cooking-mode-modal {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: var(--theme-space-6);
+  width: 100%;
+  max-width: 56rem;
+  max-height: 95vh;
+  padding: var(--theme-space-6);
+  overflow-y: auto;
+  background: var(--theme-surface);
+  border: 1px solid var(--theme-border);
+  border-radius: var(--theme-radius-xl);
+  color: var(--theme-ink);
+  box-shadow: var(--theme-shadow);
+  scrollbar-width: thin;
+  scrollbar-color: var(--theme-border-strong) transparent;
+}
+
+.cooking-mode-header,
+.cooking-mode-footer,
+.cooking-mode-step-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.cooking-mode-header {
+  gap: var(--theme-space-4);
+  padding-bottom: var(--theme-space-4);
+  border-bottom: 1px solid var(--theme-border);
+}
+
+.cooking-mode-header > div:first-child {
+  min-width: 0;
+}
+
+.cooking-mode-header > div:last-child {
+  display: flex;
+  align-items: center;
+  gap: var(--theme-space-2);
+  flex-shrink: 0;
+}
+
+.cooking-mode-eyebrow {
+  display: flex;
+  align-items: center;
+  gap: var(--theme-space-2);
+  color: var(--theme-primary);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.cooking-mode-title,
+.cooking-mode-step-title {
+  margin: 0;
+  color: var(--theme-ink);
+}
+
+.cooking-mode-title {
+  margin-top: var(--theme-space-1);
+  font-size: clamp(1.25rem, 3vw, 1.5rem);
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.cooking-mode-voice,
+.cooking-mode-close,
+.cooking-mode-nav,
+.cooking-mode-complete,
+.cooking-mode-timer {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--theme-space-2);
+  border: 1px solid var(--theme-border);
+  border-radius: var(--theme-radius-lg);
+  cursor: pointer;
+  transition: var(--theme-transition);
+}
+
+.cooking-mode-voice,
+.cooking-mode-close,
+.cooking-mode-nav {
+  background: var(--theme-surface-raised);
+  color: var(--theme-ink-muted);
+}
+
+.cooking-mode-voice {
+  padding: var(--theme-space-2) var(--theme-space-3);
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+.cooking-mode-close {
+  width: 2.25rem;
+  height: 2.25rem;
+  padding: 0;
+}
+
+.cooking-mode-voice:hover,
+.cooking-mode-close:hover,
+.cooking-mode-nav:hover:not(:disabled),
+.cooking-mode-complete:hover {
+  background: var(--theme-surface-soft);
+  border-color: var(--theme-border-strong);
+  color: var(--theme-ink);
+}
+
+.cooking-mode-voice--active {
+  background: var(--theme-warning-soft);
+  border-color: color-mix(in srgb, var(--theme-warning) 45%, transparent);
+  color: var(--theme-warning);
+  animation: cooking-mode-pulse 1.5s ease-in-out infinite;
+}
+
+.cooking-mode-progress {
+  display: flex;
+  flex-direction: column;
+  gap: var(--theme-space-2);
+}
+
+.cooking-mode-progress-label,
+.cooking-mode-counter {
+  color: var(--theme-ink-muted);
+}
+
+.cooking-mode-progress-label {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--theme-space-3);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.cooking-mode-progress-track {
+  width: 100%;
+  height: 0.75rem;
+  overflow: hidden;
+  background: var(--theme-page);
+  border: 1px solid var(--theme-border);
+  border-radius: var(--theme-radius-pill);
+}
+
+.cooking-mode-progress-fill {
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    var(--theme-primary-strong),
+    var(--theme-primary)
+  );
+  transition: width 300ms ease;
+}
+
+.cooking-mode-step {
+  display: flex;
+  flex-direction: column;
+  gap: var(--theme-space-6);
+  margin: var(--theme-space-4) 0;
+  padding: var(--theme-space-6);
+  background: var(--theme-page);
+  border: 1px solid var(--theme-border);
+  border-radius: var(--theme-radius-xl);
+  box-shadow: var(--theme-shadow-soft);
+}
+
+.cooking-mode-step-header {
+  gap: var(--theme-space-3);
+}
+
+.cooking-mode-step-badge {
+  padding: var(--theme-space-1) var(--theme-space-3);
+  background: color-mix(in srgb, var(--theme-primary) 14%, transparent);
+  border: 1px solid color-mix(in srgb, var(--theme-primary) 35%, transparent);
+  border-radius: var(--theme-radius-pill);
+  color: var(--theme-primary);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.cooking-mode-timer {
+  padding: var(--theme-space-2) var(--theme-space-4);
+  background: var(--theme-warning-soft);
+  border-color: color-mix(in srgb, var(--theme-warning) 42%, transparent);
+  color: var(--theme-warning);
+  font-size: 0.875rem;
+  font-weight: 700;
+}
+
+.cooking-mode-timer:hover {
+  background: color-mix(in srgb, var(--theme-warning) 24%, transparent);
+}
+
+.cooking-mode-step-title {
+  font-size: clamp(1.5rem, 4vw, 1.875rem);
+  font-weight: 800;
+  line-height: 1.2;
+}
+
+.cooking-mode-instruction {
+  margin: 0;
+  color: var(--theme-ink-muted);
+  font-size: clamp(1rem, 3vw, 1.25rem);
+  line-height: 1.7;
+}
+
+.cooking-mode-tip {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--theme-space-3);
+  padding: var(--theme-space-4);
+  background: var(--theme-warning-soft);
+  border: 1px solid color-mix(in srgb, var(--theme-warning) 28%, transparent);
+  border-radius: var(--theme-radius-xl);
+  color: var(--theme-warning);
+  font-size: 0.875rem;
+  line-height: 1.5;
+}
+
+.cooking-mode-tip strong {
+  display: block;
+  margin-bottom: 0.125rem;
+  color: var(--theme-secondary);
+}
+
+.cooking-mode-complete {
+  align-self: flex-start;
+  padding: var(--theme-space-3) var(--theme-space-5);
+  background: var(--theme-surface);
+  color: var(--theme-ink-muted);
+  font-size: 0.875rem;
+  font-weight: 700;
+}
+
+.cooking-mode-complete--done {
+  background: var(--theme-success-soft);
+  border-color: color-mix(in srgb, var(--theme-success) 45%, transparent);
+  color: var(--theme-success);
+}
+
+.cooking-mode-footer {
+  gap: var(--theme-space-3);
+  padding-top: var(--theme-space-4);
+  border-top: 1px solid var(--theme-border);
+}
+
+.cooking-mode-nav {
+  padding: var(--theme-space-3) var(--theme-space-5);
+  font-size: 0.875rem;
+  font-weight: 700;
+}
+
+.cooking-mode-nav--next {
+  background: var(--theme-primary-strong);
+  border-color: var(--theme-primary-strong);
+  color: var(--theme-on-accent);
+}
+
+.cooking-mode-nav--next:hover:not(:disabled) {
+  background: var(--theme-primary);
+  border-color: var(--theme-primary);
+}
+
+.cooking-mode-nav:disabled {
+  cursor: not-allowed;
+  opacity: 0.4;
+}
+
+.cooking-mode-eyebrow svg,
+.cooking-mode-voice-icon,
+.cooking-mode-timer-icon,
+.cooking-mode-tip-icon,
+.cooking-mode-complete-icon,
+.cooking-mode-nav svg,
+.cooking-mode-close svg {
+  width: 1rem;
+  height: 1rem;
+  flex: 0 0 auto;
+}
+
+.cooking-mode-close svg {
+  width: 1.25rem;
+  height: 1.25rem;
+}
+
+@keyframes cooking-mode-fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes cooking-mode-pulse {
+  50% {
+    opacity: 0.65;
+  }
+}
+
+@media (min-width: 640px) {
+  .cooking-mode-overlay {
+    padding: var(--theme-space-6);
+  }
+}
+
+@media (max-width: 639px) {
+  .cooking-mode-modal,
+  .cooking-mode-step {
+    padding: var(--theme-space-4);
+  }
+
+  .cooking-mode-header {
+    align-items: flex-start;
+  }
+
+  .cooking-mode-voice span {
+    display: none;
+  }
+
+  .cooking-mode-step-header,
+  .cooking-mode-footer {
+    flex-wrap: wrap;
+  }
+
+  .cooking-mode-footer {
+    justify-content: center;
+  }
+}

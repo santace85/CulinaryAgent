@@ -1,6 +1,6 @@
 {
-  "name": "CulinaryAgent AI",
-  "description": "An interactive AI agent culinary suite featuring dynamic recipe components, step-by-step interactive cooking mode, smart ingredient substitution, precision timers, offline shopping list exporter, and community social creation sharing.",
+  "name": "CooksALotl AI",
+  "description": "An AI cooking companion that creates recipes, manages ingredients, offers swaps, and guides you through each step.",
   "requestFramePermissions": [],
   "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
 }

@@ -11,6 +11,7 @@ import {
   Loader2,
   RefreshCw,
 } from "lucide-react";
+import "./SubstitutionsGuide.css";
 
 const COMMON_PRESET_SUBSTITUTIONS: Record<string, Substitution[]> = {
   Buttermilk: [
@@ -133,57 +134,51 @@ export const SubstitutionsGuide: React.FC<SubstitutionsGuideProps> = ({
   };
 
   return (
-    <div className="max-w-5xl mx-auto px-4 py-6 space-y-6">
+    <div className="swap-container">
       {/* Header Banner */}
-      <div className="bg-slate-900 border border-slate-800 rounded-2xl p-5 shadow-xl space-y-3">
-        <div className="flex items-center space-x-3">
-          <div className="w-10 h-10 rounded-xl bg-orange-500/20 border border-orange-500/30 text-orange-400 flex items-center justify-center">
-            <Repeat className="w-5 h-5" />
+      <div className="swap-header-card">
+        <div className="swap-brand-row">
+          <div className="swap-icon-box">
+            <Repeat />
           </div>
           <div>
-            <h1 className="text-xl font-bold text-white flex items-center gap-2">
-              Smart Ingredient Substitution Engine
-              <span className="text-xs font-normal px-2 py-0.5 rounded-full bg-orange-500/10 text-orange-300 border border-orange-500/20">
-                AI Powered ⚡
-              </span>
+            <h1 className="swap-title">
+              Ingredient swaps
+              <span className="swap-badge">AI powered</span>
             </h1>
-            <p className="text-xs text-slate-400">
-              Missing an ingredient? Find instant culinary swaps for allergies,
-              dietary needs, or empty pantries.
+            <p className="swap-subtitle">
+              Missing something? Find a quick swap for your recipe.
             </p>
           </div>
         </div>
 
         {/* AI Search Bar */}
-        <form
-          onSubmit={handleAISearch}
-          className="flex items-center space-x-2 pt-2"
-        >
-          <div className="relative flex-1">
-            <Search className="w-4 h-4 text-slate-500 absolute left-3.5 top-3" />
+        <form onSubmit={handleAISearch} className="swap-search-form">
+          <div className="swap-search-wrapper">
+            <Search className="swap-search-icon" />
             <input
               type="text"
-              placeholder="Search ingredient to substitute (e.g. Buttermilk, Eggs, Heavy Cream, Wine, Yeast...)"
+              placeholder="Search an ingredient (e.g. eggs, cream, yeast)"
               value={searchQuery}
               onChange={(e) => {
                 setSearchQuery(e.target.value);
                 if (customResults) setCustomResults(null);
               }}
-              className="w-full bg-slate-950 border border-slate-800 rounded-xl pl-10 pr-4 py-2.5 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-orange-500"
+              className="swap-search-input"
             />
           </div>
 
           <button
             type="submit"
             disabled={!searchQuery.trim() || isLoading}
-            className="px-4 py-2.5 rounded-xl bg-gradient-to-r from-orange-600 to-amber-600 text-white font-semibold text-xs sm:text-sm flex items-center space-x-1.5 hover:brightness-110 disabled:opacity-50 transition-all shadow-md"
+            className="swap-submit-btn"
           >
             {isLoading ? (
-              <Loader2 className="w-4 h-4 animate-spin" />
+              <Loader2 className="swap-submit-spinner" />
             ) : (
               <>
-                <Sparkles className="w-4 h-4" />
-                <span>AI Find Swap</span>
+                <Sparkles />
+                <span>Find swap</span>
               </>
             )}
           </button>
@@ -192,31 +187,23 @@ export const SubstitutionsGuide: React.FC<SubstitutionsGuideProps> = ({
 
       {/* AI Custom Query Results */}
       {customResults && (
-        <div className="bg-slate-900 border border-orange-500/30 rounded-2xl p-5 shadow-xl space-y-3">
-          <h2 className="text-sm font-bold text-orange-300 flex items-center gap-1.5">
-            <Sparkles className="w-4 h-4 text-amber-400" /> AI Recommended
-            Substitutes for "{searchQuery}":
+        <div className="swap-ai-results">
+          <h2 className="swap-ai-results-heading">
+            <Sparkles /> AI Recommended Substitutes for "{searchQuery}":
           </h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+          <div className="swap-ai-grid">
             {customResults.map((sub, idx) => (
-              <div
-                key={idx}
-                className="p-4 rounded-xl bg-slate-950 border border-slate-800 space-y-1.5"
-              >
-                <div className="flex items-center justify-between font-bold text-sm">
-                  <span className="text-slate-400 line-through">
+              <div key={idx} className="swap-ai-card">
+                <div className="swap-ai-card-header">
+                  <span className="swap-ai-original">
                     {sub.originalIngredient}
                   </span>
-                  <span className="text-emerald-400">➜ {sub.substitute}</span>
+                  <span className="swap-ai-substitute">➜ {sub.substitute}</span>
                 </div>
-                <div className="text-xs text-amber-300 font-medium">
-                  Ratio: {sub.ratioOrNote}
-                </div>
-                <div className="text-xs text-slate-300 leading-relaxed">
-                  {sub.reason}
-                </div>
+                <div className="swap-ai-ratio">Ratio: {sub.ratioOrNote}</div>
+                <div className="swap-ai-reason">{sub.reason}</div>
                 {sub.macroDelta && (
-                  <div className="text-[10px] text-emerald-300/90">
+                  <div className="swap-ai-macro">
                     Net macros: {getMacroDeltaSummary(sub.macroDelta)}
                   </div>
                 )}
@@ -227,41 +214,31 @@ export const SubstitutionsGuide: React.FC<SubstitutionsGuideProps> = ({
       )}
 
       {/* Common Preset Library */}
-      <div className="space-y-4">
-        <h2 className="text-xs font-bold uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
-          <BookOpen className="w-4 h-4 text-amber-400" /> Popular Kitchen
-          Ingredient Swaps
+      <div className="swap-presets">
+        <h2 className="swap-presets-heading">
+          <BookOpen /> Popular Kitchen Ingredient Swaps
         </h2>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="swap-presets-grid">
           {Object.entries(COMMON_PRESET_SUBSTITUTIONS).map(([title, subs]) => (
-            <div
-              key={title}
-              className="bg-slate-900 border border-slate-800 rounded-2xl p-4 space-y-3"
-            >
-              <h3 className="font-bold text-sm text-amber-300 flex items-center gap-2 pb-2 border-b border-slate-800">
-                <RefreshCw className="w-3.5 h-3.5 text-orange-400" /> Substitute
-                for {title}
+            <div key={title} className="swap-preset-card">
+              <h3 className="swap-preset-card-heading">
+                <RefreshCw /> Substitute for {title}
               </h3>
 
-              <div className="space-y-2.5">
+              <div className="swap-preset-list">
                 {subs.map((sub, idx) => (
-                  <div
-                    key={idx}
-                    className="p-3 rounded-xl bg-slate-950 border border-slate-800 text-xs space-y-1"
-                  >
-                    <div className="font-bold text-emerald-300 flex items-center gap-1.5">
-                      <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+                  <div key={idx} className="swap-preset-item">
+                    <div className="swap-preset-item-title">
+                      <CheckCircle2 />
                       {sub.substitute}
                     </div>
-                    <div className="text-[11px] text-amber-300/90 font-medium">
+                    <div className="swap-preset-item-ratio">
                       Ratio: {sub.ratioOrNote}
                     </div>
-                    <div className="text-[11px] text-slate-400">
-                      {sub.reason}
-                    </div>
+                    <div className="swap-preset-item-reason">{sub.reason}</div>
                     {sub.macroDelta && (
-                      <div className="text-[10px] text-emerald-300/90">
+                      <div className="swap-preset-item-macro">
                         Net macros: {getMacroDeltaSummary(sub.macroDelta)}
                       </div>
                     )}

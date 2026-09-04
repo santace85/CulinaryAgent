@@ -6,10 +6,10 @@ import {
   Timer as TimerIcon,
   Repeat,
   Sparkles,
-  UtensilsCrossed,
   Sun,
   Moon,
 } from "lucide-react";
+import "./NavbarHeader.css";
 
 interface NavbarHeaderProps {
   activeTab: "agent" | "favorites" | "shopping" | "substitutions";
@@ -35,60 +35,56 @@ export const NavbarHeader: React.FC<NavbarHeaderProps> = ({
   setDarkMode,
 }) => {
   return (
-    <header className="sticky top-0 z-40 backdrop-blur-md bg-slate-900/90 border-b border-slate-800 text-slate-100 shadow-lg">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-16">
-          {/* Brand & Hybrid Agent Badge */}
-          <div
-            className="flex items-center space-x-3 cursor-pointer"
+    <header className="navbar-header">
+      <div className="navbar-container">
+        <div className="navbar-row">
+          <button
+            className="navbar-brand"
             onClick={() => setActiveTab("agent")}
+            type="button"
           >
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-amber-500 via-orange-500 to-emerald-500 flex items-center justify-center shadow-md shadow-orange-500/20">
-              <UtensilsCrossed className="w-5 h-5 text-white" />
+            <div className="navbar-logo">
+              <img className="navbar-logo-image" src="icon-192.png" alt="" />
             </div>
             <div>
-              <div className="flex items-center space-x-2">
-                <span className="font-bold text-lg tracking-tight bg-gradient-to-r from-amber-400 via-orange-300 to-emerald-400 bg-clip-text text-transparent">
-                  CulinaryAgent
-                </span>
-                <span className="px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider bg-slate-800 text-emerald-400 border border-emerald-500/30 rounded-full flex items-center gap-1">
-                  <Sparkles className="w-2.5 h-2.5" /> AI Powered
+              <div className="navbar-brand-row">
+                <span className="navbar-brand-name">CooksALotl AI</span>
+                <span className="navbar-badge">
+                  <Sparkles className="navbar-badge-icon" /> AI kitchen
                 </span>
               </div>
-              <p className="text-xs text-slate-400 hidden sm:block">
-                Interactive Recipe & Precision Culinary Suite
-              </p>
+              <p className="navbar-subtitle">Recipes from what you have</p>
             </div>
-          </div>
+          </button>
 
           {/* Navigation Tabs */}
-          <nav className="hidden md:flex items-center space-x-1 bg-slate-950/60 p-1 rounded-xl border border-slate-800">
+          <nav className="navbar-nav">
             <button
               id="tab-agent"
               onClick={() => setActiveTab("agent")}
-              className={`flex items-center space-x-2 px-3.5 py-1.5 rounded-lg text-sm font-medium transition-all ${
+              className={`navbar-nav-btn ${
                 activeTab === "agent"
-                  ? "bg-gradient-to-r from-orange-600 to-amber-600 text-white shadow-md shadow-orange-600/30"
-                  : "text-slate-400 hover:text-slate-200 hover:bg-slate-800/60"
+                  ? "navbar-nav-btn--active"
+                  : "navbar-nav-btn--inactive"
               }`}
             >
-              <Bot className="w-4 h-4" />
-              <span>AI Agent</span>
+              <Bot className="navbar-nav-icon" />
+              <span>Cook with AI</span>
             </button>
 
             <button
               id="tab-favorites"
               onClick={() => setActiveTab("favorites")}
-              className={`flex items-center space-x-2 px-3.5 py-1.5 rounded-lg text-sm font-medium transition-all ${
+              className={`navbar-nav-btn ${
                 activeTab === "favorites"
-                  ? "bg-gradient-to-r from-orange-600 to-amber-600 text-white shadow-md shadow-orange-600/30"
-                  : "text-slate-400 hover:text-slate-200 hover:bg-slate-800/60"
+                  ? "navbar-nav-btn--active"
+                  : "navbar-nav-btn--inactive"
               }`}
             >
-              <Heart className="w-4 h-4" />
-              <span>Saved Recipes</span>
+              <Heart className="navbar-nav-icon" />
+              <span>Saved</span>
               {favoritesCount > 0 && (
-                <span className="ml-1 px-1.5 py-0.2 text-xs font-semibold bg-rose-500/20 text-rose-300 border border-rose-500/30 rounded-full">
+                <span className="navbar-count-badge navbar-count-badge--rose">
                   {favoritesCount}
                 </span>
               )}
@@ -97,16 +93,16 @@ export const NavbarHeader: React.FC<NavbarHeaderProps> = ({
             <button
               id="tab-shopping"
               onClick={() => setActiveTab("shopping")}
-              className={`flex items-center space-x-2 px-3.5 py-1.5 rounded-lg text-sm font-medium transition-all ${
+              className={`navbar-nav-btn ${
                 activeTab === "shopping"
-                  ? "bg-gradient-to-r from-orange-600 to-amber-600 text-white shadow-md shadow-orange-600/30"
-                  : "text-slate-400 hover:text-slate-200 hover:bg-slate-800/60"
+                  ? "navbar-nav-btn--active"
+                  : "navbar-nav-btn--inactive"
               }`}
             >
-              <ShoppingBag className="w-4 h-4" />
-              <span>Shopping List</span>
+              <ShoppingBag className="navbar-nav-icon" />
+              <span>Groceries</span>
               {shoppingListCount > 0 && (
-                <span className="ml-1 px-1.5 py-0.2 text-xs font-semibold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 rounded-full">
+                <span className="navbar-count-badge navbar-count-badge--emerald">
                   {shoppingListCount}
                 </span>
               )}
@@ -115,93 +111,105 @@ export const NavbarHeader: React.FC<NavbarHeaderProps> = ({
             <button
               id="tab-substitutions"
               onClick={() => setActiveTab("substitutions")}
-              className={`flex items-center space-x-2 px-3.5 py-1.5 rounded-lg text-sm font-medium transition-all ${
+              className={`navbar-nav-btn ${
                 activeTab === "substitutions"
-                  ? "bg-gradient-to-r from-orange-600 to-amber-600 text-white shadow-md shadow-orange-600/30"
-                  : "text-slate-400 hover:text-slate-200 hover:bg-slate-800/60"
+                  ? "navbar-nav-btn--active"
+                  : "navbar-nav-btn--inactive"
               }`}
             >
-              <Repeat className="w-4 h-4" />
-              <span>Substitutions</span>
+              <Repeat className="navbar-nav-icon" />
+              <span>Swaps</span>
             </button>
           </nav>
 
           {/* Action Buttons: Timers & Theme */}
-          <div className="flex items-center space-x-3">
+          <div className="navbar-actions">
             <button
               id="btn-open-timers"
               onClick={onOpenTimers}
-              className={`relative flex items-center space-x-1.5 px-3 py-1.5 rounded-xl text-xs font-medium border transition-all ${
+              className={`navbar-timer-btn ${
                 activeTimersCount > 0
-                  ? "bg-amber-500/10 border-amber-500/40 text-amber-300 animate-pulse"
-                  : "bg-slate-800/80 border-slate-700 text-slate-300 hover:bg-slate-800"
+                  ? "navbar-timer-btn--active"
+                  : "navbar-timer-btn--inactive"
               }`}
               title="Active Timers"
             >
               <TimerIcon
-                className={`w-4 h-4 ${activeTimersCount > 0 ? "text-amber-400" : "text-slate-400"}`}
+                className={`navbar-timer-icon ${
+                  activeTimersCount > 0
+                    ? "navbar-timer-icon--active"
+                    : "navbar-timer-icon--inactive"
+                }`}
               />
-              <span className="hidden sm:inline">Timers</span>
+              <span className="navbar-timer-label">Timers</span>
               {activeTimersCount > 0 && (
-                <span className="w-5 h-5 rounded-full bg-amber-500 text-slate-950 font-bold text-[11px] flex items-center justify-center">
-                  {activeTimersCount}
-                </span>
+                <span className="navbar-timer-count">{activeTimersCount}</span>
               )}
             </button>
 
-            {/* <button
+            <button
               id="btn-toggle-theme"
               onClick={() => setDarkMode((prev) => !prev)}
-              className="p-2 rounded-xl bg-slate-800 border border-slate-700 text-slate-300 hover:text-white transition-colors"
-              title="Toggle Theme"
+              className="navbar-theme-btn"
+              title={darkMode ? "Use light theme" : "Use dark theme"}
+              aria-label={darkMode ? "Use light theme" : "Use dark theme"}
+              type="button"
             >
               {darkMode ? (
-                <Sun className="w-4 h-4 text-amber-400" />
+                <Sun className="navbar-theme-icon navbar-theme-icon--sun" />
               ) : (
-                <Moon className="w-4 h-4 text-indigo-300" />
+                <Moon className="navbar-theme-icon navbar-theme-icon--moon" />
               )}
-            </button> */}
+            </button>
           </div>
         </div>
       </div>
 
       {/* Mobile Bottom Navigation Bar */}
-      <div className="md:hidden flex items-center justify-around bg-slate-950 border-t border-slate-800 py-2 px-2">
+      <div className="navbar-mobile-nav">
         <button
           onClick={() => setActiveTab("agent")}
-          className={`flex flex-col items-center text-[10px] font-medium ${
-            activeTab === "agent" ? "text-orange-400" : "text-slate-400"
+          className={`navbar-mobile-btn ${
+            activeTab === "agent"
+              ? "navbar-mobile-btn--active"
+              : "navbar-mobile-btn--inactive"
           }`}
         >
-          <Bot className="w-4 h-4" />
-          <span>AI Agent</span>
+          <Bot className="navbar-mobile-icon" />
+          <span>Cook</span>
         </button>
         <button
           onClick={() => setActiveTab("favorites")}
-          className={`flex flex-col items-center text-[10px] font-medium ${
-            activeTab === "favorites" ? "text-orange-400" : "text-slate-400"
+          className={`navbar-mobile-btn ${
+            activeTab === "favorites"
+              ? "navbar-mobile-btn--active"
+              : "navbar-mobile-btn--inactive"
           }`}
         >
-          <Heart className="w-4 h-4" />
+          <Heart className="navbar-mobile-icon" />
           <span>Saved ({favoritesCount})</span>
         </button>
         <button
           onClick={() => setActiveTab("shopping")}
-          className={`flex flex-col items-center text-[10px] font-medium ${
-            activeTab === "shopping" ? "text-orange-400" : "text-slate-400"
+          className={`navbar-mobile-btn ${
+            activeTab === "shopping"
+              ? "navbar-mobile-btn--active"
+              : "navbar-mobile-btn--inactive"
           }`}
         >
-          <ShoppingBag className="w-4 h-4" />
-          <span>Grocery ({shoppingListCount})</span>
+          <ShoppingBag className="navbar-mobile-icon" />
+          <span>Groceries ({shoppingListCount})</span>
         </button>
         <button
           onClick={() => setActiveTab("substitutions")}
-          className={`flex flex-col items-center text-[10px] font-medium ${
-            activeTab === "substitutions" ? "text-orange-400" : "text-slate-400"
+          className={`navbar-mobile-btn ${
+            activeTab === "substitutions"
+              ? "navbar-mobile-btn--active"
+              : "navbar-mobile-btn--inactive"
           }`}
         >
-          <Repeat className="w-4 h-4" />
-          <span>Substitutes</span>
+          <Repeat className="navbar-mobile-icon" />
+          <span>Swaps</span>
         </button>
       </div>
     </header>

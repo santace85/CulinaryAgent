@@ -1,0 +1,497 @@
+/* =========================================================
+   TimersModal.css
+   Design tokens + component styles extracted from Tailwind
+   utility classes used in TimersModal.tsx
+   ========================================================= */
+
+/* =========================================================
+   Overlay & modal shell
+   ========================================================= */
+
+.timer-modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-4);
+  background-color: var(--overlay-bg);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  animation: timer-modal-fade-in 0.2s ease-out;
+}
+
+.timer-modal {
+  width: 100%;
+  max-width: 42rem;
+  background-color: var(--color-slate-900);
+  border: 1px solid var(--color-slate-800);
+  border-radius: var(--radius-3xl);
+  padding: var(--space-6);
+  box-shadow: var(--shadow-2xl);
+  color: var(--color-slate-100);
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+  max-height: 90vh;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: var(--scrollbar-thumb) transparent;
+}
+
+.timer-modal::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+.timer-modal::-webkit-scrollbar-thumb {
+  background-color: var(--scrollbar-thumb);
+  border-radius: var(--radius-full);
+}
+
+.timer-modal::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+/* =========================================================
+   Header
+   ========================================================= */
+
+.timer-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid var(--color-slate-800);
+  padding-bottom: var(--space-4);
+}
+
+.timer-modal-brand {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.timer-modal-icon-box {
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: var(--radius-xl);
+  background-color: var(--icon-box-bg);
+  border: 1px solid var(--icon-box-border);
+  color: var(--color-amber-400);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.timer-modal-icon-box svg {
+  width: 1.25rem;
+  height: 1.25rem;
+  animation: timer-modal-pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+.timer-modal-title {
+  font-size: var(--text-lg);
+  font-weight: 700;
+  color: var(--color-white);
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.timer-modal-count-badge {
+  font-size: var(--text-xs);
+  font-weight: 600;
+  padding: var(--space-1) var(--space-2);
+  border-radius: var(--radius-full);
+  background-color: var(--count-badge-bg);
+  color: var(--color-amber-300);
+}
+
+.timer-modal-subtitle {
+  font-size: var(--text-xs);
+  color: var(--color-slate-400);
+}
+
+.timer-modal-close-btn {
+  padding: var(--space-2);
+  border-radius: var(--radius-xl);
+  background-color: var(--color-slate-800);
+  color: var(--color-slate-400);
+  border: none;
+  cursor: pointer;
+  transition: var(--transition-all);
+}
+
+.timer-modal-close-btn:hover {
+  background-color: var(--color-slate-700, #334155);
+  color: var(--color-white);
+}
+
+.timer-modal-close-btn svg {
+  width: 1.25rem;
+  height: 1.25rem;
+}
+
+/* =========================================================
+   Quick add presets
+   ========================================================= */
+
+.timer-modal-quick-add {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.timer-modal-quick-add-label {
+  font-size: var(--text-xs);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-wider);
+  color: var(--color-slate-400);
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+}
+
+.timer-modal-quick-add-label svg {
+  width: 0.875rem;
+  height: 0.875rem;
+  color: var(--color-amber-400);
+}
+
+.timer-modal-preset-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.timer-modal-preset-btn {
+  padding: var(--space-1_5) var(--space-3);
+  border-radius: var(--radius-xl);
+  background-color: var(--color-slate-950);
+  border: 1px solid var(--color-slate-800);
+  font-size: var(--text-xs);
+  font-weight: 600;
+  color: var(--color-amber-300);
+  transition: var(--transition-all);
+  cursor: pointer;
+}
+
+.timer-modal-preset-btn:hover {
+  border-color: var(--preset-btn-hover-border);
+  background-color: var(--color-slate-800);
+}
+
+/* =========================================================
+   Custom timer form
+   ========================================================= */
+
+.timer-modal-form {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-2);
+  background-color: var(--color-slate-950);
+  padding: var(--space-3);
+  border-radius: var(--radius-2xl);
+  border: 1px solid var(--color-slate-800);
+}
+
+@media (min-width: 640px) {
+  .timer-modal-form {
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+  }
+}
+
+.timer-modal-form-input {
+  background-color: var(--color-slate-900);
+  border: 1px solid var(--color-slate-800);
+  border-radius: var(--radius-xl);
+  padding: var(--space-2) var(--space-3);
+  font-size: var(--text-xs);
+  color: var(--color-white);
+}
+
+.timer-modal-form-input::placeholder {
+  color: var(--color-slate-500);
+}
+
+.timer-modal-form-input:focus {
+  outline: none;
+  border-color: var(--color-amber-500);
+}
+
+.timer-modal-form-input--label {
+  grid-column: span 1 / span 1;
+}
+
+.timer-modal-form-input--minutes {
+  grid-column: span 1 / span 1;
+}
+
+@media (min-width: 640px) {
+  .timer-modal-form-input--label {
+    grid-column: span 6 / span 6;
+  }
+  .timer-modal-form-input--minutes {
+    grid-column: span 3 / span 3;
+  }
+  .timer-modal-form-submit {
+    grid-column: span 3 / span 3;
+  }
+}
+
+.timer-modal-form-submit {
+  background: var(--gradient-submit-btn);
+  color: var(--color-white);
+  font-weight: 600;
+  font-size: var(--text-xs);
+  border-radius: var(--radius-xl);
+  padding: var(--space-2) var(--space-3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-1);
+  border: none;
+  cursor: pointer;
+  transition: filter 0.15s ease-in-out;
+}
+
+.timer-modal-form-submit:hover {
+  filter: brightness(1.1);
+}
+
+.timer-modal-form-submit svg {
+  width: 1rem;
+  height: 1rem;
+}
+
+/* =========================================================
+   Active timers list
+   ========================================================= */
+
+.timer-modal-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.timer-modal-empty {
+  text-align: center;
+  padding: var(--space-8) var(--space-4);
+  color: var(--color-slate-500);
+  font-size: var(--text-xs);
+  background-color: var(--empty-state-bg);
+  border-radius: var(--radius-2xl);
+  border: 1px solid rgb(30 41 59 / 0.8);
+}
+
+.timer-card {
+  padding: var(--space-4);
+  border-radius: var(--radius-2xl);
+  border: 1px solid;
+  transition: var(--transition-all);
+}
+
+.timer-card--finished {
+  background-color: var(--finished-bg);
+  border-color: var(--finished-border);
+  animation: timer-modal-pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+.timer-card--running {
+  background-color: var(--color-slate-950);
+  border-color: var(--running-border);
+  box-shadow: var(--shadow-md);
+}
+
+.timer-card--idle {
+  background-color: var(--idle-bg);
+  border-color: var(--color-slate-800);
+}
+
+.timer-card-top-row {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+@media (min-width: 640px) {
+  .timer-card-top-row {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+  }
+}
+
+.timer-card-info {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.timer-card-label-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.timer-card-bell-icon {
+  width: 1rem;
+  height: 1rem;
+  color: var(--color-rose-400);
+  animation: timer-modal-bounce 1s infinite;
+}
+
+.timer-card-label {
+  font-weight: 700;
+  font-size: var(--text-sm);
+  color: var(--color-white);
+}
+
+.timer-card-recipe {
+  font-size: var(--text-xxs);
+  color: var(--color-slate-400);
+}
+
+.timer-card-countdown-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.timer-card-countdown {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: var(--text-2xl);
+  font-weight: 700;
+  letter-spacing: var(--tracking-wider);
+}
+
+.timer-card-countdown--finished {
+  color: var(--color-rose-400);
+}
+
+.timer-card-countdown--running {
+  color: var(--color-amber-300);
+}
+
+.timer-card-countdown--idle {
+  color: var(--color-slate-400);
+}
+
+.timer-card-controls {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+}
+
+.timer-card-control-btn {
+  padding: var(--space-2);
+  border-radius: var(--radius-xl);
+  background-color: var(--color-slate-800);
+  color: var(--color-slate-200);
+  border: none;
+  cursor: pointer;
+  transition: var(--transition-all);
+}
+
+.timer-card-control-btn:hover {
+  background-color: var(--color-slate-700, #334155);
+}
+
+.timer-card-control-btn svg {
+  width: 1rem;
+  height: 1rem;
+}
+
+.timer-card-add-min-btn {
+  padding: var(--space-1_5) var(--space-2);
+  border-radius: var(--radius-xl);
+  background-color: var(--color-slate-800);
+  color: var(--color-slate-300);
+  font-size: var(--text-xs);
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  transition: var(--transition-all);
+}
+
+.timer-card-add-min-btn:hover {
+  background-color: var(--color-slate-700, #334155);
+}
+
+.timer-card-reset-btn {
+  color: var(--color-slate-400);
+}
+
+.timer-card-reset-btn:hover {
+  color: var(--color-white);
+}
+
+.timer-card-delete-btn {
+  color: var(--color-slate-500);
+}
+
+.timer-card-delete-btn:hover {
+  background-color: var(--delete-hover-bg);
+  color: var(--color-rose-400);
+}
+
+.timer-card-progress-track {
+  width: 100%;
+  height: 0.375rem;
+  background-color: var(--color-slate-900);
+  border-radius: var(--radius-full);
+  overflow: hidden;
+  margin-top: var(--space-3);
+  border: 1px solid var(--color-slate-800);
+}
+
+.timer-card-progress-fill {
+  height: 100%;
+  transition: width 1s ease-in-out;
+}
+
+.timer-card-progress-fill--finished {
+  background-color: var(--color-rose-500);
+}
+
+.timer-card-progress-fill--active {
+  background: var(--gradient-progress);
+}
+
+/* =========================================================
+   Animations
+   ========================================================= */
+
+@keyframes timer-modal-fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes timer-modal-pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.6;
+  }
+}
+
+@keyframes timer-modal-bounce {
+  0%,
+  100% {
+    transform: translateY(-15%);
+    animation-timing-function: cubic-bezier(0.8, 0, 1, 1);
+  }
+  50% {
+    transform: translateY(0);
+    animation-timing-function: cubic-bezier(0, 0, 0.2, 1);
+  }
+}

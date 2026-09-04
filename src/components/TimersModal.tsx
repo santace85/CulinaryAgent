@@ -16,6 +16,7 @@ import {
   BellRing,
   Sparkles,
 } from "lucide-react";
+import "./TimersModal.css";
 
 interface TimersModalProps {
   isOpen: boolean;
@@ -185,34 +186,29 @@ export const TimersModal: React.FC<TimersModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-sm animate-fade-in">
-      <div className="w-full max-w-2xl bg-slate-900 border border-slate-800 rounded-3xl p-6 shadow-2xl text-slate-100 relative space-y-6 max-h-[90vh] overflow-y-auto custom-scrollbar">
+    <div className="timer-modal-overlay">
+      <div className="timer-modal">
         {/* Header */}
-        <div className="flex items-center justify-between border-b border-slate-800 pb-4">
-          <div className="flex items-center space-x-3">
-            <div className="w-10 h-10 rounded-xl bg-amber-500/20 border border-amber-500/30 text-amber-400 flex items-center justify-center">
-              <TimerIcon className="w-5 h-5 animate-pulse" />
+        <div className="timer-modal-header">
+          <div className="timer-modal-brand">
+            <div className="timer-modal-icon-box">
+              <TimerIcon />
             </div>
 
             <div>
-              <h2 className="text-lg font-bold text-white flex items-center gap-2">
-                Precision Kitchen Timers
-                <span className="text-xs font-semibold px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300">
+              <h2 className="timer-modal-title">
+                Kitchen timers
+                <span className="timer-modal-count-badge">
                   {timers.length} Active
                 </span>
               </h2>
 
-              <p className="text-xs text-slate-400">
-                Simultaneous cooking timers with audio alerts
-              </p>
+              <p className="text-xs text-slate-400">Keep every step on track</p>
             </div>
           </div>
 
-          <button
-            onClick={onClose}
-            className="p-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-white"
-          >
-            <X className="w-5 h-5" />
+          <button onClick={onClose} className="timer-modal-close-btn">
+            <X />
           </button>
         </div>
 
@@ -228,7 +224,7 @@ export const TimersModal: React.FC<TimersModalProps> = ({
               <button
                 key={m}
                 onClick={() => handleAddTimer(`${m} Min Timer`, m * 60)}
-                className="px-3 py-1.5 rounded-xl bg-slate-950 border border-slate-800 hover:border-amber-500/50 hover:bg-slate-800 text-xs font-semibold text-amber-300 transition-all"
+                className="timer-modal-preset-btn"
               >
                 + {m}m
               </button>
@@ -250,14 +246,14 @@ export const TimersModal: React.FC<TimersModalProps> = ({
               setCustomLabel("");
             }
           }}
-          className="grid grid-cols-1 sm:grid-cols-12 gap-2 bg-slate-950 p-3 rounded-2xl border border-slate-800"
+          className="timer-modal-form"
         >
           <input
             type="text"
             placeholder="Timer Label (e.g. Boil Eggs, Sear Steak)"
             value={customLabel}
             onChange={(e) => setCustomLabel(e.target.value)}
-            className="sm:col-span-6 bg-slate-900 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-amber-500"
+            className="timer-modal-form-input timer-modal-form-input--label"
           />
 
           <input
@@ -266,20 +262,17 @@ export const TimersModal: React.FC<TimersModalProps> = ({
             max="180"
             value={customMinutes}
             onChange={(e) => setCustomMinutes(Number(e.target.value))}
-            className="sm:col-span-3 bg-slate-900 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-amber-500"
+            className="timer-modal-form-input timer-modal-form-input--minutes"
           />
 
-          <button
-            type="submit"
-            className="sm:col-span-3 bg-gradient-to-r from-amber-600 to-orange-600 text-white font-semibold text-xs rounded-xl px-3 py-2 flex items-center justify-center space-x-1 hover:brightness-110"
-          >
+          <button type="submit" className="timer-modal-form-submit">
             <Plus className="w-4 h-4" />
             <span>Add Timer</span>
           </button>
         </form>
 
         {/* Active Timers List */}
-        <div className="space-y-3">
+        <div className="timer-modal-list">
           {timers.length === 0 ? (
             <div className="text-center py-8 text-slate-500 text-xs bg-slate-950/40 rounded-2xl border border-slate-800/80 p-4">
               No active timers running. Click a step timer in any recipe or add
@@ -338,7 +331,7 @@ export const TimersModal: React.FC<TimersModalProps> = ({
                     </div>
 
                     {/* Countdown Display */}
-                    <div className="flex items-center space-x-3">
+                    <div className="timer-card-countdown-row">
                       <span
                         className={`font-mono text-2xl font-bold tracking-wider ${
                           isFinished
@@ -379,7 +372,7 @@ export const TimersModal: React.FC<TimersModalProps> = ({
 
                         <button
                           onClick={() => handleAddMinutes(timer.id, 1)}
-                          className="px-2 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold"
+                          className="timer-card-add-min-btn"
                           title="+1 Minute"
                         >
                           +1m
@@ -387,25 +380,25 @@ export const TimersModal: React.FC<TimersModalProps> = ({
 
                         <button
                           onClick={() => handleReset(timer.id)}
-                          className="p-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-white"
+                          className="timer-card-control-btn timer-card-reset-btn"
                           title="Reset"
                         >
-                          <RotateCcw className="w-4 h-4" />
+                          <RotateCcw />
                         </button>
 
                         <button
                           onClick={() => handleDeleteTimer(timer.id)}
-                          className="p-2 rounded-xl bg-slate-800 hover:bg-rose-500/20 text-slate-500 hover:text-rose-400"
+                          className="timer-card-control-btn timer-card-delete-btn"
                           title="Delete"
                         >
-                          <Trash2 className="w-4 h-4" />
+                          <Trash2 />
                         </button>
                       </div>
                     </div>
                   </div>
 
                   {/* Progress Bar */}
-                  <div className="w-full h-1.5 bg-slate-900 rounded-full overflow-hidden mt-3 border border-slate-800">
+                  <div className="timer-card-progress-track">
                     <div
                       className={`h-full transition-all duration-1000 ${
                         isFinished
