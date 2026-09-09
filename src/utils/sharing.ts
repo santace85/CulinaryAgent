@@ -1,8 +1,10 @@
 import { Recipe } from "../types";
+import { deflateSync, inflateSync, strFromU8, strToU8 } from "fflate";
 
 const SHARE_PARAM = "sharedRecipe";
-const PAYLOAD_VERSION = 1;
+const PAYLOAD_VERSION = 2;
 const MAX_PAYLOAD_LENGTH = 14000;
+const V2_PREFIX = "v2.";
 
 interface SharedRecipePayload {
   version: number;
@@ -23,16 +25,24 @@ function base64ToBytes(value: string): Uint8Array {
 }
 
 function toBase64Url(value: string): string {
-  return bytesToBase64(new TextEncoder().encode(value))
+  return bytesToBase64Url(strToU8(value));
+}
+
+function bytesToBase64Url(bytes: Uint8Array): string {
+  return bytesToBase64(bytes)
     .replace(/\+/g, "-")
     .replace(/\//g, "_")
     .replace(/=+$/, "");
 }
 
-function fromBase64Url(value: string): string {
+function base64UrlToBytes(value: string): Uint8Array {
   const normalized = value.replace(/-/g, "+").replace(/_/g, "/");
   const padded = normalized.padEnd(Math.ceil(normalized.length / 4) * 4, "=");
-  return new TextDecoder().decode(base64ToBytes(padded));
+  return base64ToBytes(padded);
+}
+
+function fromBase64Url(value: string): string {
+  return strFromU8(base64UrlToBytes(value));
 }
 
 function isRecord(value: unknown): value is Record<string, unknown> {
@@ -74,12 +84,26 @@ function isRecipe(value: unknown): value is Recipe {
   );
 }
 
-export function encodeSharedRecipe(recipe: Recipe): string {
+function createPayload(recipe: Recipe): string {
   const payload: SharedRecipePayload = {
     version: PAYLOAD_VERSION,
     recipe: { ...recipe, isFavorite: undefined },
   };
-  const encoded = toBase64Url(JSON.stringify(payload));
+  return JSON.stringify(payload);
+}
+
+function encodeV1(recipe: Recipe): string {
+  const payload = {
+    version: 1,
+    recipe: { ...recipe, isFavorite: undefined },
+  };
+  return toBase64Url(JSON.stringify(payload));
+}
+
+export function encodeSharedRecipe(recipe: Recipe): string {
+  const encoded = `${V2_PREFIX}${bytesToBase64Url(
+    deflateSync(strToU8(createPayload(recipe)), { level: 9 }),
+  )}`;
 
   if (encoded.length > MAX_PAYLOAD_LENGTH) {
     throw new Error("This recipe is too large to share in a link.");
@@ -92,10 +116,18 @@ export function decodeSharedRecipe(value: string): Recipe | null {
   if (!value || value.length > MAX_PAYLOAD_LENGTH) return null;
 
   try {
-    const payload: unknown = JSON.parse(fromBase64Url(value));
+    const isV2 = value.startsWith(V2_PREFIX);
+    const prefixLength = isV2 ? V2_PREFIX.length : 0;
+    const encodedValue = value.slice(prefixLength);
+    const compressed = base64UrlToBytes(encodedValue);
+    const json = isV2
+      ? strFromU8(inflateSync(compressed))
+      : fromBase64Url(encodedValue);
+    const payload: unknown = JSON.parse(json);
     if (
       !isRecord(payload) ||
-      payload.version !== PAYLOAD_VERSION ||
+      (isV2 && payload.version !== 2) ||
+      (!isV2 && payload.version !== 1) ||
       !isRecipe(payload.recipe)
     ) {
       return null;

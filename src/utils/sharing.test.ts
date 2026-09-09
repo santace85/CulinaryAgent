@@ -29,7 +29,9 @@ const recipe: Recipe = {
 };
 
 test("shared recipe payload round-trips without transient favorite state", () => {
-  const decoded = decodeSharedRecipe(encodeSharedRecipe(recipe));
+  const encoded = encodeSharedRecipe(recipe);
+  assert.match(encoded, /^v2\./);
+  const decoded = decodeSharedRecipe(encoded);
   assert.deepEqual(decoded, { ...recipe, isFavorite: undefined });
 });
 
@@ -38,7 +40,12 @@ test("invalid shared recipe payloads are rejected", () => {
 });
 
 test("oversized recipes cannot be encoded into a link", () => {
+  let state = 0x12345678;
+  const highEntropySummary = Array.from({ length: 20000 }, () => {
+    state = (state * 1664525 + 1013904223) >>> 0;
+    return String.fromCharCode(32 + (state % 95));
+  }).join("");
   assert.throws(() =>
-    encodeSharedRecipe({ ...recipe, summary: "x".repeat(20000) }),
+    encodeSharedRecipe({ ...recipe, summary: highEntropySummary }),
   );
 });
