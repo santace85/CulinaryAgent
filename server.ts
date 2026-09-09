@@ -251,9 +251,18 @@ ${cookTimeMax ? `Maximum cook time limit: ${cookTimeMax} minutes.` : ""}`;
 
     const recipeData = JSON.parse(text);
 
-    if (!recipeData.id) {
-      recipeData.id = "recipe_" + Date.now();
-    }
+    recipeData.id =
+      "recipe_" + Date.now() + "_" + Math.random().toString(36).slice(2, 10);
+
+    recipeData.ingredients = (recipeData.ingredients || []).map(
+      (ingredient: any, index: number) => ({
+        ...ingredient,
+        id:
+          typeof ingredient.id === "string" && ingredient.id.trim()
+            ? ingredient.id.trim()
+            : `${recipeData.id}_ingredient_${index + 1}`,
+      }),
+    );
 
     if (!recipeData.chefNotes) {
       recipeData.chefNotes =

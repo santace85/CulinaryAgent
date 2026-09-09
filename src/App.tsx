@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { NavbarHeader } from "./components/NavbarHeader";
 import { AgentChatWindow } from "./components/AgentChatWindow";
 import { FavoritesView } from "./components/FavoritesView";
+import { SharedRecipesView } from "./components/SharedRecipesView";
 import { ShoppingListView } from "./components/ShoppingListView";
 import { SubstitutionsGuide } from "./components/SubstitutionsGuide";
 import { TimersModal } from "./components/TimersModal";
@@ -21,7 +22,13 @@ import {
   saveShoppingList,
   getStoredTimers,
   saveStoredTimers,
+  getStoredSharedRecipes,
+  saveSharedRecipe,
 } from "./utils/storage";
+import {
+  clearSharedRecipeFromUrl,
+  readSharedRecipeFromUrl,
+} from "./utils/sharing";
 import { STARTER_RECIPES } from "./data/mockRecipes";
 import { useTheme } from "./context/ThemeContext";
 
@@ -29,7 +36,7 @@ export default function App() {
   const { toggleTheme, darkMode } = useTheme();
 
   const [activeTab, setActiveTab] = useState<
-    "agent" | "favorites" | "shopping" | "substitutions"
+    "agent" | "favorites" | "shared" | "shopping" | "substitutions"
   >("agent");
 
   // State Persistence Initialization
@@ -41,6 +48,13 @@ export default function App() {
   const [shoppingList, setShoppingList] = useState<ShoppingListItem[]>(() => {
     return getStoredShoppingList();
   });
+
+  const [sharedRecipes, setSharedRecipes] = useState<Recipe[]>(() =>
+    getStoredSharedRecipes(),
+  );
+  const [sharedRecipeToOpen, setSharedRecipeToOpen] = useState<Recipe | null>(
+    null,
+  );
 
   const [timers, setTimers] = useState<CookingTimer[]>(() => {
     return getStoredTimers();
@@ -70,6 +84,16 @@ export default function App() {
   useEffect(() => {
     saveStoredTimers(timers);
   }, [timers]);
+
+  useEffect(() => {
+    const sharedRecipe = readSharedRecipeFromUrl();
+    if (!sharedRecipe) return;
+
+    setSharedRecipes(saveSharedRecipe(sharedRecipe));
+    setSharedRecipeToOpen(sharedRecipe);
+    setActiveTab("shared");
+    clearSharedRecipeFromUrl();
+  }, []);
 
   // Favorite toggle handler
   const handleToggleFavorite = (recipe: Recipe) => {
@@ -138,6 +162,7 @@ export default function App() {
         activeTab={activeTab}
         setActiveTab={setActiveTab}
         favoritesCount={favorites.length}
+        sharedRecipesCount={sharedRecipes.length}
         shoppingListCount={shoppingList.length}
         activeTimersCount={
           timers.filter((t) => t.isRunning && t.remainingSeconds > 0).length
@@ -166,6 +191,20 @@ export default function App() {
           <FavoritesView
             favorites={favorites}
             onToggleFavorite={handleToggleFavorite}
+            onAddToShoppingList={handleAddToShoppingList}
+            onStartTimer={handleStartTimer}
+            onOpenCookingMode={(recipe) => setCookingModeRecipe(recipe)}
+            onRequestSubstitution={handleOpenSubstitution}
+          />
+        )}
+
+        {activeTab === "shared" && (
+          <SharedRecipesView
+            recipes={sharedRecipes}
+            initialRecipe={sharedRecipeToOpen}
+            onRecipesChange={setSharedRecipes}
+            onToggleFavorite={handleToggleFavorite}
+            isFavorite={isFavorite}
             onAddToShoppingList={handleAddToShoppingList}
             onStartTimer={handleStartTimer}
             onOpenCookingMode={(recipe) => setCookingModeRecipe(recipe)}

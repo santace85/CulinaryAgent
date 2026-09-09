@@ -1,6 +1,7 @@
 import { Recipe, ShoppingListItem, CookingTimer } from "../types";
 
 const FAVORITES_KEY = "culinary_favorites_v1";
+const SHARED_RECIPES_KEY = "culinary_shared_recipes_v1";
 const SHOPPING_KEY = "culinary_shopping_list_v1";
 const TIMERS_KEY = "culinary_active_timers_v1";
 
@@ -29,6 +30,28 @@ export function saveFavoriteRecipe(recipe: Recipe): Recipe[] {
 
 export function isRecipeFavorite(id: string): boolean {
   return getStoredFavorites().some((r) => r.id === id);
+}
+
+export function getStoredSharedRecipes(): Recipe[] {
+  try {
+    const raw = localStorage.getItem(SHARED_RECIPES_KEY);
+    return raw ? JSON.parse(raw) : [];
+  } catch {
+    return [];
+  }
+}
+
+export function saveSharedRecipe(recipe: Recipe): Recipe[] {
+  const current = getStoredSharedRecipes();
+  const updated = [recipe, ...current.filter((item) => item.id !== recipe.id)];
+  localStorage.setItem(SHARED_RECIPES_KEY, JSON.stringify(updated));
+  return updated;
+}
+
+export function removeSharedRecipe(id: string): Recipe[] {
+  const updated = getStoredSharedRecipes().filter((recipe) => recipe.id !== id);
+  localStorage.setItem(SHARED_RECIPES_KEY, JSON.stringify(updated));
+  return updated;
 }
 
 // Shopping List Local Storage

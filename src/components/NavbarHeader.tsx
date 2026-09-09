@@ -2,6 +2,7 @@ import React from "react";
 import {
   Bot,
   Heart,
+  Link2,
   ShoppingBag,
   Timer as TimerIcon,
   Repeat,
@@ -12,11 +13,12 @@ import {
 import "./NavbarHeader.css";
 
 interface NavbarHeaderProps {
-  activeTab: "agent" | "favorites" | "shopping" | "substitutions";
+  activeTab: "agent" | "favorites" | "shared" | "shopping" | "substitutions";
   setActiveTab: (
-    tab: "agent" | "favorites" | "shopping" | "substitutions",
+    tab: "agent" | "favorites" | "shared" | "shopping" | "substitutions",
   ) => void;
   favoritesCount: number;
+  sharedRecipesCount: number;
   shoppingListCount: number;
   activeTimersCount: number;
   onOpenTimers: () => void;
@@ -28,6 +30,7 @@ export const NavbarHeader: React.FC<NavbarHeaderProps> = ({
   activeTab,
   setActiveTab,
   favoritesCount,
+  sharedRecipesCount,
   shoppingListCount,
   activeTimersCount,
   onOpenTimers,
@@ -70,6 +73,24 @@ export const NavbarHeader: React.FC<NavbarHeaderProps> = ({
             >
               <Bot className="navbar-nav-icon" />
               <span>Cook with AI</span>
+            </button>
+
+            <button
+              id="tab-shared"
+              onClick={() => setActiveTab("shared")}
+              className={`navbar-nav-btn ${
+                activeTab === "shared"
+                  ? "navbar-nav-btn--active"
+                  : "navbar-nav-btn--inactive"
+              }`}
+            >
+              <Link2 className="navbar-nav-icon" />
+              <span>Shared</span>
+              {sharedRecipesCount > 0 && (
+                <span className="navbar-count-badge navbar-count-badge--emerald">
+                  {sharedRecipesCount}
+                </span>
+              )}
             </button>
 
             <button
@@ -177,6 +198,17 @@ export const NavbarHeader: React.FC<NavbarHeaderProps> = ({
         >
           <Bot className="navbar-mobile-icon" />
           <span>Cook</span>
+        </button>
+        <button
+          onClick={() => setActiveTab("shared")}
+          className={`navbar-mobile-btn ${
+            activeTab === "shared"
+              ? "navbar-mobile-btn--active"
+              : "navbar-mobile-btn--inactive"
+          }`}
+        >
+          <Link2 className="navbar-mobile-icon" />
+          <span>Shared ({sharedRecipesCount})</span>
         </button>
         <button
           onClick={() => setActiveTab("favorites")}

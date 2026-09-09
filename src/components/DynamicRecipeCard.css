@@ -183,6 +183,78 @@
   color: var(--color-rose-400);
 }
 
+.recipe-share-wrapper {
+  position: relative;
+}
+
+.recipe-share-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-2_5);
+  border-radius: var(--radius-xl);
+  border: 1px solid var(--color-slate-700);
+  background-color: var(--fav-inactive-bg);
+  color: var(--color-slate-300);
+  cursor: pointer;
+  transition: var(--transition-all);
+}
+
+.recipe-share-btn:hover {
+  color: var(--color-white);
+  background-color: var(--color-slate-800);
+}
+
+.recipe-share-btn svg {
+  width: 1.25rem;
+  height: 1.25rem;
+}
+
+.recipe-share-menu {
+  position: absolute;
+  right: 0;
+  top: calc(100% + var(--space-2));
+  z-index: 20;
+  display: grid;
+  min-width: 10rem;
+  padding: var(--space-1);
+  border: 1px solid var(--color-slate-700);
+  border-radius: var(--radius-lg);
+  background: var(--navbar-bg);
+  box-shadow: var(--shadow-lg);
+}
+
+.recipe-share-menu button {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-3);
+  border: 0;
+  border-radius: var(--radius-md);
+  background: transparent;
+  color: var(--color-slate-200);
+  text-align: left;
+  cursor: pointer;
+}
+
+.recipe-share-menu button:hover {
+  background: var(--nav-inactive-hover-bg);
+}
+
+.recipe-share-menu svg {
+  width: 1rem;
+  height: 1rem;
+}
+
+.recipe-share-alert {
+  position: absolute;
+  right: 0;
+  top: calc(100% + 11rem);
+  white-space: nowrap;
+  color: var(--color-emerald-300);
+  font-size: var(--text-xs);
+}
+
 .recipe-cook-btn {
   display: flex;
   align-items: center;

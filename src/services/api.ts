@@ -1,5 +1,6 @@
 import { Recipe, Substitution } from "../types";
 import { POPULAR_FALLBACK_RECIPES } from "../data/fallbackRecipes";
+import { normalizeRecipeIdentity } from "../utils/recipeIdentity";
 
 export interface GenerateRecipeOptions {
   prompt: string;
@@ -71,7 +72,7 @@ export async function fetchAIRecipe(
 
     const isFallback = !!data.isFallback || !response.ok;
     return {
-      recipe: isFallback ? undefined : data.recipe,
+      recipe: isFallback ? undefined : normalizeRecipeIdentity(data.recipe),
       isFallback,
       error: data.error,
       recommendedRecipes: data.recommendedRecipes,

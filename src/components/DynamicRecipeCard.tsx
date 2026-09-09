@@ -19,7 +19,12 @@ import {
   Users,
   Check,
   Zap,
+  Share2,
+  MessageSquare,
+  Mail,
+  Link,
 } from "lucide-react";
+import { createRecipeShareUrl, getShareMessage } from "../utils/sharing";
 import "./DynamicRecipeCard.css";
 
 interface DynamicRecipeCardProps {
@@ -70,6 +75,8 @@ export const DynamicRecipeCard: React.FC<DynamicRecipeCardProps> = ({
   const [showSubstitutions, setShowSubstitutions] = useState<boolean>(true);
   const [copiedAlert, setCopiedAlert] = useState<boolean>(false);
   const [addedShoppingAlert, setAddedShoppingAlert] = useState<boolean>(false);
+  const [isShareMenuOpen, setIsShareMenuOpen] = useState(false);
+  const [shareAlert, setShareAlert] = useState<string | null>(null);
 
   // Toggle ingredient checkbox
   const toggleIngredient = (id: string) => {
@@ -131,6 +138,45 @@ export const DynamicRecipeCard: React.FC<DynamicRecipeCardProps> = ({
     setTimeout(() => setCopiedAlert(false), 2500);
   };
 
+  const handleShare = async (channel: "native" | "copy" | "sms" | "email") => {
+    const url = createRecipeShareUrl(recipe);
+    const message = getShareMessage(recipe, url);
+
+    if (channel === "native" && navigator.share) {
+      try {
+        await navigator.share({
+          title: recipe.title,
+          text: recipe.summary,
+          url,
+        });
+        setShareAlert("Shared!");
+      } catch {
+        return;
+      }
+    } else if (channel === "copy") {
+      if (navigator.clipboard?.writeText) {
+        await navigator.clipboard.writeText(url);
+      } else {
+        const textArea = document.createElement("textarea");
+        textArea.value = url;
+        textArea.style.position = "fixed";
+        textArea.style.opacity = "0";
+        document.body.appendChild(textArea);
+        textArea.select();
+        document.execCommand("copy");
+        document.body.removeChild(textArea);
+      }
+      setShareAlert("Link copied");
+    } else if (channel === "sms") {
+      window.location.href = `sms:?body=${encodeURIComponent(message)}`;
+    } else if (channel === "email") {
+      window.location.href = `mailto:?subject=${encodeURIComponent(recipe.title)}&body=${encodeURIComponent(message)}`;
+    }
+
+    setIsShareMenuOpen(false);
+    window.setTimeout(() => setShareAlert(null), 2500);
+  };
+
   return (
     <div
       className={`recipe-card ${darkMode ? "recipe-card--dark" : "recipe-card--light"}`}
@@ -174,6 +220,40 @@ export const DynamicRecipeCard: React.FC<DynamicRecipeCardProps> = ({
               className={`recipe-fav-icon ${isFavorite ? "recipe-fav-icon--active" : ""}`}
             />
           </button>
+
+          <div className="recipe-share-wrapper">
+            <button
+              id={`btn-share-${recipe.id}`}
+              onClick={() => setIsShareMenuOpen((open) => !open)}
+              className="recipe-share-btn"
+              title="Share recipe"
+              aria-label="Share recipe"
+              aria-expanded={isShareMenuOpen}
+            >
+              <Share2 />
+            </button>
+            {isShareMenuOpen && (
+              <div className="recipe-share-menu" role="menu">
+                {navigator.share && (
+                  <button onClick={() => handleShare("native")} role="menuitem">
+                    <Share2 /> Share
+                  </button>
+                )}
+                <button onClick={() => handleShare("copy")} role="menuitem">
+                  <Link /> Copy link
+                </button>
+                <button onClick={() => handleShare("sms")} role="menuitem">
+                  <MessageSquare /> Text message
+                </button>
+                <button onClick={() => handleShare("email")} role="menuitem">
+                  <Mail /> Email
+                </button>
+              </div>
+            )}
+            {shareAlert && (
+              <span className="recipe-share-alert">{shareAlert}</span>
+            )}
+          </div>
 
           <button
             id={`btn-cooking-mode-${recipe.id}`}
