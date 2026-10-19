@@ -201,7 +201,7 @@ export const CookingModeModal: React.FC<CookingModeModalProps> = ({
               >
                 <TimerIcon className="cooking-mode-timer-icon" />
                 <span>
-                  ⏱️ Start {Math.round(currentStep.timerSeconds / 60)}m Timer
+                  ⏱️ Start ~{Math.round(currentStep.timerSeconds / 60)}m Timer
                 </span>
               </button>
             )}

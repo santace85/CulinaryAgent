@@ -109,9 +109,10 @@ When given a user query, generate a detailed recipe with:
 1. A conversational 'agentIntro' (1-2 sentences) that explains why this recipe is a great choice based on their request (e.g., "This hearty pasta is perfect for a cozy winter evening.").
 2. Precise metric or standard measurements for every ingredient.
 3. Categorized ingredients ('Produce', 'Dairy & Eggs', 'Meat & Seafood', 'Pantry & Spices', 'Bakery', 'Other').
-4. Step-by-step clear instructions with explicit time durations in seconds where applicable (e.g., 600 for 10 mins).
+4. Step-by-step clear instructions with time durations in seconds where applicable (e.g., 600 for 10 mins); treat all cooking times and timers as estimates, not guarantees.
 5. Practical ingredient substitutions for common allergies or missing pantry items, including a concise net macro delta for each swap.
-6. Chef tips, calorie counts, compact nutrition metrics per serving (protein, carbs, fat, fiber), and a distinct drink pairing suggestion.`;
+6. Chef tips, calorie counts, compact nutrition metrics per serving (protein, carbs, fat, fiber), and a distinct drink pairing suggestion.
+7. For packaged or premade ingredients, defer to the product's package directions because brands, shapes, thicknesses, and preparation vary. Give a sensory doneness cue, suggest checking before the estimated time is up, and continue cooking in short intervals as needed. Never promise a fixed time will produce a specific result (for example, fettuccine is not guaranteed to be al dente after 10 minutes).`;
 
     const userPrompt = `
 ${history ? `Context of previous conversation: ${JSON.stringify(history)}` : ""}
@@ -436,7 +437,7 @@ function getFallbackRecipe(
           stepNumber: 1,
           title: "Boil Pasta",
           instruction:
-            "Bring a large pot of salted water to a rolling boil. Add pasta and cook according to package directions until al dente.",
+            "Bring a large pot of salted water to a rolling boil. Add pasta and follow the package's cooking range, checking a little early. Taste for a firm center and continue in short intervals until al dente; timing varies by brand and shape.",
           timerSeconds: 540,
           tip: "Reserve 1/2 cup of starchy pasta water before draining!",
         },

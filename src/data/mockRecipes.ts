@@ -85,7 +85,7 @@ export const STARTER_RECIPES: Recipe[] = [
         stepNumber: 1,
         title: "Boil Pasta Al Dente",
         instruction:
-          "Bring a large pot of salted water to a rolling boil. Add fettuccine and cook according to package instructions until al dente.",
+          "Bring a large pot of salted water to a rolling boil. Add fettuccine and follow the package's cooking range, checking a little early. Taste for a firm center and continue in short intervals until al dente; timing varies by brand and shape.",
         timerSeconds: 540,
         tip: "Save 1/2 cup pasta water before draining!",
       },
