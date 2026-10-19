@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Recipe, Ingredient } from "../types";
 import { getMacroDeltaSummary, getMacroSummary } from "../utils/nutrition";
+import { formatInstructionDurations } from "../utils/durationFormatting";
 import {
   Heart,
   ShoppingBag,
@@ -487,7 +488,7 @@ export const DynamicRecipeCard: React.FC<DynamicRecipeCardProps> = ({
                       <p
                         className={`recipe-step-instruction ${isCompleted ? "recipe-step-instruction--completed" : ""}`}
                       >
-                        {step.instruction}
+                        {formatInstructionDurations(step.instruction)}
                       </p>
 
                       {step.tip && (

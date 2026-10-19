@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Recipe } from "../types";
+import { formatInstructionDurations } from "../utils/durationFormatting";
 import {
   X,
   ChevronLeft,
@@ -209,7 +210,9 @@ export const CookingModeModal: React.FC<CookingModeModalProps> = ({
 
           <h3 className="cooking-mode-step-title">{currentStep.title}</h3>
 
-          <p className="cooking-mode-instruction">{currentStep.instruction}</p>
+          <p className="cooking-mode-instruction">
+            {formatInstructionDurations(currentStep.instruction)}
+          </p>
 
           {currentStep.tip && (
             <div className="cooking-mode-tip">
