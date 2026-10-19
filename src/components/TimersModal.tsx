@@ -36,21 +36,29 @@ export const TimersModal: React.FC<TimersModalProps> = ({
 
   // Timer interval ticker
   useEffect(() => {
-    const interval = setInterval(() => {
+    const updateTimers = () => {
+      const now = Date.now();
+
       setTimers((prevTimers) => {
         let hasChanged = false;
 
         const updated = prevTimers.map((timer) => {
-          // Don't do anything to paused
           if (!timer.isRunning) {
+            return timer;
+          }
+
+          const endsAt = timer.endsAt ?? now + timer.remainingSeconds * 1000;
+          const nextSec =
+            endsAt > now
+              ? Math.ceil((endsAt - now) / 1000)
+              : -Math.floor((now - endsAt) / 1000);
+
+          if (timer.endsAt === endsAt && timer.remainingSeconds === nextSec) {
             return timer;
           }
 
           hasChanged = true;
 
-          const nextSec = timer.remainingSeconds - 1;
-
-          // Timer has finished.
           if (timer.remainingSeconds > 0 && nextSec <= 0) {
             startTimerCompletionAlert();
           }
@@ -58,15 +66,21 @@ export const TimersModal: React.FC<TimersModalProps> = ({
           return {
             ...timer,
             remainingSeconds: nextSec,
-            isRunning: true,
+            endsAt,
           };
         });
 
         return hasChanged ? updated : prevTimers;
       });
-    }, 1000);
+    };
 
-    return () => clearInterval(interval);
+    const interval = window.setInterval(updateTimers, 1000);
+    document.addEventListener("visibilitychange", updateTimers);
+
+    return () => {
+      window.clearInterval(interval);
+      document.removeEventListener("visibilitychange", updateTimers);
+    };
   }, [setTimers]);
 
   if (!isOpen) return null;
@@ -79,6 +93,7 @@ export const TimersModal: React.FC<TimersModalProps> = ({
       totalSeconds: totalSec,
       remainingSeconds: totalSec,
       isRunning: true,
+      endsAt: Date.now() + totalSec * 1000,
     };
 
     setTimers((prev) => [newTimer, ...prev]);
@@ -99,6 +114,9 @@ export const TimersModal: React.FC<TimersModalProps> = ({
         return {
           ...t,
           isRunning: !t.isRunning,
+          endsAt: t.isRunning
+            ? undefined
+            : Date.now() + t.remainingSeconds * 1000,
         };
       }),
     );
@@ -113,6 +131,7 @@ export const TimersModal: React.FC<TimersModalProps> = ({
               ...t,
               remainingSeconds: t.totalSeconds,
               isRunning: true,
+              endsAt: Date.now() + t.totalSeconds * 1000,
             }
           : t,
       );
@@ -133,6 +152,7 @@ export const TimersModal: React.FC<TimersModalProps> = ({
               ...t,
               remainingSeconds: t.totalSeconds,
               isRunning: false,
+              endsAt: undefined,
             }
           : t,
       );
@@ -153,6 +173,10 @@ export const TimersModal: React.FC<TimersModalProps> = ({
               ...t,
               remainingSeconds: t.remainingSeconds + mins * 60,
               totalSeconds: t.totalSeconds + mins * 60,
+              endsAt: t.isRunning
+                ? (t.endsAt ?? Date.now() + t.remainingSeconds * 1000) +
+                  mins * 60 * 1000
+                : undefined,
             }
           : t,
       );

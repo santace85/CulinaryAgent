@@ -86,6 +86,7 @@ export interface CookingTimer {
   totalSeconds: number;
   remainingSeconds: number;
   isRunning: boolean;
+  endsAt?: number;
   recipeTitle?: string;
   stepNumber?: number;
 }
