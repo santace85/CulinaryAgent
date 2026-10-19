@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Recipe } from "../types";
 import {
   X,
@@ -34,6 +34,54 @@ export const CookingModeModal: React.FC<CookingModeModalProps> = ({
     {},
   );
   const [isSpeaking, setIsSpeaking] = useState<boolean>(false);
+
+  useEffect(() => {
+    if (!recipe || !("wakeLock" in navigator)) return;
+
+    let isActive = true;
+    let isRequestPending = false;
+    let wakeLock: WakeLockSentinel | null = null;
+
+    const requestWakeLock = async () => {
+      if (
+        !isActive ||
+        document.visibilityState !== "visible" ||
+        isRequestPending ||
+        (wakeLock && !wakeLock.released)
+      ) {
+        return;
+      }
+
+      isRequestPending = true;
+      try {
+        const sentinel = await navigator.wakeLock.request("screen");
+        if (!isActive) {
+          await sentinel.release();
+          return;
+        }
+        wakeLock = sentinel;
+      } catch {
+        // Wake locks may be unavailable or denied by browser policy.
+      } finally {
+        isRequestPending = false;
+      }
+    };
+
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === "visible") {
+        void requestWakeLock();
+      }
+    };
+
+    void requestWakeLock();
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+
+    return () => {
+      isActive = false;
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+      if (wakeLock && !wakeLock.released) void wakeLock.release();
+    };
+  }, [recipe]);
 
   if (!recipe) return null;
 
