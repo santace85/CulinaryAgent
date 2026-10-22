@@ -86,7 +86,14 @@ app.get("/api/health", (_req, res) => {
 // AI Recipe Generation Endpoint
 app.post("/api/recipe", rateLimitMiddleware, async (req, res) => {
   try {
-    const { prompt, dietary, servings, cookTimeMax, history } = req.body;
+    const {
+      prompt,
+      dietary,
+      servings,
+      cookTimeMax,
+      history,
+      measurementSystem,
+    } = req.body;
 
     if (!prompt || typeof prompt !== "string") {
       return res.status(400).json({ error: "A recipe prompt is required." });
@@ -107,7 +114,7 @@ app.post("/api/recipe", rateLimitMiddleware, async (req, res) => {
 Your task is to generate complete, structured, highly accurate cooking recipes formatted strictly as JSON.
 When given a user query, generate a detailed recipe with:
 1. A conversational 'agentIntro' (1-2 sentences) that explains why this recipe is a great choice based on their request (e.g., "This hearty pasta is perfect for a cozy winter evening.").
-2. Precise metric or standard measurements for every ingredient.
+2. Precise ${measurementSystem === "imperial" ? "US customary" : "metric"} measurements for every ingredient, and use the same system in inline quantities and oven temperatures.
 3. Categorized ingredients ('Produce', 'Dairy & Eggs', 'Meat & Seafood', 'Pantry & Spices', 'Bakery', 'Other').
 4. Step-by-step clear instructions with durations of one minute or more expressed in minutes (e.g., "10 minutes"), and durations under one minute expressed in seconds. Keep each step's timerSeconds value numeric and in seconds; treat all cooking times and timers as estimates, not guarantees.
 5. Practical ingredient substitutions for common allergies or missing pantry items, including a concise net macro delta for each swap.

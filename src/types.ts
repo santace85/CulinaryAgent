@@ -6,6 +6,8 @@ export type IngredientCategory =
   | "Bakery"
   | "Other";
 
+export type MeasurementSystem = "metric" | "imperial";
+
 export interface Ingredient {
   id: string;
   name: string;

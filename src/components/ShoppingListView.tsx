@@ -18,6 +18,11 @@ import {
   Store,
 } from "lucide-react";
 import "./ShoppingListView.css";
+import { useMeasurementSystem } from "../context/MeasurementContext";
+import {
+  formatMeasurement,
+  formatMeasurementText,
+} from "../utils/measurementFormatting";
 
 interface ShoppingListViewProps {
   shoppingList: ShoppingListItem[];
@@ -37,6 +42,7 @@ export const ShoppingListView: React.FC<ShoppingListViewProps> = ({
   shoppingList,
   setShoppingList,
 }) => {
+  const { measurementSystem } = useMeasurementSystem();
   const [copiedAlert, setCopiedAlert] = useState(false);
   const [newItemName, setNewItemName] = useState("");
   const [newItemAmount, setNewItemAmount] = useState<number>(1);
@@ -99,14 +105,14 @@ export const ShoppingListView: React.FC<ShoppingListViewProps> = ({
   };
 
   const handleCopyText = () => {
-    const text = exportShoppingListAsText(shoppingList);
+    const text = exportShoppingListAsText(shoppingList, measurementSystem);
     navigator.clipboard.writeText(text);
     setCopiedAlert(true);
     setTimeout(() => setCopiedAlert(false), 2500);
   };
 
   const handleDownloadFile = () => {
-    const text = exportShoppingListAsText(shoppingList);
+    const text = exportShoppingListAsText(shoppingList, measurementSystem);
     downloadTextFile(`Grocery_Shopping_List_${Date.now()}.txt`, text);
   };
 
@@ -296,7 +302,12 @@ export const ShoppingListView: React.FC<ShoppingListViewProps> = ({
                           )}
                         </button>
                         <div>
-                          <span className="shop-item-name">{item.name}</span>
+                          <span className="shop-item-name">
+                            {formatMeasurementText(
+                              item.name,
+                              measurementSystem,
+                            )}
+                          </span>
                           {item.recipeSource && (
                             <span className="shop-item-source">
                               From: {item.recipeSource}
@@ -307,7 +318,13 @@ export const ShoppingListView: React.FC<ShoppingListViewProps> = ({
 
                       <div className="shop-item-right">
                         <span className="shop-item-amount">
-                          {item.amount > 0 ? item.amount : ""} {item.unit}
+                          {item.amount > 0
+                            ? formatMeasurement(
+                                item.amount,
+                                item.unit,
+                                measurementSystem,
+                              )
+                            : ""}
                         </span>
                         <button
                           onClick={(e) => {

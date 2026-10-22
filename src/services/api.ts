@@ -1,12 +1,14 @@
 import { Recipe, Substitution } from "../types";
 import { POPULAR_FALLBACK_RECIPES } from "../data/fallbackRecipes";
 import { normalizeRecipeIdentity } from "../utils/recipeIdentity";
+import { MeasurementSystem } from "../types";
 
 export interface GenerateRecipeOptions {
   prompt: string;
   dietary?: string[];
   servings?: number;
   cookTimeMax?: number;
+  measurementSystem?: MeasurementSystem;
   history?: { userPrompt: string; recipeTitle?: string }[];
 }
 

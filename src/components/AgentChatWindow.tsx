@@ -3,6 +3,8 @@ import { AgentMessage, Recipe, Ingredient } from "../types";
 import { DynamicRecipeCard } from "./DynamicRecipeCard";
 import { fetchAIRecipe, fetchAISubstitutions } from "../services/api";
 import { getMacroDeltaSummary } from "../utils/nutrition";
+import { useMeasurementSystem } from "../context/MeasurementContext";
+import { formatMeasurementText } from "../utils/measurementFormatting";
 import {
   Send,
   Sparkles,
@@ -67,6 +69,7 @@ export const AgentChatWindow: React.FC<AgentChatWindowProps> = ({
   onOpenCookingMode,
   onOpenSubstitutions,
 }) => {
+  const { measurementSystem } = useMeasurementSystem();
   const [inputText, setInputText] = useState("");
   const [selectedDietary, setSelectedDietary] = useState<string[]>([]);
   const [targetServings, setTargetServings] = useState<number>(4);
@@ -165,6 +168,7 @@ export const AgentChatWindow: React.FC<AgentChatWindowProps> = ({
             prompt: promptToUse,
             dietary: selectedDietary,
             servings: targetServings,
+            measurementSystem,
             history: history.slice(-5), // Keep last 3 interactions for context
           });
 
@@ -402,7 +406,9 @@ export const AgentChatWindow: React.FC<AgentChatWindowProps> = ({
                         </div>
                       ) : (
                         <div>
-                          <p className="chat-agent-text">{msg.text}</p>
+                          <p className="chat-agent-text">
+                            {formatMeasurementText(msg.text, measurementSystem)}
+                          </p>
 
                           {msg.recommendedRecipes &&
                             msg.recommendedRecipes.length > 0 && (
@@ -421,10 +427,16 @@ export const AgentChatWindow: React.FC<AgentChatWindowProps> = ({
                                       className="chat-fallback-card"
                                     >
                                       <div className="chat-fallback-title">
-                                        {recipe.title}
+                                        {formatMeasurementText(
+                                          recipe.title,
+                                          measurementSystem,
+                                        )}
                                       </div>
                                       <div className="chat-fallback-summary">
-                                        {recipe.summary}
+                                        {formatMeasurementText(
+                                          recipe.summary,
+                                          measurementSystem,
+                                        )}
                                       </div>
                                     </button>
                                   ))}
@@ -438,13 +450,23 @@ export const AgentChatWindow: React.FC<AgentChatWindowProps> = ({
                               {msg.substitutionsList.map((s, idx) => (
                                 <div key={idx} className="chat-sub-card">
                                   <div className="chat-sub-name">
-                                    {s.substitute}
+                                    {formatMeasurementText(
+                                      s.substitute,
+                                      measurementSystem,
+                                    )}
                                   </div>
                                   <div className="chat-sub-ratio">
-                                    Ratio: {s.ratioOrNote}
+                                    Ratio:{" "}
+                                    {formatMeasurementText(
+                                      s.ratioOrNote,
+                                      measurementSystem,
+                                    )}
                                   </div>
                                   <div className="chat-sub-reason">
-                                    {s.reason}
+                                    {formatMeasurementText(
+                                      s.reason,
+                                      measurementSystem,
+                                    )}
                                   </div>
                                   {s.macroDelta && (
                                     <div className="chat-sub-macro">

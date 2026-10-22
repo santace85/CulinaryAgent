@@ -1,9 +1,37 @@
-import { Recipe, ShoppingListItem, CookingTimer } from "../types";
+import {
+  Recipe,
+  ShoppingListItem,
+  CookingTimer,
+  MeasurementSystem,
+} from "../types";
+import {
+  formatMeasurement,
+  formatMeasurementText,
+} from "./measurementFormatting";
 
 const FAVORITES_KEY = "culinary_favorites_v1";
 const SHARED_RECIPES_KEY = "culinary_shared_recipes_v1";
 const SHOPPING_KEY = "culinary_shopping_list_v1";
 const TIMERS_KEY = "culinary_active_timers_v1";
+const MEASUREMENT_SYSTEM_KEY = "culinary_measurement_system_v1";
+
+export function getStoredMeasurementSystem(): MeasurementSystem {
+  try {
+    return localStorage.getItem(MEASUREMENT_SYSTEM_KEY) === "imperial"
+      ? "imperial"
+      : "metric";
+  } catch {
+    return "metric";
+  }
+}
+
+export function saveMeasurementSystem(system: MeasurementSystem): void {
+  try {
+    localStorage.setItem(MEASUREMENT_SYSTEM_KEY, system);
+  } catch {
+    // The setting remains available for the current session if storage is unavailable.
+  }
+}
 
 // Favorites Local Storage
 export function getStoredFavorites(): Recipe[] {
@@ -83,7 +111,10 @@ export function saveStoredTimers(timers: CookingTimer[]): void {
 }
 
 // Export shopping list as formatted plaintext or downloadable file
-export function exportShoppingListAsText(items: ShoppingListItem[]): string {
+export function exportShoppingListAsText(
+  items: ShoppingListItem[],
+  measurementSystem: MeasurementSystem = "metric",
+): string {
   if (!items.length) return "Shopping list is empty.";
 
   const categories = Array.from(new Set(items.map((i) => i.category)));
@@ -95,7 +126,7 @@ export function exportShoppingListAsText(items: ShoppingListItem[]): string {
     text += `📌 ${cat.toUpperCase()}\n`;
     catItems.forEach((item) => {
       const box = item.isChecked ? "[x]" : "[ ]";
-      text += `  ${box} ${item.amount > 0 ? item.amount + " " : ""}${item.unit ? item.unit + " " : ""}${item.name}${
+      text += `  ${box} ${item.amount > 0 ? formatMeasurement(item.amount, item.unit, measurementSystem) + " " : ""}${formatMeasurementText(item.name, measurementSystem)}${
         item.recipeSource ? ` (for ${item.recipeSource})` : ""
       }\n`;
     });

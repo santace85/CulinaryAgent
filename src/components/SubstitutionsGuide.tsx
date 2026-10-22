@@ -12,6 +12,8 @@ import {
   RefreshCw,
 } from "lucide-react";
 import "./SubstitutionsGuide.css";
+import { useMeasurementSystem } from "../context/MeasurementContext";
+import { formatMeasurementText } from "../utils/measurementFormatting";
 
 const COMMON_PRESET_SUBSTITUTIONS: Record<string, Substitution[]> = {
   Buttermilk: [
@@ -112,6 +114,7 @@ interface SubstitutionsGuideProps {
 export const SubstitutionsGuide: React.FC<SubstitutionsGuideProps> = ({
   initialSearch = "",
 }) => {
+  const { measurementSystem } = useMeasurementSystem();
   const [searchQuery, setSearchQuery] = useState(initialSearch);
   const [customResults, setCustomResults] = useState<Substitution[] | null>(
     null,
@@ -196,12 +199,22 @@ export const SubstitutionsGuide: React.FC<SubstitutionsGuideProps> = ({
               <div key={idx} className="swap-ai-card">
                 <div className="swap-ai-card-header">
                   <span className="swap-ai-original">
-                    {sub.originalIngredient}
+                    {formatMeasurementText(
+                      sub.originalIngredient,
+                      measurementSystem,
+                    )}
                   </span>
-                  <span className="swap-ai-substitute">➜ {sub.substitute}</span>
+                  <span className="swap-ai-substitute">
+                    ➜ {formatMeasurementText(sub.substitute, measurementSystem)}
+                  </span>
                 </div>
-                <div className="swap-ai-ratio">Ratio: {sub.ratioOrNote}</div>
-                <div className="swap-ai-reason">{sub.reason}</div>
+                <div className="swap-ai-ratio">
+                  Ratio:{" "}
+                  {formatMeasurementText(sub.ratioOrNote, measurementSystem)}
+                </div>
+                <div className="swap-ai-reason">
+                  {formatMeasurementText(sub.reason, measurementSystem)}
+                </div>
                 {sub.macroDelta && (
                   <div className="swap-ai-macro">
                     Net macros: {getMacroDeltaSummary(sub.macroDelta)}
@@ -231,12 +244,18 @@ export const SubstitutionsGuide: React.FC<SubstitutionsGuideProps> = ({
                   <div key={idx} className="swap-preset-item">
                     <div className="swap-preset-item-title">
                       <CheckCircle2 />
-                      {sub.substitute}
+                      {formatMeasurementText(sub.substitute, measurementSystem)}
                     </div>
                     <div className="swap-preset-item-ratio">
-                      Ratio: {sub.ratioOrNote}
+                      Ratio:{" "}
+                      {formatMeasurementText(
+                        sub.ratioOrNote,
+                        measurementSystem,
+                      )}
                     </div>
-                    <div className="swap-preset-item-reason">{sub.reason}</div>
+                    <div className="swap-preset-item-reason">
+                      {formatMeasurementText(sub.reason, measurementSystem)}
+                    </div>
                     {sub.macroDelta && (
                       <div className="swap-preset-item-macro">
                         Net macros: {getMacroDeltaSummary(sub.macroDelta)}

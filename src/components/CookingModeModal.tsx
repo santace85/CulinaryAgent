@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { Recipe } from "../types";
 import { formatInstructionDurations } from "../utils/durationFormatting";
+import { useMeasurementSystem } from "../context/MeasurementContext";
+import { formatMeasurementText } from "../utils/measurementFormatting";
 import {
   X,
   ChevronLeft,
@@ -30,6 +32,7 @@ export const CookingModeModal: React.FC<CookingModeModalProps> = ({
   onClose,
   onStartTimer,
 }) => {
+  const { measurementSystem } = useMeasurementSystem();
   const [currentStepIdx, setCurrentStepIdx] = useState<number>(0);
   const [completedSteps, setCompletedSteps] = useState<Record<number, boolean>>(
     {},
@@ -110,8 +113,10 @@ export const CookingModeModal: React.FC<CookingModeModalProps> = ({
     }
 
     window.speechSynthesis.cancel();
-    const textToRead = `Step ${currentStep.stepNumber}. ${currentStep.title}. ${currentStep.instruction}. ${
-      currentStep.tip ? `Chef tip: ${currentStep.tip}` : ""
+    const textToRead = `Step ${currentStep.stepNumber}. ${formatMeasurementText(currentStep.title, measurementSystem)}. ${formatMeasurementText(currentStep.instruction, measurementSystem)}. ${
+      currentStep.tip
+        ? `Chef tip: ${formatMeasurementText(currentStep.tip, measurementSystem)}`
+        : ""
     }`;
 
     const utterance = new SpeechSynthesisUtterance(textToRead);
@@ -211,7 +216,10 @@ export const CookingModeModal: React.FC<CookingModeModalProps> = ({
           <h3 className="cooking-mode-step-title">{currentStep.title}</h3>
 
           <p className="cooking-mode-instruction">
-            {formatInstructionDurations(currentStep.instruction)}
+            {formatMeasurementText(
+              formatInstructionDurations(currentStep.instruction),
+              measurementSystem,
+            )}
           </p>
 
           {currentStep.tip && (
@@ -219,7 +227,7 @@ export const CookingModeModal: React.FC<CookingModeModalProps> = ({
               <Zap className="cooking-mode-tip-icon" />
               <div>
                 <strong>Chef Tip:</strong>
-                {currentStep.tip}
+                {formatMeasurementText(currentStep.tip, measurementSystem)}
               </div>
             </div>
           )}

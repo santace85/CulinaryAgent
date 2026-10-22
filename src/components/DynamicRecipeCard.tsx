@@ -26,6 +26,11 @@ import {
   Link,
 } from "lucide-react";
 import { createRecipeShareUrl, getShareMessage } from "../utils/sharing";
+import { useMeasurementSystem } from "../context/MeasurementContext";
+import {
+  formatMeasurement,
+  formatMeasurementText,
+} from "../utils/measurementFormatting";
 import "./DynamicRecipeCard.css";
 
 interface DynamicRecipeCardProps {
@@ -60,6 +65,7 @@ export const DynamicRecipeCard: React.FC<DynamicRecipeCardProps> = ({
   initialServings,
   darkMode = true,
 }) => {
+  const { measurementSystem } = useMeasurementSystem();
   const [currentServings, setCurrentServings] = useState<number>(
     initialServings ?? recipe.servings ?? 4,
   );
@@ -103,7 +109,7 @@ export const DynamicRecipeCard: React.FC<DynamicRecipeCardProps> = ({
   // Scale ingredient amounts mathematically
   const getScaledAmount = (amount: number) => {
     const val = (amount * currentServings) / baseServings;
-    return Number.isInteger(val) ? val.toString() : val.toFixed(1);
+    return Number(Number.isInteger(val) ? val : val.toFixed(1));
   };
 
   // Export checked or all ingredients to shopping list
@@ -127,11 +133,11 @@ export const DynamicRecipeCard: React.FC<DynamicRecipeCardProps> = ({
     txt += `⏱️ Prep: ${recipe.prepTimeMinutes}m | Cook: ${recipe.cookTimeMinutes}m | Servings: ${currentServings}\n\n`;
     txt += `🛒 INGREDIENTS:\n`;
     recipe.ingredients.forEach((i) => {
-      txt += `- ${getScaledAmount(i.amount)} ${i.unit} ${i.name}\n`;
+      txt += `- ${formatMeasurement(getScaledAmount(i.amount), i.unit, measurementSystem)} ${formatMeasurementText(i.name, measurementSystem)}\n`;
     });
     txt += `\n👨‍🍳 STEPS:\n`;
     recipe.steps.forEach((s) => {
-      txt += `${s.stepNumber}. ${s.title}: ${s.instruction}\n`;
+      txt += `${s.stepNumber}. ${formatMeasurementText(s.title, measurementSystem)}: ${formatMeasurementText(s.instruction, measurementSystem)}\n`;
     });
 
     navigator.clipboard.writeText(txt);
@@ -200,7 +206,9 @@ export const DynamicRecipeCard: React.FC<DynamicRecipeCardProps> = ({
           </div>
 
           <h2 className="recipe-title">{recipe.title}</h2>
-          <p className="recipe-summary">{recipe.summary}</p>
+          <p className="recipe-summary">
+            {formatMeasurementText(recipe.summary, measurementSystem)}
+          </p>
         </div>
 
         {/* Favorite & Share Buttons */}
@@ -374,10 +382,12 @@ export const DynamicRecipeCard: React.FC<DynamicRecipeCardProps> = ({
                       )}
                     </button>
                     <div>
-                      <span className="recipe-ingredient-name">{ing.name}</span>
+                      <span className="recipe-ingredient-name">
+                        {formatMeasurementText(ing.name, measurementSystem)}
+                      </span>
                       {ing.notes && (
                         <div className="recipe-ingredient-notes">
-                          {ing.notes}
+                          {formatMeasurementText(ing.notes, measurementSystem)}
                         </div>
                       )}
                     </div>
@@ -385,7 +395,11 @@ export const DynamicRecipeCard: React.FC<DynamicRecipeCardProps> = ({
 
                   <div className="recipe-ingredient-right">
                     <span className="recipe-ingredient-amount">
-                      {getScaledAmount(ing.amount)} {ing.unit}
+                      {formatMeasurement(
+                        getScaledAmount(ing.amount),
+                        ing.unit,
+                        measurementSystem,
+                      )}
                     </span>
                     {onRequestSubstitution && (
                       <button
@@ -488,14 +502,18 @@ export const DynamicRecipeCard: React.FC<DynamicRecipeCardProps> = ({
                       <p
                         className={`recipe-step-instruction ${isCompleted ? "recipe-step-instruction--completed" : ""}`}
                       >
-                        {formatInstructionDurations(step.instruction)}
+                        {formatMeasurementText(
+                          formatInstructionDurations(step.instruction),
+                          measurementSystem,
+                        )}
                       </p>
 
                       {step.tip && (
                         <div className="recipe-step-tip">
                           <Zap className="recipe-step-tip-icon" />
                           <span>
-                            <strong>Chef Tip:</strong> {step.tip}
+                            <strong>Chef Tip:</strong>{" "}
+                            {formatMeasurementText(step.tip, measurementSystem)}
                           </span>
                         </div>
                       )}
@@ -528,16 +546,27 @@ export const DynamicRecipeCard: React.FC<DynamicRecipeCardProps> = ({
                 <div key={idx} className="recipe-sub-card">
                   <div className="recipe-sub-header">
                     <span className="recipe-sub-original">
-                      {sub.originalIngredient}
+                      {formatMeasurementText(
+                        sub.originalIngredient,
+                        measurementSystem,
+                      )}
                     </span>
                     <span className="recipe-sub-arrow">➜</span>
                     <span className="recipe-sub-substitute">
-                      {sub.substitute}
+                      {formatMeasurementText(sub.substitute, measurementSystem)}
                     </span>
                   </div>
                   <div className="recipe-sub-detail">
-                    <span>Ratio: {sub.ratioOrNote}</span>
-                    <span className="recipe-sub-reason">{sub.reason}</span>
+                    <span>
+                      Ratio:{" "}
+                      {formatMeasurementText(
+                        sub.ratioOrNote,
+                        measurementSystem,
+                      )}
+                    </span>
+                    <span className="recipe-sub-reason">
+                      {formatMeasurementText(sub.reason, measurementSystem)}
+                    </span>
                   </div>
                   {sub.macroDelta && (
                     <div className="recipe-sub-macro">
@@ -557,14 +586,18 @@ export const DynamicRecipeCard: React.FC<DynamicRecipeCardProps> = ({
           {recipe.chefNotes && (
             <div className="recipe-chef-notes-box">
               <div className="recipe-chef-notes-label">Chef Notes</div>
-              <div className="recipe-chef-notes-text">{recipe.chefNotes}</div>
+              <div className="recipe-chef-notes-text">
+                {formatMeasurementText(recipe.chefNotes, measurementSystem)}
+              </div>
             </div>
           )}
 
           {recipe.drinkPairing && (
             <div className="recipe-drink-box">
               <div className="recipe-drink-label">Drink Pairing</div>
-              <div className="recipe-drink-text">{recipe.drinkPairing}</div>
+              <div className="recipe-drink-text">
+                {formatMeasurementText(recipe.drinkPairing, measurementSystem)}
+              </div>
             </div>
           )}
         </div>

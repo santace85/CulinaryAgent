@@ -3,6 +3,8 @@ import { Recipe, Ingredient } from "../types";
 import { DynamicRecipeCard } from "./DynamicRecipeCard";
 import { ArrowLeft, Link2, Search, Trash2 } from "lucide-react";
 import { removeSharedRecipe } from "../utils/storage";
+import { useMeasurementSystem } from "../context/MeasurementContext";
+import { formatMeasurementText } from "../utils/measurementFormatting";
 import "./FavoritesView.css";
 
 interface SharedRecipesViewProps {
@@ -37,6 +39,7 @@ export const SharedRecipesView: React.FC<SharedRecipesViewProps> = ({
   onOpenCookingMode,
   onRequestSubstitution,
 }) => {
+  const { measurementSystem } = useMeasurementSystem();
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedRecipe, setSelectedRecipe] = useState<Recipe | null>(null);
 
@@ -140,7 +143,9 @@ export const SharedRecipesView: React.FC<SharedRecipesViewProps> = ({
                   <Trash2 />
                 </button>
               </div>
-              <p className="fav-card-summary">{recipe.summary}</p>
+              <p className="fav-card-summary">
+                {formatMeasurementText(recipe.summary, measurementSystem)}
+              </p>
               <div className="fav-card-footer">
                 <span>
                   {recipe.prepTimeMinutes + recipe.cookTimeMinutes} mins

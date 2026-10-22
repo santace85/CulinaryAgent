@@ -4,11 +4,14 @@ import App from "./App.tsx";
 import "./index.css";
 import "./theme.css";
 import { ThemeProvider } from "./context/ThemeContext";
+import { MeasurementProvider } from "./context/MeasurementContext";
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <ThemeProvider>
-      <App />
+      <MeasurementProvider>
+        <App />
+      </MeasurementProvider>
     </ThemeProvider>
   </StrictMode>,
 );

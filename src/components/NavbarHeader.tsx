@@ -11,6 +11,7 @@ import {
   Moon,
 } from "lucide-react";
 import "./NavbarHeader.css";
+import { useMeasurementSystem } from "../context/MeasurementContext";
 
 interface NavbarHeaderProps {
   activeTab: "agent" | "favorites" | "shared" | "shopping" | "substitutions";
@@ -37,6 +38,8 @@ export const NavbarHeader: React.FC<NavbarHeaderProps> = ({
   darkMode,
   setDarkMode,
 }) => {
+  const { measurementSystem, setMeasurementSystem } = useMeasurementSystem();
+
   return (
     <header className="navbar-header">
       <div className="navbar-container">
@@ -145,6 +148,29 @@ export const NavbarHeader: React.FC<NavbarHeaderProps> = ({
 
           {/* Action Buttons: Timers & Theme */}
           <div className="navbar-actions">
+            <div
+              className="navbar-measurement-toggle"
+              role="group"
+              aria-label="Measurement system"
+            >
+              <button
+                type="button"
+                onClick={() => setMeasurementSystem("metric")}
+                aria-pressed={measurementSystem === "metric"}
+                className={`navbar-measurement-btn ${measurementSystem === "metric" ? "navbar-measurement-btn--active" : ""}`}
+              >
+                Metric
+              </button>
+              <button
+                type="button"
+                onClick={() => setMeasurementSystem("imperial")}
+                aria-pressed={measurementSystem === "imperial"}
+                className={`navbar-measurement-btn ${measurementSystem === "imperial" ? "navbar-measurement-btn--active" : ""}`}
+              >
+                Imperial
+              </button>
+            </div>
+
             <button
               id="btn-open-timers"
               onClick={onOpenTimers}

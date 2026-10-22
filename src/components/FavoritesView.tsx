@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import { Recipe, Ingredient } from "../types";
 import { DynamicRecipeCard } from "./DynamicRecipeCard";
+import { useMeasurementSystem } from "../context/MeasurementContext";
+import { formatMeasurementText } from "../utils/measurementFormatting";
 import {
   Heart,
   Search,
@@ -37,6 +39,7 @@ export const FavoritesView: React.FC<FavoritesViewProps> = ({
   onOpenCookingMode,
   onRequestSubstitution,
 }) => {
+  const { measurementSystem } = useMeasurementSystem();
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedRecipe, setSelectedRecipe] = useState<Recipe | null>(null);
 
@@ -143,7 +146,9 @@ export const FavoritesView: React.FC<FavoritesViewProps> = ({
                 </button>
               </div>
 
-              <p className="fav-card-summary">{recipe.summary}</p>
+              <p className="fav-card-summary">
+                {formatMeasurementText(recipe.summary, measurementSystem)}
+              </p>
 
               <div className="fav-card-footer">
                 <span>
