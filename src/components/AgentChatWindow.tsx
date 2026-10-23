@@ -18,8 +18,48 @@ import {
   Loader2,
   Trash2,
   AlertCircle,
+  Mic,
+  MicOff,
 } from "lucide-react";
 import "./AgentChatWindow.css";
+
+interface SpeechRecognitionAlternativeLike {
+  transcript: string;
+}
+
+interface SpeechRecognitionResultLike extends ArrayLike<SpeechRecognitionAlternativeLike> {
+  isFinal: boolean;
+}
+
+interface SpeechRecognitionEventLike extends Event {
+  resultIndex: number;
+  results: ArrayLike<SpeechRecognitionResultLike>;
+}
+
+interface SpeechRecognitionLike {
+  lang: string;
+  interimResults: boolean;
+  continuous: boolean;
+  onresult: ((event: SpeechRecognitionEventLike) => void) | null;
+  onerror: ((event: Event & { error: string }) => void) | null;
+  onend: (() => void) | null;
+  start: () => void;
+  stop: () => void;
+  abort: () => void;
+}
+
+type SpeechRecognitionConstructor = new () => SpeechRecognitionLike;
+
+const getSpeechRecognitionConstructor = () => {
+  if (typeof window === "undefined") return undefined;
+  const browserWindow = window as Window & {
+    SpeechRecognition?: SpeechRecognitionConstructor;
+    webkitSpeechRecognition?: SpeechRecognitionConstructor;
+  };
+  return (
+    browserWindow.SpeechRecognition ?? browserWindow.webkitSpeechRecognition
+  );
+};
 
 interface AgentChatWindowProps {
   messages: AgentMessage[];
@@ -77,9 +117,14 @@ export const AgentChatWindow: React.FC<AgentChatWindowProps> = ({
   const [history, setHistory] = useState<
     { userPrompt: string; recipeTitle?: string }[]
   >([]);
+  const [isListening, setIsListening] = useState(false);
+  const [speechStatus, setSpeechStatus] = useState("");
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const chatAreaRef = useRef<HTMLDivElement>(null);
+  const speechRecognitionRef = useRef<SpeechRecognitionLike | null>(null);
+  const speechErrorRef = useRef(false);
+  const SpeechRecognition = getSpeechRecognitionConstructor();
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -98,6 +143,78 @@ export const AgentChatWindow: React.FC<AgentChatWindowProps> = ({
   useEffect(() => {
     scrollToBottom();
   }, [messages, isLoading]);
+
+  useEffect(
+    () => () => {
+      speechRecognitionRef.current?.abort();
+      speechRecognitionRef.current = null;
+    },
+    [],
+  );
+
+  const toggleSpeechRecognition = () => {
+    if (isListening) {
+      speechRecognitionRef.current?.stop();
+      return;
+    }
+
+    if (!SpeechRecognition) return;
+
+    const recognition = new SpeechRecognition();
+    recognition.lang = navigator.language || "en-US";
+    recognition.continuous = true;
+    recognition.interimResults = false;
+    speechErrorRef.current = false;
+    recognition.onresult = (event) => {
+      const transcripts: string[] = [];
+      for (
+        let index = event.resultIndex;
+        index < event.results.length;
+        index += 1
+      ) {
+        const result = event.results[index];
+        if (result.isFinal) transcripts.push(result[0].transcript.trim());
+      }
+      const transcript = transcripts.filter(Boolean).join(" ");
+      if (transcript) {
+        setInputText(
+          (currentText) =>
+            `${currentText.trimEnd()}${currentText.trim() ? " " : ""}${transcript}`,
+        );
+        setSpeechStatus("");
+      }
+    };
+    recognition.onerror = (event) => {
+      speechErrorRef.current = true;
+      const message =
+        event.error === "not-allowed" || event.error === "service-not-allowed"
+          ? "Allow microphone access in your browser to use voice input."
+          : event.error === "audio-capture"
+            ? "No microphone was found. Check your device settings."
+            : event.error === "no-speech"
+              ? "No speech was detected. Tap the microphone to try again."
+              : "Voice input stopped. Check your connection and try again.";
+      setSpeechStatus(message);
+    };
+    recognition.onend = () => {
+      setIsListening(false);
+      speechRecognitionRef.current = null;
+      if (!speechErrorRef.current) setSpeechStatus("");
+    };
+
+    speechRecognitionRef.current = recognition;
+    setSpeechStatus("Listening… Tap the microphone to finish.");
+    setIsListening(true);
+    try {
+      recognition.start();
+    } catch {
+      speechRecognitionRef.current = null;
+      setIsListening(false);
+      setSpeechStatus(
+        "Microphone unavailable. Check browser permission and try again.",
+      );
+    }
+  };
 
   const toggleDietaryTag = (tag: string) => {
     setSelectedDietary((prev) =>
@@ -583,6 +700,29 @@ export const AgentChatWindow: React.FC<AgentChatWindowProps> = ({
           />
 
           <button
+            type="button"
+            onClick={toggleSpeechRecognition}
+            disabled={isLoading || !SpeechRecognition}
+            className={`chat-mic-btn${isListening ? " chat-mic-btn--active" : ""}`}
+            aria-label={
+              isListening
+                ? "Stop voice input"
+                : SpeechRecognition
+                  ? "Start voice input"
+                  : "Voice input unavailable"
+            }
+            title={
+              SpeechRecognition
+                ? isListening
+                  ? "Stop voice input"
+                  : "Start voice input"
+                : "Voice input isn't supported by this browser"
+            }
+          >
+            {isListening ? <MicOff /> : <Mic />}
+          </button>
+
+          <button
             type="submit"
             disabled={!inputText.trim() || isLoading}
             className="chat-send-btn"
@@ -597,6 +737,11 @@ export const AgentChatWindow: React.FC<AgentChatWindowProps> = ({
             )}
           </button>
         </form>
+        {(speechStatus || !SpeechRecognition) && (
+          <p className="chat-speech-status" role="status" aria-live="polite">
+            {speechStatus || "Voice input isn't supported by this browser."}
+          </p>
+        )}
       </div>
     </div>
   );

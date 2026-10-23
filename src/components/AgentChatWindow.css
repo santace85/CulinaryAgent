@@ -710,6 +710,54 @@
   border-color: var(--input-focus-border-alpha); /* Use var */
 }
 
+.chat-mic-btn {
+  width: 2.75rem;
+  height: 2.75rem;
+  flex: 0 0 2.75rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--color-border);
+  border-radius: var(--border-radius-xl);
+  background: var(--color-background);
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  transition: var(--transition-all);
+  touch-action: manipulation;
+}
+
+.chat-mic-btn:hover:not(:disabled) {
+  border-color: var(--input-focus-border-alpha);
+  color: var(--color-text-primary);
+}
+
+.chat-mic-btn:focus-visible {
+  outline: 2px solid var(--input-focus-border-alpha);
+  outline-offset: 2px;
+}
+
+.chat-mic-btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.chat-mic-btn--active {
+  border-color: var(--input-focus-border-alpha);
+  background: var(--color-background-alt);
+  color: var(--color-text-primary);
+}
+
+.chat-mic-btn svg {
+  width: 1.125rem;
+  height: 1.125rem;
+}
+
+.chat-speech-status {
+  margin: var(--spacing-2) var(--spacing-1) 0;
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-2xs);
+}
+
 .chat-send-btn {
   padding: var(--spacing-2_5) var(--spacing-4);
   border-radius: var(--border-radius-xl);
