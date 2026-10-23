@@ -119,6 +119,7 @@ export const SubstitutionsGuide: React.FC<SubstitutionsGuideProps> = ({
   const [customResults, setCustomResults] = useState<Substitution[] | null>(
     null,
   );
+  const [requestError, setRequestError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
   const handleAISearch = async (e?: React.FormEvent) => {
@@ -128,9 +129,15 @@ export const SubstitutionsGuide: React.FC<SubstitutionsGuideProps> = ({
     setIsLoading(true);
     try {
       const results = await fetchAISubstitutions(searchQuery.trim());
-      setCustomResults(results);
+      setCustomResults(results.substitutions);
+      setRequestError(
+        results.isRequestError
+          ? results.error || "Unable to reach the AI service."
+          : "",
+      );
     } catch (err) {
       console.error(err);
+      setRequestError("Unable to reach the AI service. Please try again.");
     } finally {
       setIsLoading(false);
     }
@@ -186,6 +193,7 @@ export const SubstitutionsGuide: React.FC<SubstitutionsGuideProps> = ({
             )}
           </button>
         </form>
+        {requestError && <p role="alert">{requestError}</p>}
       </div>
 
       {/* AI Custom Query Results */}

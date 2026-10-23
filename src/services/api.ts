@@ -15,8 +15,15 @@ export interface GenerateRecipeOptions {
 export interface FetchRecipeResponse {
   recipe?: Recipe & { agentIntro?: string };
   isFallback: boolean;
+  isRequestError?: boolean;
   error?: string;
   recommendedRecipes?: Recipe[];
+}
+
+export interface FetchSubstitutionsResponse {
+  substitutions: Substitution[];
+  isRequestError: boolean;
+  error?: string;
 }
 
 function getFriendlyError(message: string, status?: number) {
@@ -44,7 +51,7 @@ function getFriendlyError(message: string, status?: number) {
   return "AI is unavailable. Please try again.";
 }
 
-const BASE_URL = import.meta.env.VITE_API_BASE_URL; // <-- Your Render API URL
+const BASE_URL = (import.meta.env.VITE_API_BASE_URL || "").replace(/\/+$/, "");
 
 export async function fetchAIRecipe(
   options: GenerateRecipeOptions,
@@ -61,28 +68,48 @@ export async function fetchAIRecipe(
 
     const data = await response.json().catch(() => ({}));
 
-    if (!response.ok || !data.recipe) {
+    if (!response.ok) {
       return {
         isFallback: true,
-        error: getFriendlyError(
-          data?.error || response.statusText || `HTTP ${response.status}`,
-          response.status,
-        ),
+        isRequestError: true,
+        error: data?.isRequestError
+          ? data.error
+          : getFriendlyError(
+              data?.error || response.statusText || `HTTP ${response.status}`,
+              response.status,
+            ),
+        recommendedRecipes:
+          data?.recommendedRecipes || POPULAR_FALLBACK_RECIPES,
+      };
+    }
+
+    if (data?.isFallback) {
+      return {
+        isFallback: true,
+        error: data.error,
+        recommendedRecipes: data.recommendedRecipes || POPULAR_FALLBACK_RECIPES,
+      };
+    }
+
+    if (!data?.recipe) {
+      return {
+        isFallback: true,
+        isRequestError: true,
+        error: "The recipe service returned an incomplete response.",
         recommendedRecipes: POPULAR_FALLBACK_RECIPES,
       };
     }
 
-    const isFallback = !!data.isFallback || !response.ok;
     return {
-      recipe: isFallback ? undefined : normalizeRecipeIdentity(data.recipe),
-      isFallback,
-      error: data.error,
+      recipe: normalizeRecipeIdentity(data.recipe),
+      isFallback: false,
       recommendedRecipes: data.recommendedRecipes,
     };
   } catch (error: any) {
     console.warn("Error calling /api/recipe, fallback triggered:", error);
     return {
       isFallback: true,
+      isRequestError: true,
       error: getFriendlyError(error?.message || ""),
       recommendedRecipes: POPULAR_FALLBACK_RECIPES,
     };
@@ -92,7 +119,7 @@ export async function fetchAIRecipe(
 export async function fetchAISubstitutions(
   ingredient: string,
   recipeContext?: string,
-): Promise<Substitution[]> {
+): Promise<FetchSubstitutionsResponse> {
   try {
     const response = await fetch(`${BASE_URL}/api/substitute`, {
       method: "POST",
@@ -102,14 +129,29 @@ export async function fetchAISubstitutions(
       body: JSON.stringify({ ingredient, recipeContext }),
     });
 
+    const data = await response.json().catch(() => ({}));
     if (!response.ok) {
-      throw new Error("Failed to fetch substitutions");
+      return {
+        substitutions: [],
+        isRequestError: true,
+        error: getFriendlyError(
+          data?.error || response.statusText || `HTTP ${response.status}`,
+          response.status,
+        ),
+      };
     }
 
-    const data = await response.json();
-    return data.substitutions || [];
+    return {
+      substitutions: data.substitutions || [],
+      isRequestError: !!data.isRequestError,
+      error: data.error,
+    };
   } catch (error) {
     console.warn("Substitutions fetch failed:", error);
-    return [];
+    return {
+      substitutions: [],
+      isRequestError: true,
+      error: getFriendlyError(error instanceof Error ? error.message : ""),
+    };
   }
 }

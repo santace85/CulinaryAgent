@@ -514,6 +514,50 @@
   font-weight: 500;
 }
 
+.chat-request-error {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--spacing-2);
+  color: var(--color-rose-400);
+  font-size: var(--font-size-xs);
+}
+
+.chat-request-error > svg {
+  width: 1rem;
+  height: 1rem;
+  flex: 0 0 auto;
+}
+
+.chat-retry-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-1);
+  min-height: 2rem;
+  padding: 0 var(--spacing-2_5);
+  border: 1px solid var(--color-border-alt);
+  border-radius: var(--border-radius-md);
+  background: var(--color-background-alt);
+  color: var(--color-text-primary);
+  font: inherit;
+  cursor: pointer;
+}
+
+.chat-retry-btn:hover:not(:disabled) {
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+}
+
+.chat-retry-btn:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.chat-retry-btn svg {
+  width: 0.875rem;
+  height: 0.875rem;
+}
+
 /* Fallback recipe recommendations */
 
 .chat-fallback-list {

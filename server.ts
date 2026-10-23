@@ -5,6 +5,10 @@ import { GoogleGenAI, Type } from "@google/genai";
 import dotenv from "dotenv";
 import { POPULAR_FALLBACK_RECIPES } from "./src/data/fallbackRecipes";
 import cors from "cors"; // Import the cors package
+import {
+  isRetryableGeminiError,
+  withTransientRetries,
+} from "./src/utils/transientRetry";
 
 dotenv.config();
 
@@ -128,129 +132,131 @@ ${dietary && dietary.length ? `Dietary preferences/restrictions: ${dietary.join(
 ${servings ? `Target servings: ${servings}.` : ""}
 ${cookTimeMax ? `Maximum cook time limit: ${cookTimeMax} minutes.` : ""}`;
 
-    const response = await ai.models.generateContent({
-      model: "gemini-3.6-flash",
-      contents: userPrompt,
-      config: {
-        systemInstruction,
-        temperature: 0.7,
-        responseMimeType: "application/json",
-        responseSchema: {
-          type: Type.OBJECT,
-          properties: {
-            agentIntro: { type: Type.STRING },
-            id: { type: Type.STRING },
-            title: { type: Type.STRING },
+    const response = await withTransientRetries(() =>
+      ai.models.generateContent({
+        model: "gemini-3.6-flash",
+        contents: userPrompt,
+        config: {
+          systemInstruction,
+          temperature: 0.7,
+          responseMimeType: "application/json",
+          responseSchema: {
+            type: Type.OBJECT,
+            properties: {
+              agentIntro: { type: Type.STRING },
+              id: { type: Type.STRING },
+              title: { type: Type.STRING },
 
-            summary: { type: Type.STRING },
-            prepTimeMinutes: { type: Type.INTEGER },
-            cookTimeMinutes: { type: Type.INTEGER },
-            servings: { type: Type.INTEGER },
-            difficulty: {
-              type: Type.STRING,
-              enum: ["Easy", "Medium", "Advanced"],
-            },
-            calories: { type: Type.INTEGER },
-            cuisine: { type: Type.STRING },
-            dietaryTags: {
-              type: Type.ARRAY,
-              items: { type: Type.STRING },
-            },
-            ingredients: {
-              type: Type.ARRAY,
-              items: {
-                type: Type.OBJECT,
-                properties: {
-                  id: { type: Type.STRING },
-                  name: { type: Type.STRING },
-                  amount: { type: Type.NUMBER },
-                  unit: { type: Type.STRING },
-                  category: {
-                    type: Type.STRING,
-                    enum: [
-                      "Produce",
-                      "Dairy & Eggs",
-                      "Meat & Seafood",
-                      "Pantry & Spices",
-                      "Bakery",
-                      "Other",
-                    ],
+              summary: { type: Type.STRING },
+              prepTimeMinutes: { type: Type.INTEGER },
+              cookTimeMinutes: { type: Type.INTEGER },
+              servings: { type: Type.INTEGER },
+              difficulty: {
+                type: Type.STRING,
+                enum: ["Easy", "Medium", "Advanced"],
+              },
+              calories: { type: Type.INTEGER },
+              cuisine: { type: Type.STRING },
+              dietaryTags: {
+                type: Type.ARRAY,
+                items: { type: Type.STRING },
+              },
+              ingredients: {
+                type: Type.ARRAY,
+                items: {
+                  type: Type.OBJECT,
+                  properties: {
+                    id: { type: Type.STRING },
+                    name: { type: Type.STRING },
+                    amount: { type: Type.NUMBER },
+                    unit: { type: Type.STRING },
+                    category: {
+                      type: Type.STRING,
+                      enum: [
+                        "Produce",
+                        "Dairy & Eggs",
+                        "Meat & Seafood",
+                        "Pantry & Spices",
+                        "Bakery",
+                        "Other",
+                      ],
+                    },
+                    notes: { type: Type.STRING },
+                    optional: { type: Type.BOOLEAN },
                   },
-                  notes: { type: Type.STRING },
-                  optional: { type: Type.BOOLEAN },
+                  required: ["id", "name", "amount", "unit", "category"],
                 },
-                required: ["id", "name", "amount", "unit", "category"],
               },
-            },
-            steps: {
-              type: Type.ARRAY,
-              items: {
-                type: Type.OBJECT,
-                properties: {
-                  stepNumber: { type: Type.INTEGER },
-                  title: { type: Type.STRING },
-                  instruction: { type: Type.STRING },
-                  timerSeconds: { type: Type.INTEGER },
-                  tip: { type: Type.STRING },
-                  technique: { type: Type.STRING },
+              steps: {
+                type: Type.ARRAY,
+                items: {
+                  type: Type.OBJECT,
+                  properties: {
+                    stepNumber: { type: Type.INTEGER },
+                    title: { type: Type.STRING },
+                    instruction: { type: Type.STRING },
+                    timerSeconds: { type: Type.INTEGER },
+                    tip: { type: Type.STRING },
+                    technique: { type: Type.STRING },
+                  },
+                  required: ["stepNumber", "title", "instruction"],
                 },
-                required: ["stepNumber", "title", "instruction"],
               },
-            },
-            substitutions: {
-              type: Type.ARRAY,
-              items: {
-                type: Type.OBJECT,
-                properties: {
-                  originalIngredient: { type: Type.STRING },
-                  substitute: { type: Type.STRING },
-                  ratioOrNote: { type: Type.STRING },
-                  reason: { type: Type.STRING },
-                  macroDelta: {
-                    type: Type.OBJECT,
-                    properties: {
-                      protein: { type: Type.STRING },
-                      carbs: { type: Type.STRING },
-                      fat: { type: Type.STRING },
-                      fiber: { type: Type.STRING },
+              substitutions: {
+                type: Type.ARRAY,
+                items: {
+                  type: Type.OBJECT,
+                  properties: {
+                    originalIngredient: { type: Type.STRING },
+                    substitute: { type: Type.STRING },
+                    ratioOrNote: { type: Type.STRING },
+                    reason: { type: Type.STRING },
+                    macroDelta: {
+                      type: Type.OBJECT,
+                      properties: {
+                        protein: { type: Type.STRING },
+                        carbs: { type: Type.STRING },
+                        fat: { type: Type.STRING },
+                        fiber: { type: Type.STRING },
+                      },
                     },
                   },
+                  required: ["originalIngredient", "substitute", "ratioOrNote"],
                 },
-                required: ["originalIngredient", "substitute", "ratioOrNote"],
+              },
+              chefNotes: { type: Type.STRING },
+              drinkPairing: { type: Type.STRING },
+              nutritionalInfo: {
+                type: Type.OBJECT,
+                properties: {
+                  protein: { type: Type.STRING },
+                  carbs: { type: Type.STRING },
+                  fat: { type: Type.STRING },
+                  fiber: { type: Type.STRING },
+                },
               },
             },
-            chefNotes: { type: Type.STRING },
-            drinkPairing: { type: Type.STRING },
-            nutritionalInfo: {
-              type: Type.OBJECT,
-              properties: {
-                protein: { type: Type.STRING },
-                carbs: { type: Type.STRING },
-                fat: { type: Type.STRING },
-                fiber: { type: Type.STRING },
-              },
-            },
+            required: [
+              "title",
+              "summary",
+              "prepTimeMinutes",
+              "cookTimeMinutes",
+              "servings",
+              "difficulty",
+              "cuisine",
+              "ingredients",
+              "steps",
+              "calories",
+              "dietaryTags",
+              "substitutions",
+              "chefNotes",
+              "drinkPairing",
+              "nutritionalInfo",
+            ],
           },
-          required: [
-            "title",
-            "summary",
-            "prepTimeMinutes",
-            "cookTimeMinutes",
-            "servings",
-            "difficulty",
-            "cuisine",
-            "ingredients",
-            "steps",
-            "calories",
-            "dietaryTags",
-            "substitutions",
-            "chefNotes",
-            "drinkPairing",
-            "nutritionalInfo",
-          ],
         },
-      },
-    });
+      }),
+    );
 
     const text = response.text;
     if (!text) {
@@ -288,6 +294,14 @@ ${cookTimeMax ? `Maximum cook time limit: ${cookTimeMax} minutes.` : ""}`;
     return res.json({ recipe: recipeData, isFallback: false });
   } catch (error: any) {
     console.error("Error generating recipe with Gemini:", error);
+    if (isRetryableGeminiError(error)) {
+      return res.status(503).json({
+        isRequestError: true,
+        error: "Gemini could not be reached after automatic retries.",
+        recommendedRecipes: POPULAR_FALLBACK_RECIPES,
+      });
+    }
+
     // Graceful fallback if error or quota limit
     return res.json({
       isFallback: true,
@@ -311,47 +325,56 @@ app.post("/api/substitute", rateLimitMiddleware, async (req, res) => {
       });
     }
 
-    const response = await ai.models.generateContent({
-      model: "gemini-3.6-flash",
-      contents: `Suggest 3 top culinary substitutes for "${ingredient}" ${
-        recipeContext ? `in the context of making ${recipeContext}` : ""
-      }. Provide ratio, taste impact, and best usage.`,
-      config: {
-        responseMimeType: "application/json",
-        responseSchema: {
-          type: Type.ARRAY,
-          items: {
-            type: Type.OBJECT,
-            properties: {
-              originalIngredient: { type: Type.STRING },
-              substitute: { type: Type.STRING },
-              ratioOrNote: { type: Type.STRING },
-              reason: { type: Type.STRING },
-              macroDelta: {
-                type: Type.OBJECT,
-                properties: {
-                  protein: { type: Type.STRING },
-                  carbs: { type: Type.STRING },
-                  fat: { type: Type.STRING },
-                  fiber: { type: Type.STRING },
+    const response = await withTransientRetries(() =>
+      ai.models.generateContent({
+        model: "gemini-3.6-flash",
+        contents: `Suggest 3 top culinary substitutes for "${ingredient}" ${
+          recipeContext ? `in the context of making ${recipeContext}` : ""
+        }. Provide ratio, taste impact, and best usage.`,
+        config: {
+          responseMimeType: "application/json",
+          responseSchema: {
+            type: Type.ARRAY,
+            items: {
+              type: Type.OBJECT,
+              properties: {
+                originalIngredient: { type: Type.STRING },
+                substitute: { type: Type.STRING },
+                ratioOrNote: { type: Type.STRING },
+                reason: { type: Type.STRING },
+                macroDelta: {
+                  type: Type.OBJECT,
+                  properties: {
+                    protein: { type: Type.STRING },
+                    carbs: { type: Type.STRING },
+                    fat: { type: Type.STRING },
+                    fiber: { type: Type.STRING },
+                  },
                 },
               },
+              required: [
+                "originalIngredient",
+                "substitute",
+                "ratioOrNote",
+                "reason",
+              ],
             },
-            required: [
-              "originalIngredient",
-              "substitute",
-              "ratioOrNote",
-              "reason",
-            ],
           },
         },
-      },
-    });
+      }),
+    );
 
     const parsed = JSON.parse(response.text || "[]");
     return res.json({ substitutions: parsed });
   } catch (err: any) {
     console.error("Error fetching substitutions:", err);
+    if (isRetryableGeminiError(err)) {
+      return res.status(503).json({
+        isRequestError: true,
+        error: "Gemini could not be reached after automatic retries.",
+      });
+    }
+
     return res.json({
       substitutions: getFallbackSubstitutions(req.body.ingredient),
     });

@@ -103,4 +103,15 @@ export interface AgentMessage {
   recommendedRecipes?: Recipe[];
   isThinking?: boolean;
   quickPrompts?: string[];
+  isRequestError?: boolean;
+  retryRequest?: AgentRetryRequest;
+}
+
+export interface AgentRetryRequest {
+  kind: "recipe" | "substitutions";
+  prompt: string;
+  dietary?: string[];
+  servings?: number;
+  measurementSystem?: MeasurementSystem;
+  history?: { userPrompt: string; recipeTitle?: string }[];
 }

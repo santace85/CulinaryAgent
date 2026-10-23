@@ -28,6 +28,10 @@ Create a `.env` file with:
 GEMINI_API_KEY=your_api_key_here
 ```
 
+The frontend uses the same origin for API requests by default. If the frontend
+is hosted separately from the API, set `VITE_API_BASE_URL` to the API origin,
+for example `https://your-api.example.com`.
+
 If you skip this, the server will return curated fallback recipes instead.
 
 3. Start the app

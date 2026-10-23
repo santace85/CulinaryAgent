@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
-import { AgentMessage, Recipe, Ingredient } from "../types";
+import { AgentMessage, AgentRetryRequest, Recipe, Ingredient } from "../types";
 import { DynamicRecipeCard } from "./DynamicRecipeCard";
 import { fetchAIRecipe, fetchAISubstitutions } from "../services/api";
 import { getMacroDeltaSummary } from "../utils/nutrition";
@@ -105,122 +105,90 @@ export const AgentChatWindow: React.FC<AgentChatWindowProps> = ({
     );
   };
 
-  const handleSendMessage = async (customPrompt?: string) => {
-    const promptToUse = customPrompt || inputText.trim();
-    if (!promptToUse || isLoading) return;
-
-    const userMsgId = "msg_user_" + Date.now();
-    const newUserMsg: AgentMessage = {
-      id: userMsgId,
-      sender: "user",
-      text: promptToUse,
-      timestamp: new Date().toLocaleTimeString([], {
+  const runAgentRequest = async (
+    request: AgentRetryRequest,
+    messageId: string,
+  ) => {
+    const timestamp = () =>
+      new Date().toLocaleTimeString([], {
         hour: "2-digit",
         minute: "2-digit",
-      }),
-    };
-
-    const agentThinkingId = "msg_agent_thinking_" + Date.now();
-    const newThinkingMsg: AgentMessage = {
-      id: agentThinkingId,
-      sender: "agent",
-      text: "Building your recipe...",
-      timestamp: new Date().toLocaleTimeString([], {
-        hour: "2-digit",
-        minute: "2-digit",
-      }),
-      isThinking: true,
-    };
-
-    setMessages((prev) => [...prev, newUserMsg, newThinkingMsg]);
-    if (!customPrompt) setInputText("");
-    setIsLoading(true);
+      });
 
     try {
-      // Check if user is asking for ingredient substitutions
-      if (
-        promptToUse.toLowerCase().includes("substitute") ||
-        promptToUse.toLowerCase().includes("swap") ||
-        promptToUse.toLowerCase().includes("instead of")
-      ) {
-        const subs = await fetchAISubstitutions(promptToUse);
+      if (request.kind === "substitutions") {
+        const result = await fetchAISubstitutions(request.prompt);
         setMessages((prev) =>
           prev.map((msg) =>
-            msg.id === agentThinkingId
+            msg.id === messageId
               ? {
-                  id: "msg_agent_" + Date.now(),
-                  sender: "agent",
-                  text: `Good swaps for "${promptToUse}":`,
-                  timestamp: new Date().toLocaleTimeString([], {
-                    hour: "2-digit",
-                    minute: "2-digit",
-                  }),
-                  substitutionsList: subs,
+                  ...msg,
+                  text: result.isRequestError
+                    ? result.error || "Unable to reach the AI service."
+                    : `Good swaps for "${request.prompt}":`,
+                  timestamp: timestamp(),
+                  substitutionsList: result.isRequestError
+                    ? undefined
+                    : result.substitutions,
                   isThinking: false,
+                  isRequestError: result.isRequestError,
+                  retryRequest: result.isRequestError ? request : undefined,
                 }
               : msg,
           ),
         );
-      } else {
-        // Fetch AI Recipe with History
-        const { recipe, isFallback, error, recommendedRecipes } =
-          await fetchAIRecipe({
-            prompt: promptToUse,
-            dietary: selectedDietary,
-            servings: targetServings,
-            measurementSystem,
-            history: history.slice(-5), // Keep last 3 interactions for context
-          });
-
-        const agentText = isFallback
-          ? error || "Unable to reach the AI service right now."
-          : recipe?.agentIntro || `Here's **${recipe?.title}**.`;
-
-        const agentMsgId = "msg_agent_" + Date.now();
-
-        setMessages((prev) =>
-          prev.map((msg) =>
-            msg.id === agentThinkingId
-              ? {
-                  id: agentMsgId,
-                  sender: "agent",
-                  text: agentText,
-                  timestamp: new Date().toLocaleTimeString([], {
-                    hour: "2-digit",
-                    minute: "2-digit",
-                  }),
-                  recipe: isFallback ? undefined : recipe,
-                  recommendedRecipes: isFallback
-                    ? recommendedRecipes
-                    : undefined,
-                  isThinking: false,
-                }
-              : msg,
-          ),
-        );
-
-        if (!isFallback && recipe) {
-          setHistory((prev) => [
-            ...prev,
-            { userPrompt: promptToUse, recipeTitle: recipe.title },
-          ]);
-          scrollToNewRecipe(agentMsgId);
-        }
+        return;
       }
-    } catch (err: any) {
-      console.error("Agent error:", err);
+
+      const result = await fetchAIRecipe({
+        prompt: request.prompt,
+        dietary: request.dietary,
+        servings: request.servings,
+        measurementSystem: request.measurementSystem,
+        history: request.history,
+      });
+      const agentText = result.isRequestError
+        ? result.error || "Unable to reach the AI service."
+        : result.isFallback
+          ? result.error || "Try one of these recipes instead."
+          : result.recipe?.agentIntro || `Here's **${result.recipe?.title}**.`;
+
       setMessages((prev) =>
         prev.map((msg) =>
-          msg.id === agentThinkingId
+          msg.id === messageId
             ? {
-                id: "msg_agent_" + Date.now(),
-                sender: "agent",
-                text: "I couldn't make that recipe. Try again, or choose a dish below.",
-                timestamp: new Date().toLocaleTimeString([], {
-                  hour: "2-digit",
-                  minute: "2-digit",
-                }),
+                ...msg,
+                text: agentText,
+                timestamp: timestamp(),
+                recipe: result.isFallback ? undefined : result.recipe,
+                recommendedRecipes: result.recommendedRecipes,
                 isThinking: false,
+                isRequestError: !!result.isRequestError,
+                retryRequest: result.isRequestError ? request : undefined,
+              }
+            : msg,
+        ),
+      );
+
+      if (!result.isRequestError && !result.isFallback && result.recipe) {
+        setHistory((prev) => [
+          ...prev,
+          { userPrompt: request.prompt, recipeTitle: result.recipe!.title },
+        ]);
+        scrollToNewRecipe(messageId);
+      }
+    } catch (error) {
+      console.error("Agent error:", error);
+      setMessages((prev) =>
+        prev.map((msg) =>
+          msg.id === messageId
+            ? {
+                ...msg,
+                text: "The request failed. Please try again.",
+                timestamp: timestamp(),
+                isThinking: false,
+                isRequestError: true,
+                retryRequest: request,
               }
             : msg,
         ),
@@ -228,6 +196,78 @@ export const AgentChatWindow: React.FC<AgentChatWindowProps> = ({
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const handleSendMessage = async (customPrompt?: string) => {
+    const promptToUse = customPrompt || inputText.trim();
+    if (!promptToUse || isLoading) return;
+
+    const isSubstitutionRequest = ["substitute", "swap", "instead of"].some(
+      (keyword) => promptToUse.toLowerCase().includes(keyword),
+    );
+    const request: AgentRetryRequest = isSubstitutionRequest
+      ? { kind: "substitutions", prompt: promptToUse }
+      : {
+          kind: "recipe",
+          prompt: promptToUse,
+          dietary: [...selectedDietary],
+          servings: targetServings,
+          measurementSystem,
+          history: history.slice(-5),
+        };
+    const timestamp = new Date().toLocaleTimeString([], {
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+    const messageId = "msg_agent_" + Date.now();
+
+    setMessages((prev) => [
+      ...prev,
+      {
+        id: "msg_user_" + Date.now(),
+        sender: "user",
+        text: promptToUse,
+        timestamp,
+      },
+      {
+        id: messageId,
+        sender: "agent",
+        text: isSubstitutionRequest
+          ? "Finding ingredient swaps..."
+          : "Building your recipe...",
+        timestamp,
+        isThinking: true,
+      },
+    ]);
+    if (!customPrompt) setInputText("");
+    setIsLoading(true);
+    await runAgentRequest(request, messageId);
+  };
+
+  const handleRetryMessage = async (message: AgentMessage) => {
+    if (!message.retryRequest || isLoading) return;
+
+    setMessages((prev) =>
+      prev.map((msg) =>
+        msg.id === message.id
+          ? {
+              ...msg,
+              text:
+                message.retryRequest?.kind === "substitutions"
+                  ? "Retrying ingredient swaps..."
+                  : "Retrying your recipe...",
+              isThinking: true,
+              isRequestError: false,
+              retryRequest: undefined,
+              recipe: undefined,
+              recommendedRecipes: undefined,
+              substitutionsList: undefined,
+            }
+          : msg,
+      ),
+    );
+    setIsLoading(true);
+    await runAgentRequest(message.retryRequest, message.id);
   };
 
   const handleClearChat = () => {
@@ -409,6 +449,24 @@ export const AgentChatWindow: React.FC<AgentChatWindowProps> = ({
                           <p className="chat-agent-text">
                             {formatMeasurementText(msg.text, measurementSystem)}
                           </p>
+
+                          {msg.isRequestError && msg.retryRequest && (
+                            <div className="chat-request-error" role="alert">
+                              <AlertCircle aria-hidden="true" />
+                              <span>
+                                Connection issue. Your message is still here.
+                              </span>
+                              <button
+                                type="button"
+                                className="chat-retry-btn"
+                                onClick={() => handleRetryMessage(msg)}
+                                disabled={isLoading}
+                              >
+                                <Repeat aria-hidden="true" />
+                                <span>Redo</span>
+                              </button>
+                            </div>
+                          )}
 
                           {msg.recommendedRecipes &&
                             msg.recommendedRecipes.length > 0 && (
