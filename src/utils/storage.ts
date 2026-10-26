@@ -14,6 +14,76 @@ const SHARED_RECIPES_KEY = "culinary_shared_recipes_v1";
 const SHOPPING_KEY = "culinary_shopping_list_v1";
 const TIMERS_KEY = "culinary_active_timers_v1";
 const MEASUREMENT_SYSTEM_KEY = "culinary_measurement_system_v1";
+const CHEATSHEET_NOTES_KEY = "culinary_cheatsheet_notes_v1";
+const CHEATSHEET_DATA_KEY = "culinary_cheatsheet_data_v1";
+
+export interface CheatsheetCard {
+  id: string;
+  title: string;
+  group: string;
+  value: string;
+  detail: string;
+  kind: "temperature" | "note";
+  isDefault?: boolean;
+}
+
+export interface CheatsheetData {
+  cards: CheatsheetCard[];
+  groupOrder: string[];
+  groupColors?: Record<string, string>;
+  removedDefaultIds?: string[];
+}
+
+export function getStoredCheatsheetData(): CheatsheetData | null {
+  try {
+    const raw = localStorage.getItem(CHEATSHEET_DATA_KEY);
+    if (!raw) return null;
+    const parsed: unknown = JSON.parse(raw);
+    if (
+      !parsed ||
+      typeof parsed !== "object" ||
+      !Array.isArray((parsed as CheatsheetData).cards) ||
+      !Array.isArray((parsed as CheatsheetData).groupOrder)
+    ) {
+      return null;
+    }
+    return parsed as CheatsheetData;
+  } catch {
+    return null;
+  }
+}
+
+export function saveCheatsheetData(data: CheatsheetData): void {
+  try {
+    localStorage.setItem(CHEATSHEET_DATA_KEY, JSON.stringify(data));
+  } catch {
+    // Keep edits available for the current session if storage is unavailable.
+  }
+}
+
+export interface CheatsheetNote {
+  id: string;
+  title: string;
+  content: string;
+  updatedAt: string;
+}
+
+export function getStoredCheatsheetNotes(): CheatsheetNote[] {
+  try {
+    const raw = localStorage.getItem(CHEATSHEET_NOTES_KEY);
+    return raw ? JSON.parse(raw) : [];
+  } catch {
+    return [];
+  }
+}
+
+export function saveCheatsheetNotes(notes: CheatsheetNote[]): void {
+  try {
+    localStorage.setItem(CHEATSHEET_NOTES_KEY, JSON.stringify(notes));
+  } catch {
+    // Notes remain available for the current session if storage is unavailable.
+  }
+}
 
 export function getStoredMeasurementSystem(): MeasurementSystem {
   try {

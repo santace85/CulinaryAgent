@@ -5,6 +5,7 @@ import { FavoritesView } from "./components/FavoritesView";
 import { SharedRecipesView } from "./components/SharedRecipesView";
 import { ShoppingListView } from "./components/ShoppingListView";
 import { SubstitutionsGuide } from "./components/SubstitutionsGuide";
+import { CheatsheetView } from "./components/CheatsheetView";
 import { TimersModal } from "./components/TimersModal";
 import { CookingModeModal } from "./components/CookingModeModal";
 
@@ -36,7 +37,12 @@ export default function App() {
   const { toggleTheme, darkMode } = useTheme();
 
   const [activeTab, setActiveTab] = useState<
-    "agent" | "favorites" | "shared" | "shopping" | "substitutions"
+    | "agent"
+    | "favorites"
+    | "shared"
+    | "shopping"
+    | "substitutions"
+    | "cheatsheet"
   >("agent");
 
   // State Persistence Initialization
@@ -222,6 +228,8 @@ export default function App() {
         {activeTab === "substitutions" && (
           <SubstitutionsGuide initialSearch={substitutionQuery} />
         )}
+
+        {activeTab === "cheatsheet" && <CheatsheetView />}
       </main>
 
       {/* Modals */}

@@ -7,6 +7,7 @@ import {
   Timer as TimerIcon,
   Repeat,
   Sparkles,
+  NotebookPen,
   Sun,
   Moon,
 } from "lucide-react";
@@ -14,9 +15,21 @@ import "./NavbarHeader.css";
 import { useMeasurementSystem } from "../context/MeasurementContext";
 
 interface NavbarHeaderProps {
-  activeTab: "agent" | "favorites" | "shared" | "shopping" | "substitutions";
+  activeTab:
+    | "agent"
+    | "favorites"
+    | "shared"
+    | "shopping"
+    | "substitutions"
+    | "cheatsheet";
   setActiveTab: (
-    tab: "agent" | "favorites" | "shared" | "shopping" | "substitutions",
+    tab:
+      | "agent"
+      | "favorites"
+      | "shared"
+      | "shopping"
+      | "substitutions"
+      | "cheatsheet",
   ) => void;
   favoritesCount: number;
   sharedRecipesCount: number;
@@ -144,6 +157,19 @@ export const NavbarHeader: React.FC<NavbarHeaderProps> = ({
               <Repeat className="navbar-nav-icon" />
               <span>Swaps</span>
             </button>
+
+            <button
+              id="tab-cheatsheet"
+              onClick={() => setActiveTab("cheatsheet")}
+              className={`navbar-nav-btn ${
+                activeTab === "cheatsheet"
+                  ? "navbar-nav-btn--active"
+                  : "navbar-nav-btn--inactive"
+              }`}
+            >
+              <NotebookPen className="navbar-nav-icon" />
+              <span>Cheatsheet</span>
+            </button>
           </nav>
 
           {/* Action Buttons: Timers & Theme */}
@@ -268,6 +294,17 @@ export const NavbarHeader: React.FC<NavbarHeaderProps> = ({
         >
           <Repeat className="navbar-mobile-icon" />
           <span>Swaps</span>
+        </button>
+        <button
+          onClick={() => setActiveTab("cheatsheet")}
+          className={`navbar-mobile-btn ${
+            activeTab === "cheatsheet"
+              ? "navbar-mobile-btn--active"
+              : "navbar-mobile-btn--inactive"
+          }`}
+        >
+          <NotebookPen className="navbar-mobile-icon" />
+          <span>Notes</span>
         </button>
       </div>
     </header>
