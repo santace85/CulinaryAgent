@@ -5,6 +5,7 @@ import { fetchAIRecipe, fetchAISubstitutions } from "../services/api";
 import { getMacroDeltaSummary } from "../utils/nutrition";
 import { useMeasurementSystem } from "../context/MeasurementContext";
 import { formatMeasurementText } from "../utils/measurementFormatting";
+import { normalizeRecipeIdentity } from "../utils/recipeIdentity";
 import {
   Send,
   Sparkles,
@@ -14,12 +15,13 @@ import {
   ChefHat,
   Filter,
   Users,
-  Repeat,
+  RotateCcw,
   Loader2,
   Trash2,
-  AlertCircle,
   Mic,
   MicOff,
+  ArrowRight,
+  BookOpen,
 } from "lucide-react";
 import "./AgentChatWindow.css";
 
@@ -79,6 +81,8 @@ interface AgentChatWindowProps {
   ) => void;
   onOpenCookingMode: (recipe: Recipe) => void;
   onOpenSubstitutions: (ingredientName: string) => void;
+  onAddSuggestedRecipes: (recipes: Recipe[]) => void;
+  onOpenRecipes: () => void;
 }
 
 const PRESET_PROMPTS = [
@@ -108,6 +112,8 @@ export const AgentChatWindow: React.FC<AgentChatWindowProps> = ({
   onStartTimer,
   onOpenCookingMode,
   onOpenSubstitutions,
+  onAddSuggestedRecipes,
+  onOpenRecipes,
 }) => {
   const { measurementSystem } = useMeasurementSystem();
   const [inputText, setInputText] = useState("");
@@ -241,7 +247,7 @@ export const AgentChatWindow: React.FC<AgentChatWindowProps> = ({
               ? {
                   ...msg,
                   text: result.isRequestError
-                    ? result.error || "Unable to reach the AI service."
+                    ? "I couldn't find those swaps just now."
                     : `Good swaps for "${request.prompt}":`,
                   timestamp: timestamp(),
                   substitutionsList: result.isRequestError
@@ -264,10 +270,19 @@ export const AgentChatWindow: React.FC<AgentChatWindowProps> = ({
         measurementSystem: request.measurementSystem,
         history: request.history,
       });
+      const recommendedRecipes = (result.recommendedRecipes ?? []).map(
+        normalizeRecipeIdentity,
+      );
+      if (recommendedRecipes.length > 0) {
+        onAddSuggestedRecipes(recommendedRecipes);
+      }
+
       const agentText = result.isRequestError
-        ? result.error || "Unable to reach the AI service."
+        ? "Oops, I hit a little snag. Let's give it another go."
         : result.isFallback
-          ? result.error || "Try one of these recipes instead."
+          ? recommendedRecipes.length > 0
+            ? "I couldn't make that recipe just now, but I saved a few ideas for you in Recipes."
+            : "I couldn't make that recipe just now. Try a different prompt, or give it another go in a moment."
           : result.recipe?.agentIntro || `Here's **${result.recipe?.title}**.`;
 
       setMessages((prev) =>
@@ -278,7 +293,7 @@ export const AgentChatWindow: React.FC<AgentChatWindowProps> = ({
                 text: agentText,
                 timestamp: timestamp(),
                 recipe: result.isFallback ? undefined : result.recipe,
-                recommendedRecipes: result.recommendedRecipes,
+                recommendedRecipes,
                 isThinking: false,
                 isRequestError: !!result.isRequestError,
                 retryRequest: result.isRequestError ? request : undefined,
@@ -301,7 +316,7 @@ export const AgentChatWindow: React.FC<AgentChatWindowProps> = ({
           msg.id === messageId
             ? {
                 ...msg,
-                text: "The request failed. Please try again.",
+                text: "I hit a small snag while preparing that.",
                 timestamp: timestamp(),
                 isThinking: false,
                 isRequestError: true,
@@ -392,39 +407,6 @@ export const AgentChatWindow: React.FC<AgentChatWindowProps> = ({
       setMessages([]);
       setHistory([]);
     }
-  };
-
-  const handleSelectFallbackRecipe = (recipe: Recipe) => {
-    const loadingMessageId = "msg_agent_loading_" + Date.now();
-    const loadingMsg: AgentMessage = {
-      id: loadingMessageId,
-      sender: "agent",
-      text: `Loading **${recipe.title}**...`,
-      timestamp: new Date().toLocaleTimeString([], {
-        hour: "2-digit",
-        minute: "2-digit",
-      }),
-      isThinking: true,
-    };
-
-    setMessages((prev) => [...prev, loadingMsg]);
-
-    setTimeout(() => {
-      setMessages((prev) =>
-        prev.map((msg) =>
-          msg.id === loadingMessageId
-            ? {
-                ...msg,
-                id: "msg_agent_recipe_" + Date.now(),
-                sender: "agent",
-                text: `Try **${recipe.title}**.`,
-                isThinking: false,
-                recipe,
-              }
-            : msg,
-        ),
-      );
-    }, 3000);
   };
 
   return (
@@ -563,59 +545,84 @@ export const AgentChatWindow: React.FC<AgentChatWindowProps> = ({
                         </div>
                       ) : (
                         <div>
-                          <p className="chat-agent-text">
-                            {formatMeasurementText(msg.text, measurementSystem)}
-                          </p>
+                          {!msg.isRequestError && (
+                            <p className="chat-agent-text">
+                              {formatMeasurementText(
+                                msg.text,
+                                measurementSystem,
+                              )}
+                            </p>
+                          )}
 
                           {msg.isRequestError && msg.retryRequest && (
-                            <div className="chat-request-error" role="alert">
-                              <AlertCircle aria-hidden="true" />
-                              <span>
-                                Connection issue. Your message is still here.
-                              </span>
+                            <div
+                              className="chat-error-actions"
+                              role="group"
+                              aria-label="Choose what to do next"
+                            >
                               <button
                                 type="button"
-                                className="chat-retry-btn"
+                                className="chat-error-action chat-error-action--retry"
                                 onClick={() => handleRetryMessage(msg)}
                                 disabled={isLoading}
                               >
-                                <Repeat aria-hidden="true" />
-                                <span>Redo</span>
+                                <span className="chat-error-action-heading">
+                                  {isLoading ? (
+                                    <Loader2
+                                      className="chat-retry-spinner"
+                                      aria-hidden="true"
+                                    />
+                                  ) : (
+                                    <RotateCcw aria-hidden="true" />
+                                  )}
+                                  <span>
+                                    {isLoading
+                                      ? "Trying again..."
+                                      : "Try again"}
+                                  </span>
+                                </span>
+                                <span className="chat-error-action-description">
+                                  Retry your request with the same details.
+                                </span>
+                              </button>
+                              <button
+                                type="button"
+                                className="chat-error-action chat-error-action--recipes"
+                                onClick={onOpenRecipes}
+                              >
+                                <span className="chat-error-action-heading">
+                                  <BookOpen aria-hidden="true" />
+                                  <span>Recipe collection</span>
+                                  <ArrowRight aria-hidden="true" />
+                                </span>
+                                <span className="chat-error-action-description">
+                                  Browse your shared, hearted, and suggested
+                                  recipes.
+                                </span>
                               </button>
                             </div>
                           )}
 
                           {msg.recommendedRecipes &&
-                            msg.recommendedRecipes.length > 0 && (
-                              <div className="chat-fallback-list">
-                                <div className="chat-fallback-label">
-                                  Try one of these:
+                            msg.recommendedRecipes.length > 0 &&
+                            !msg.isRequestError && (
+                              <div className="chat-recipes-suggestion">
+                                <div className="chat-recipes-suggestion-copy">
+                                  <Sparkles aria-hidden="true" />
+                                  <span>
+                                    {msg.recommendedRecipes.length === 1
+                                      ? "A recipe idea is waiting in your collection."
+                                      : `${msg.recommendedRecipes.length} recipe ideas are waiting in your collection.`}
+                                  </span>
                                 </div>
-                                <div className="chat-fallback-grid">
-                                  {msg.recommendedRecipes.map((recipe) => (
-                                    <button
-                                      key={recipe.id}
-                                      type="button"
-                                      onClick={() =>
-                                        handleSelectFallbackRecipe(recipe)
-                                      }
-                                      className="chat-fallback-card"
-                                    >
-                                      <div className="chat-fallback-title">
-                                        {formatMeasurementText(
-                                          recipe.title,
-                                          measurementSystem,
-                                        )}
-                                      </div>
-                                      <div className="chat-fallback-summary">
-                                        {formatMeasurementText(
-                                          recipe.summary,
-                                          measurementSystem,
-                                        )}
-                                      </div>
-                                    </button>
-                                  ))}
-                                </div>
+                                <button
+                                  type="button"
+                                  className="chat-open-recipes-btn"
+                                  onClick={onOpenRecipes}
+                                >
+                                  <span>Explore Recipes</span>
+                                  <ArrowRight aria-hidden="true" />
+                                </button>
                               </div>
                             )}
 

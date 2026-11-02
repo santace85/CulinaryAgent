@@ -11,6 +11,8 @@ import {
 
 const FAVORITES_KEY = "culinary_favorites_v1";
 const SHARED_RECIPES_KEY = "culinary_shared_recipes_v1";
+const SUGGESTED_RECIPES_KEY = "culinary_suggested_recipes_v1";
+const HIDDEN_SAMPLE_RECIPES_KEY = "culinary_hidden_sample_recipes_v1";
 const SHOPPING_KEY = "culinary_shopping_list_v1";
 const TIMERS_KEY = "culinary_active_timers_v1";
 const MEASUREMENT_SYSTEM_KEY = "culinary_measurement_system_v1";
@@ -150,6 +152,32 @@ export function removeSharedRecipe(id: string): Recipe[] {
   const updated = getStoredSharedRecipes().filter((recipe) => recipe.id !== id);
   localStorage.setItem(SHARED_RECIPES_KEY, JSON.stringify(updated));
   return updated;
+}
+
+export function getStoredSuggestedRecipes(): Recipe[] {
+  try {
+    const raw = localStorage.getItem(SUGGESTED_RECIPES_KEY);
+    return raw ? JSON.parse(raw) : [];
+  } catch {
+    return [];
+  }
+}
+
+export function saveSuggestedRecipes(recipes: Recipe[]): void {
+  localStorage.setItem(SUGGESTED_RECIPES_KEY, JSON.stringify(recipes));
+}
+
+export function getHiddenSampleRecipeIds(): string[] {
+  try {
+    const raw = localStorage.getItem(HIDDEN_SAMPLE_RECIPES_KEY);
+    return raw ? JSON.parse(raw) : [];
+  } catch {
+    return [];
+  }
+}
+
+export function saveHiddenSampleRecipeIds(ids: string[]): void {
+  localStorage.setItem(HIDDEN_SAMPLE_RECIPES_KEY, JSON.stringify(ids));
 }
 
 // Shopping List Local Storage

@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { NavbarHeader } from "./components/NavbarHeader";
 import { AgentChatWindow } from "./components/AgentChatWindow";
-import { FavoritesView } from "./components/FavoritesView";
-import { SharedRecipesView } from "./components/SharedRecipesView";
+import { RecipesView } from "./components/RecipesView";
 import { ShoppingListView } from "./components/ShoppingListView";
 import { SubstitutionsGuide } from "./components/SubstitutionsGuide";
 import { CheatsheetView } from "./components/CheatsheetView";
@@ -25,6 +24,11 @@ import {
   saveStoredTimers,
   getStoredSharedRecipes,
   saveSharedRecipe,
+  getStoredSuggestedRecipes,
+  saveSuggestedRecipes,
+  getHiddenSampleRecipeIds,
+  saveHiddenSampleRecipeIds,
+  removeSharedRecipe,
 } from "./utils/storage";
 import {
   clearSharedRecipeFromUrl,
@@ -38,18 +42,14 @@ export default function App() {
 
   const [activeTab, setActiveTab] = useState<
     | "agent"
-    | "favorites"
-    | "shared"
+    | "recipes"
     | "shopping"
     | "substitutions"
     | "cheatsheet"
   >("agent");
 
   // State Persistence Initialization
-  const [favorites, setFavorites] = useState<Recipe[]>(() => {
-    const stored = getStoredFavorites();
-    return stored.length ? stored : STARTER_RECIPES;
-  });
+  const [favorites, setFavorites] = useState<Recipe[]>(getStoredFavorites);
 
   const [shoppingList, setShoppingList] = useState<ShoppingListItem[]>(() => {
     return getStoredShoppingList();
@@ -57,6 +57,12 @@ export default function App() {
 
   const [sharedRecipes, setSharedRecipes] = useState<Recipe[]>(() =>
     getStoredSharedRecipes(),
+  );
+  const [suggestedRecipes, setSuggestedRecipes] = useState<Recipe[]>(() =>
+    getStoredSuggestedRecipes(),
+  );
+  const [hiddenSampleIds, setHiddenSampleIds] = useState<string[]>(() =>
+    getHiddenSampleRecipeIds(),
   );
   const [sharedRecipeToOpen, setSharedRecipeToOpen] = useState<Recipe | null>(
     null,
@@ -92,12 +98,20 @@ export default function App() {
   }, [timers]);
 
   useEffect(() => {
+    saveSuggestedRecipes(suggestedRecipes);
+  }, [suggestedRecipes]);
+
+  useEffect(() => {
+    saveHiddenSampleRecipeIds(hiddenSampleIds);
+  }, [hiddenSampleIds]);
+
+  useEffect(() => {
     const sharedRecipe = readSharedRecipeFromUrl();
     if (!sharedRecipe) return;
 
     setSharedRecipes(saveSharedRecipe(sharedRecipe));
     setSharedRecipeToOpen(sharedRecipe);
-    setActiveTab("shared");
+    setActiveTab("recipes");
     clearSharedRecipeFromUrl();
   }, []);
 
@@ -107,9 +121,36 @@ export default function App() {
     setFavorites(updated);
   };
 
+  const handleAddSuggestedRecipes = (recipes: Recipe[]) => {
+    setSuggestedRecipes((current) => {
+      const byId = new Map(current.map((recipe) => [recipe.id, recipe]));
+      recipes.forEach((recipe) => {
+        if (!byId.has(recipe.id)) byId.set(recipe.id, recipe);
+      });
+      return Array.from(byId.values());
+    });
+  };
+
+  const handleHideSampleRecipe = (id: string) => {
+    setHiddenSampleIds((current) => {
+      return current.includes(id) ? current : [...current, id];
+    });
+  };
+
+  const handleRestoreSamples = () => {
+    setHiddenSampleIds([]);
+  };
+
   const isFavorite = (id: string) => {
     return favorites.some((r) => r.id === id);
   };
+
+  const recipeCount = new Set([
+    ...favorites,
+    ...sharedRecipes,
+    ...suggestedRecipes,
+    ...STARTER_RECIPES.filter((recipe) => !hiddenSampleIds.includes(recipe.id)),
+  ].map((recipe) => recipe.id)).size;
 
   // Add ingredients to shopping list
   const handleAddToShoppingList = (
@@ -167,8 +208,7 @@ export default function App() {
       <NavbarHeader
         activeTab={activeTab}
         setActiveTab={setActiveTab}
-        favoritesCount={favorites.length}
-        sharedRecipesCount={sharedRecipes.length}
+        recipesCount={recipeCount}
         shoppingListCount={shoppingList.length}
         activeTimersCount={
           timers.filter((t) => t.isRunning && t.remainingSeconds > 0).length
@@ -190,27 +230,25 @@ export default function App() {
             onStartTimer={handleStartTimer}
             onOpenCookingMode={(recipe) => setCookingModeRecipe(recipe)}
             onOpenSubstitutions={handleOpenSubstitution}
+            onAddSuggestedRecipes={handleAddSuggestedRecipes}
+            onOpenRecipes={() => setActiveTab("recipes")}
           />
         )}
 
-        {activeTab === "favorites" && (
-          <FavoritesView
+        {activeTab === "recipes" && (
+          <RecipesView
             favorites={favorites}
-            onToggleFavorite={handleToggleFavorite}
-            onAddToShoppingList={handleAddToShoppingList}
-            onStartTimer={handleStartTimer}
-            onOpenCookingMode={(recipe) => setCookingModeRecipe(recipe)}
-            onRequestSubstitution={handleOpenSubstitution}
-          />
-        )}
-
-        {activeTab === "shared" && (
-          <SharedRecipesView
-            recipes={sharedRecipes}
+            sharedRecipes={sharedRecipes}
+            suggestedRecipes={suggestedRecipes}
+            sampleRecipes={STARTER_RECIPES}
+            hiddenSampleIds={hiddenSampleIds}
             initialRecipe={sharedRecipeToOpen}
-            onRecipesChange={setSharedRecipes}
+            onInitialRecipeOpened={() => setSharedRecipeToOpen(null)}
             onToggleFavorite={handleToggleFavorite}
             isFavorite={isFavorite}
+            onRemoveSharedRecipe={(id) => setSharedRecipes(removeSharedRecipe(id))}
+            onHideSampleRecipe={handleHideSampleRecipe}
+            onRestoreSamples={handleRestoreSamples}
             onAddToShoppingList={handleAddToShoppingList}
             onStartTimer={handleStartTimer}
             onOpenCookingMode={(recipe) => setCookingModeRecipe(recipe)}

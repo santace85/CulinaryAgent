@@ -1,8 +1,7 @@
 import React from "react";
 import {
   Bot,
-  Heart,
-  Link2,
+  BookOpen,
   ShoppingBag,
   Timer as TimerIcon,
   Repeat,
@@ -17,22 +16,19 @@ import { useMeasurementSystem } from "../context/MeasurementContext";
 interface NavbarHeaderProps {
   activeTab:
     | "agent"
-    | "favorites"
-    | "shared"
+    | "recipes"
     | "shopping"
     | "substitutions"
     | "cheatsheet";
   setActiveTab: (
     tab:
       | "agent"
-      | "favorites"
-      | "shared"
+      | "recipes"
       | "shopping"
       | "substitutions"
       | "cheatsheet",
   ) => void;
-  favoritesCount: number;
-  sharedRecipesCount: number;
+  recipesCount: number;
   shoppingListCount: number;
   activeTimersCount: number;
   onOpenTimers: () => void;
@@ -43,8 +39,7 @@ interface NavbarHeaderProps {
 export const NavbarHeader: React.FC<NavbarHeaderProps> = ({
   activeTab,
   setActiveTab,
-  favoritesCount,
-  sharedRecipesCount,
+  recipesCount,
   shoppingListCount,
   activeTimersCount,
   onOpenTimers,
@@ -92,37 +87,19 @@ export const NavbarHeader: React.FC<NavbarHeaderProps> = ({
             </button>
 
             <button
-              id="tab-shared"
-              onClick={() => setActiveTab("shared")}
+              id="tab-recipes"
+              onClick={() => setActiveTab("recipes")}
               className={`navbar-nav-btn ${
-                activeTab === "shared"
+                activeTab === "recipes"
                   ? "navbar-nav-btn--active"
                   : "navbar-nav-btn--inactive"
               }`}
             >
-              <Link2 className="navbar-nav-icon" />
-              <span>Shared</span>
-              {sharedRecipesCount > 0 && (
+              <BookOpen className="navbar-nav-icon" />
+              <span>Recipes</span>
+              {recipesCount > 0 && (
                 <span className="navbar-count-badge navbar-count-badge--emerald">
-                  {sharedRecipesCount}
-                </span>
-              )}
-            </button>
-
-            <button
-              id="tab-favorites"
-              onClick={() => setActiveTab("favorites")}
-              className={`navbar-nav-btn ${
-                activeTab === "favorites"
-                  ? "navbar-nav-btn--active"
-                  : "navbar-nav-btn--inactive"
-              }`}
-            >
-              <Heart className="navbar-nav-icon" />
-              <span>Saved</span>
-              {favoritesCount > 0 && (
-                <span className="navbar-count-badge navbar-count-badge--rose">
-                  {favoritesCount}
+                  {recipesCount}
                 </span>
               )}
             </button>
@@ -252,26 +229,15 @@ export const NavbarHeader: React.FC<NavbarHeaderProps> = ({
           <span>Cook</span>
         </button>
         <button
-          onClick={() => setActiveTab("shared")}
+          onClick={() => setActiveTab("recipes")}
           className={`navbar-mobile-btn ${
-            activeTab === "shared"
+            activeTab === "recipes"
               ? "navbar-mobile-btn--active"
               : "navbar-mobile-btn--inactive"
           }`}
         >
-          <Link2 className="navbar-mobile-icon" />
-          <span>Shared ({sharedRecipesCount})</span>
-        </button>
-        <button
-          onClick={() => setActiveTab("favorites")}
-          className={`navbar-mobile-btn ${
-            activeTab === "favorites"
-              ? "navbar-mobile-btn--active"
-              : "navbar-mobile-btn--inactive"
-          }`}
-        >
-          <Heart className="navbar-mobile-icon" />
-          <span>Saved ({favoritesCount})</span>
+          <BookOpen className="navbar-mobile-icon" />
+          <span>Recipes ({recipesCount})</span>
         </button>
         <button
           onClick={() => setActiveTab("shopping")}
